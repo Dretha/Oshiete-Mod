@@ -1,0 +1,32 @@
+{
+    "let_out_kagune": {
+        "category": "player",
+            "sounds": [
+                "dm:let_out_kagune"
+            ]
+    },
+        "hit_of_kagune": {
+            "category": "player",
+                "sounds": [
+                    "dm:hit_of_kagune"
+                ]
+        },
+            "hit_air_kagune": {
+                "category": "player",
+                    "sounds": [
+                        "dm:hit_air_kagune"
+                    ]
+            },
+                "hit_ground_kagune_2": {
+                    "category": "player",
+                        "sounds": [
+                            "dm:hit_ground_kagune_2"
+                        ]
+                },
+                    "ukaku_shooting": {
+                        "category": "player",
+                            "sounds": [
+                                "dm:ukaku_shooting"
+                            ]
+                    }
+}

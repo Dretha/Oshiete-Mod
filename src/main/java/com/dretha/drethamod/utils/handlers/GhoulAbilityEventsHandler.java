@@ -1,0 +1,394 @@
+package com.dretha.drethamod.utils.handlers;
+
+import java.util.Random;
+
+import com.dretha.drethamod.capability.CapaProvider;
+import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.client.keybinds.KeybindsRegister;
+import com.dretha.drethamod.entity.passive.EntityHuman;
+import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.reference.Reference;
+import com.dretha.drethamod.utils.interfaces.IGhoul;
+import com.dretha.drethamod.utils.interfaces.IGhoulFood;
+import com.dretha.drethamod.utils.interfaces.IKuinke;
+
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemSoup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@EventBusSubscriber(
+		value = { Side.CLIENT, Side.SERVER },
+		modid = Reference.MODID)
+public class GhoulAbilityEventsHandler {
+
+//for support      
+    
+    public static final ItemStack ghoulFood = new ItemStack(InitItems.HUMAN_MEAT);
+    public static final Item bottle = Item.getItemById(374);
+    public static final ItemStack rottenflesh = new ItemStack(Items.ROTTEN_FLESH);
+    
+    /*@SubscribeEvent
+    public static void dropKagune(ItemTossEvent e) {
+    	System.out.println(e.getEntity().getName());  
+    	if ((e.getPlayer()!=null) && (e.getEntityItem().getItem().getItem() instanceof IKagune)) {
+    		e.getEntityItem().setDead();
+    	    e.getPlayer().inventory.addItemStackToInventory(new ItemStack(e.getEntityItem().getItem().getItem()));   		   
+    	    e.getPlayer().inventoryContainer.detectAndSendChanges(); 
+    	}
+    }*/
+    
+    
+    @SubscribeEvent
+    public void onJoin(EntityJoinWorldEvent e) {    	
+        if (e.getEntity() instanceof EntityPlayer) {
+        	
+        	if(e.getEntity() instanceof EntityPlayer) {
+        		EntityPlayer player = (EntityPlayer) e.getEntity();
+        		
+        		player.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
+                player.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
+                player.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
+            }
+            
+        }
+    }
+    
+    
+    
+    
+    /*AttributeModifier speedghoul = new AttributeModifier("speedghoul", 2.1, 2);
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void kaguneActivated1(LivingEquipmentChangeEvent e) {
+    	if (e.getEntity() instanceof EntityPlayer && ((EntityPlayer) e.getEntity()).getCapability(CapaProvider.PLAYER_CAP, null).isGhoul()) {
+    		if ((((EntityPlayer) e.getEntity()).ticksExisted%3)==0) {
+    		System.out.println(e.isCancelable());
+    		if (!(e.getFrom().getItem() instanceof KaguneBase) && e.getTo().getItem() instanceof KaguneBase) {
+    			
+    			EntityPlayer player = (EntityPlayer) e.getEntity();
+    			player.getCapability(CapaProvider.PLAYER_CAP, null).setActivatedKagune(true);
+    			ticksPre=player.ticksExisted;
+    			spawnPatr=true;
+    			player.world.playSound(null, player.getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1F, 1F);
+    			
+				player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(speedghoul);
+				
+    		}
+    		if (e.getFrom().getItem() instanceof IKagune && !(e.getTo().getItem() instanceof IKagune)) {
+    			
+    			EntityPlayer player = (EntityPlayer) e.getEntity();
+    			player.getCapability(CapaProvider.PLAYER_CAP, null).setActivatedKagune(false);				
+				player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(speedghoul);
+				
+    		}
+    		}
+    	}
+    }*/
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //ghoul eat
+    
+    @SubscribeEvent
+    public static void ghoulEat(LivingEntityUseItemEvent.Finish e) { 
+    	if (e.getEntity() instanceof EntityPlayer) { 
+    		if (EventsHandler.getCapaMP((EntityPlayer) e.getEntity()).isGhoul()) {
+    		if (!(e.getItem().getItem() instanceof IGhoulFood) && ((e.getItem().getItem() instanceof ItemFood) || (e.getItem().getItem() instanceof ItemSoup)) && !(ItemStack.areItemsEqual(e.getItem(), rottenflesh))) {
+    			((EntityLivingBase) e.getEntity()).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 240, 1)); 
+    			EntityPlayer player = (EntityPlayer) e.getEntity();
+    			ItemFood itemFood = (ItemFood) e.getItem().getItem();
+    			player.getFoodStats().setFoodLevel(player.getFoodStats().getFoodLevel()-itemFood.getHealAmount(e.getItem()));
+    			player.getFoodStats().setFoodSaturationLevel(player.getFoodStats().getSaturationLevel()-itemFood.getSaturationModifier(e.getItem()));
+    		}
+    		if (e.getItem().getItem() instanceof IGhoulFood) {
+    			ICapaHandler capa = ((EntityPlayer) e.getEntity()).getCapability(CapaProvider.PLAYER_CAP, null);
+    			capa.addRCpoints(7);
+    		}
+    		}
+        }        
+    	
+    }
+    
+    @SubscribeEvent
+    public static void ghoulEatSoup(LivingEntityUseItemEvent.Finish e) {
+    	if (ItemStack.areItemsEqual(e.getResultStack(), new ItemStack(Items.BOWL))) {
+    		((EntityLivingBase) e.getEntity()).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 240, 1)); 
+    		EntityPlayer player = (EntityPlayer) e.getEntity();
+    		player.getFoodStats().setFoodLevel(player.getFoodStats().getFoodLevel()-10);
+    		player.getFoodStats().setFoodSaturationLevel(player.getFoodStats().getSaturationLevel()-12);
+    	}
+    }
+    
+    @SubscribeEvent
+    public static void ghoulEatCake(PlayerInteractEvent.RightClickBlock e) {
+    	if (Block.isEqualTo(e.getWorld().getBlockState(e.getPos()).getBlock(), Blocks.CAKE) && e.getEntityPlayer().getFoodStats().getFoodLevel()<=18) {
+    		((EntityLivingBase) e.getEntity()).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 240, 1)); 
+    		e.setUseBlock(Event.Result.DENY);
+    		e.getEntityPlayer().getFoodStats().setFoodLevel(e.getEntityPlayer().getFoodStats().getFoodLevel()-2);
+    		e.getEntityPlayer().getFoodStats().setFoodSaturationLevel(e.getEntityPlayer().getFoodStats().getSaturationLevel()-0.4F);
+    	}
+    }
+    
+    
+    
+    //sounds kagune
+    
+    /*@SubscribeEvent
+    public static void playSoundKaguneBlock(LivingEntityUseItemEvent.Start e) {
+    	if (e.getEntity() instanceof EntityPlayer && ItemStack.areItemStacksEqual(e.getItem(), kaguneRinkaku)) {
+    		EntityPlayer player = (EntityPlayer) e.getEntity();
+    		player.world.spawnParticle(EnumParticleTypes.REDSTONE, player.posX, player.posY, player.posZ, player.motionX, player.motionY, player.motionZ);
+    		e.getEntityLiving().world.playSound(player, player.getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1F, 1F);
+    		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+    		player.sendMessage(new TextComponentString(capa.getRCpoints()+" RC"));
+    	}
+    	
+    }*/
+    /*
+    @SubscribeEvent
+    public static void playSoundKaguneHitAir(PlayerInteractEvent.LeftClickEmpty e) {
+    	if (e.getItemStack().getItem() instanceof KaguneMelee) {
+    		EntityPlayer player = (EntityPlayer) e.getEntity();
+    		e.getEntityLiving().world.playSound(player, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 0.5F, 1.0F);
+    	}
+    }
+    */
+    /*static int i=0;
+    @SubscribeEvent
+    public static void playSoundKagune(RenderSpecificHandEvent e) {
+    	System.out.println("playSoundKagune");
+    	if (ItemStack.areItemStacksEqual(e.getItemStack(), kagune)&&i==0) {
+    		System.out.println("playSoundKagune true");
+    		world.playSound(playerS, playerS.getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1.0F, 1.0F);
+    		i++;
+    	}
+    }*/
+    
+    /*
+    @SubscribeEvent
+    public static void playSoundLetOfKagune(RenderSpecificHandEvent e) {
+    	ItemStack kagune = new ItemStack(InitItems.KAGUNE_RINKAKU);
+    	System.out.println("playSoundLetOfKagune");
+    	if (ItemStack.areItemStacksEqual(e.getItemStack(), kagune)&&false) {
+    		System.out.println("playSoundLetOfKagune true");
+    		player.world.playSound(player, player.getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1.0F, 1.0F);    		
+    	}
+    }*/
+    
+    
+    
+    
+  //Regenerate RC level and remove food level
+  	@SubscribeEvent
+      public void regenerateRClevel(PlayerTickEvent e) {
+      	//e.player.world.spawnParticle(EnumParticleTypes.REDSTONE, e.player.posX, e.player.posY, e.player.posZ, e.player.motionX, e.player.motionY, e.player.motionZ);
+      	if ((EventsHandler.getPlayerMP(e.player).ticksExisted%20)==0 && EventsHandler.getPlayerMP(e.player).getFoodStats().getFoodLevel()>0) {
+      		
+      		ICapaHandler capa = EventsHandler.getPlayerMP(e.player).getCapability(CapaProvider.PLAYER_CAP, null);
+      		EntityPlayer player = EventsHandler.getPlayerMP(e.player);
+      		
+      		if (capa.isGhoul() && player.getFoodStats().getFoodLevel()>0 && capa.getRClevel()<capa.getRCpoints()/10) {
+      			
+      			if (capa.isGhoul()) capa.updateRClevel();
+      			if (capa.isGhoul() && capa.getRClevel()<capa.getRCpoints()/10) {
+      				capa.addRClevel((capa.getRCpoints()/10)/40);
+      				player.sendMessage(new TextComponentString(capa.getRClevel()+" RC Level"));
+      			}
+      			if ((player.ticksExisted%200)==0 && !(player.isCreative())) {
+      				if (player.getFoodStats().getSaturationLevel()>0) {
+      					player.getFoodStats().setFoodSaturationLevel(player.getFoodStats().getSaturationLevel()-1);
+      				} else {
+      					EventsHandler.getPlayerMP(player).getFoodStats().setFoodLevel(player.getFoodStats().getFoodLevel()-1);
+      				}
+      			}
+      			
+      		}
+      	
+      	}
+      	
+      }
+  	
+  	
+  	
+  	//protect ghoul from melee weapon
+  	/*worked
+  	@SubscribeEvent
+      public static void setGhoulProtect(LivingAttackEvent e) {
+      	if (e.getEntityLiving() instanceof EntityPlayer) {
+      		EntityPlayer player = (EntityPlayer) e.getEntityLiving();
+      		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+      		if (capa.isGhoul()) {
+      			if (e.getSource().getTrueSource() instanceof EntityPlayer) {
+      				EntityPlayer playerAt = (EntityPlayer) e.getEntityLiving();
+      				if (!(playerAt.getHeldItemMainhand().getItem() instanceof IKuinke) && !(playerAt.getHeldItemMainhand().getItem() instanceof IKagune)) {
+      					e.setCanceled(true);
+      					if (!e.getSource().isProjectile()) {
+      						playerAt.getHeldItemMainhand().damageItem(100000, playerAt);
+      					}
+      				}
+      			}
+      			if (e.getSource().getTrueSource() != null && !(e.getSource().getTrueSource() instanceof EntityPlayer)) {
+      				EntityLivingBase entity = (EntityLivingBase) e.getSource().getTrueSource();
+      				if (!(entity.getHeldItemMainhand().getItem().equals(Items.AIR)) && !(entity.getHeldItemMainhand().getItem() instanceof IKuinke) && !(entity.getHeldItemMainhand().getItem() instanceof IKagune)) {
+      					e.setCanceled(true);
+      					if (!e.getSource().isProjectile()) {
+      					    entity.getHeldItemMainhand().damageItem(100000, entity);
+      					}
+      				}
+      			}
+      		}
+      	}
+      	if (!(e.getEntityLiving() instanceof EntityPlayer) && e.getEntityLiving() instanceof IGhoul) {
+      		if (e.getSource().getTrueSource() instanceof EntityPlayer) {
+      			EntityPlayer playerAt = (EntityPlayer) e.getSource().getTrueSource();
+  				if (!(playerAt.getHeldItemMainhand().getItem() instanceof IKuinke) && !(playerAt.getHeldItemMainhand().getItem() instanceof IKagune)) {
+  					e.setCanceled(true);
+  					if (!e.getSource().isProjectile()) {
+  						playerAt.getHeldItemMainhand().damageItem(100000, playerAt);
+  					}
+  				}
+      		}
+      		if (e.getSource().getTrueSource() != null && !(e.getSource().getTrueSource() instanceof EntityPlayer)) {
+      			EntityLivingBase entity = (EntityLivingBase) e.getSource().getTrueSource();
+  				if (!(entity.getHeldItemMainhand().getItem().equals(Items.AIR)) && !(entity.getHeldItemMainhand().getItem() instanceof IKuinke) && !(entity.getHeldItemMainhand().getItem() instanceof IKagune)) {
+  					e.setCanceled(true);
+  					if (!e.getSource().isProjectile()) {
+  					    entity.getHeldItemMainhand().damageItem(100000, entity);
+  					}
+  				}
+      		}
+      	}
+      }
+  	*/
+  	
+  	
+      @SubscribeEvent
+      public void spawnKagunePatricles(PlayerTickEvent e) {
+    	  ICapaHandler capa = EventsHandler.getCapaMP(e.player);
+      	  if (capa.getSpawnKagunePatriclesFlag()) {
+      		this.spawnPatricleSpine(e.player);
+      		if (capa.getSpawnKagunePatriclesTicksPre()+30<=e.player.ticksExisted) 
+      			capa.setSpawnKagunePatriclesFlag(false);
+      	  }
+      }
+      public void spawnPatricleSpine(EntityLivingBase entity) {
+      	Random random = new Random();
+      	double d0 = entity.posX + ((random.nextGaussian()-0.5D)*0.25D);
+          double d1 = entity.posY + 1D + ((random.nextGaussian()-0.5D)*0.5D);
+          double d2 = entity.posZ + ((random.nextGaussian()-0.5D)*0.25D);
+          float f = 10F / 15.0F;
+          float f1 = f * 0.6F + 0.4F;
+          float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
+          float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
+          entity.world.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, (double)f1, (double)f2, (double)f3);
+      }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      /*
+      AttributeModifier forcespeed = new AttributeModifier("forcespeed", 12, 2);
+      static boolean firstKeyPressed=false;
+      static boolean secondKeyPressed=false;
+      static boolean isForceSpeedActive=false;
+      static boolean canForceSpeedActive=true;
+      static int forceSpeedTicksPre=0;
+      static int firstKeyPressedTicksPre=0;
+      static int forceSpeedActivedTicksPre=0;
+      @SubscribeEvent
+      public void forceSpeedKeyEvent(KeyInputEvent e) {
+    	  if (Minecraft.getMinecraft().gameSettings.keyBindForward.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindBack.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindLeft.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindRight.isPressed()) {
+    		  if (!firstKeyPressed && canForceSpeedActive) {
+    			  canForceSpeedActive=false;
+    			  firstKeyPressed=true;
+    			  System.out.println("firstKeyPressed=true");
+    			  firstKeyPressedTicksPre=getPlayerMP(Minecraft.getMinecraft().player).ticksExisted;
+    			  System.out.println(getPlayerMP(Minecraft.getMinecraft().player).ticksExisted);
+    		  }
+    		  if (firstKeyPressed && !secondKeyPressed) {
+    			  secondKeyPressed=true;
+    			  System.out.println("secondKeyPressed=true");
+    		  }
+    	  }
+      }
+      @SubscribeEvent
+      public void forceSpeedTickEvent(PlayerTickEvent e) {
+    	  //if more than 10 ticks have passed (forcespeed fail)
+    	  if (firstKeyPressed && firstKeyPressedTicksPre+15<=e.player.ticksExisted) {
+    		  firstKeyPressed=false;
+    		  System.out.println("forcespeed fail");
+    		  System.out.println(e.player.ticksExisted);
+    	  }
+    	  if (firstKeyPressed && secondKeyPressed) {
+    		  forceSpeedActivedTicksPre=e.player.ticksExisted;
+    		  e.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(forcespeed);
+    		  firstKeyPressed=false;
+    		  secondKeyPressed=false;
+    		  isForceSpeedActive=true;
+    		  System.out.println("forcespeed start");
+    	  }
+    	  if (isForceSpeedActive && forceSpeedActivedTicksPre+3<=e.player.ticksExisted) {
+    			  e.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(forcespeed);
+    			  isForceSpeedActive=false;
+    			  System.out.println("forcespeed finish");
+    			  forceSpeedTicksPre=e.player.ticksExisted;
+    	  }
+    	  if (!canForceSpeedActive && forceSpeedTicksPre+20<=e.player.ticksExisted) canForceSpeedActive=true;
+    	  
+     }
+    */
+	
+}

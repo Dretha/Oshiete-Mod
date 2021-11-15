@@ -1,0 +1,72 @@
+package com.dretha.drethamod.main;
+
+import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.proxy.CommonProxy;
+import com.dretha.drethamod.reference.Reference;
+import com.dretha.drethamod.utils.handlers.EventsHandler;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import software.bernie.geckolib3.GeckoLib;
+
+import com.dretha.drethamod.server.TakeASlashMessage;
+import com.dretha.drethamod.server.TakeAThrustMessage;
+
+
+@Mod(modid=Reference.MODID, name=Reference.NAME, version = Reference.VERSION, 
+acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSION)
+public class Main {
+	
+	public static final String ID = "dm";
+	public static SimpleNetworkWrapper NETWORK;
+	
+	@Instance
+	public static Main instance;
+	
+	@SidedProxy(clientSide = Reference.CLIENT, serverSide = Reference.COMMON)
+	public static CommonProxy proxy;
+	
+	
+	
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event)
+	{
+		MinecraftForge.EVENT_BUS.register(new EventsHandler());
+	    proxy.preInit(event);
+	    GeckoLib.initialize();
+	    
+	    //NetworkHandler.NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("MyChannel");
+	    //NetworkHandler.register(CPacketParticles.class, Side.SERVER);
+	    
+	    NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("Channel_0001");
+	    NETWORK.registerMessage(TakeAThrustMessage.Handler.class, TakeAThrustMessage.class, 0, Side.SERVER);
+	    NETWORK.registerMessage(TakeASlashMessage.Handler.class, TakeASlashMessage.class, 1, Side.SERVER);
+	}
+
+	@EventHandler
+	public void init(FMLInitializationEvent event)
+	{
+	    proxy.init(event);
+	}
+
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event)
+	{
+	    proxy.postInit(event);
+	}
+	
+	
+}
