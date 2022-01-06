@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "dm:steel_ingot"
+        },
+        {
+            "item": "minecraft:gunpowder"
+        },
+        {
+            "item": "dm:iron_plate"
+        }
+    ],
+    "result": {
+        "item": "dm:steel_bullet",
+        "count": 16
+    }
+}

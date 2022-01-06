@@ -5,7 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 public enum ImpactType {
 	THRUST {
 		public float speed(ICapaHandler capa) {
-			return capa.getImpactSpeed();
+			return capa.isBlock() ? 10 : 15;
 		}
 		public ImpactType change() {
 			return SLASH;
@@ -13,7 +13,7 @@ public enum ImpactType {
 	},
 	SLASH {
 		public float speed(ICapaHandler capa) {
-			return (float) (capa.getImpactSpeed()*1.5);
+			return (float) 25;
 		}
 		public ImpactType change() {
 			return THRUST;

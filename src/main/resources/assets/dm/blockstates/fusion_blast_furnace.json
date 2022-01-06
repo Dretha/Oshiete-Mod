@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "fire=false": { "model": "dm:fusion_blast_furnace" },
+	"fire=true": { "model": "dm:fusion_blast_furnace_on" }
+    }
+}

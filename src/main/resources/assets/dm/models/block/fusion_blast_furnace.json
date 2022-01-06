@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "dm:blocks/fireclay_brick",
+        "side": "dm:blocks/fusion_blast_furnace_front"
+    }
+}

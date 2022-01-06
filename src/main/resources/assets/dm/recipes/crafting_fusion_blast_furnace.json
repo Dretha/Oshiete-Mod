@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "#I#",
+        "#CY",
+        "#H#"
+    ],
+    "key": {
+        "#": {
+            "item": "dm:fireclay_brick"
+        },
+        "I": {
+            "item": "minecraft:iron_trapdoor"
+        },
+        "C": {
+            "item": "minecraft:cauldron"
+        },
+        "Y": {
+            "item": "minecraft:iron_bars"
+        },
+        "H": {
+            "item": "minecraft:hopper"
+        }
+    },
+    "result": {
+        "item": "dm:fusion_blast_furnace",
+        "count": 1
+    }
+}

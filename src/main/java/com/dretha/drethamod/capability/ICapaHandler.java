@@ -1,22 +1,32 @@
 package com.dretha.drethamod.capability;
 
-import java.util.ArrayList;
-
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
+import com.dretha.drethamod.client.inventory.ClothesInventory;
+import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
-
-import net.minecraft.entity.Entity;
+import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.EntityPlayer;
+
+import javax.annotation.Nonnull;
 
 public interface ICapaHandler {
 	
-	public void attachMaster(EntityLivingBase master);
+	public void attachMaster(EntityPlayer master);
 	public EntityKagune getKagune();
+	public void nullKagune();
+	
+	public void copyInventory(ICapaHandler capa);
+    public ClothesInventory getInventory();
 	
 	public String getModelLocation();
 	public String getTextureLocation();
 	public String getAnimationLocation();
+	public int getModelVariant();
+	public int getTextureVariant();
+	
+	public String getEnumId();
 	
 	public void removeRCpoints(int points);
 	public void addRCpoints(int points);
@@ -28,16 +38,27 @@ public interface ICapaHandler {
 	public void setRClevel(int points);
 	public void updateRClevel();
     public int getRClevel();
+    public boolean RClevelFull();
 	 
 	public boolean isGhoul();
-	public void becomeGhoul(boolean isGhoul, int ghoulType, EntityLivingBase entity);
+	public void becomeGhoul(GhoulType ghoulType, EntityLivingBase entity);
 	public void becomeHuman(EntityLivingBase entity);
 	public void setIsGhoul(boolean isGhoul);
-    public int getGhoulType();
-    public void setGhoulType(int ghoulType);
-	 
-	public int getGhoulRank();
-	public int getDoveRank();
+	public void updateSpeedAttribute();
+	public void applyAtrSpeedMode();
+	public void removeAtrSpeedMode();
+	
+    public GhoulType getGhoulType();
+    public void setGhoulType(@Nonnull GhoulType ghoulType);
+    public UkakuState ukakuState();
+    public void setUkakuState(UkakuState state);
+    public HandType handType();
+    public void setHandType(HandType type);
+    public boolean rightHanded();
+    
+    public boolean ukaku();
+    
+	public int rank();
 	
 	public int getSkill();
 	public void addSkill(int points);
@@ -48,6 +69,7 @@ public interface ICapaHandler {
 	public void setIsKaguneActive(boolean activeKagune);
 	public void releaseKagune();
 	public void admitKagune();
+	public void updateEntityKagune();
 	
 	public boolean isKakuganActive();
 	public void setActivatedKakugan(boolean activeKagune);
@@ -64,26 +86,30 @@ public interface ICapaHandler {
 	public void setImpactModeTicksPre(int ticks);
 	public int getImpactModeTicksPre();
 	
+	public boolean isBlock();
+	public void setBlock(boolean b);
+	public float getResponseValue();
+	
 	public ImpactType getImpactType();
 	public void changeImpactType();
-	
-	public int getImpactSpeed();
-	public void setImpactSpeed(int speed);
-	
-	public boolean canUseHit(int ticks);
-	public boolean canAttackEntityFrom(int ticks);
-	public void setHitTicksPre(int ticks);
 	
 	public int getShardCountInEntity();
 	public void setShardCountInEntity(int count);
 	public void addShardCountInEntity();
 	
-	public boolean isUkakuShooting();
-	public void changeUkakuShooting();
-	
 	public boolean getSpawnKagunePatriclesFlag();
 	public int getSpawnKagunePatriclesTicksPre();
 	public void setSpawnKagunePatriclesFlag(boolean flag);
 	
+	public void setLastFoodAmount(int amount);
+	public int getLastFoodAmount();
+	
+	public int getShootTicksPre();
+	public void setShootTicksPre(int ticks);
+	
+	public int getSmellRadius();
+	public int getSmellDuration();
+	public int getSmellTicksPre();
+	public void setSmellTicksPre(int ticks);
 }
 

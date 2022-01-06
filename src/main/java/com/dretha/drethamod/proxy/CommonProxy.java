@@ -1,36 +1,20 @@
 package com.dretha.drethamod.proxy;
 
 
-import java.util.Arrays;
-
-import com.dretha.drethamod.capability.CapaHandler;
-import com.dretha.drethamod.capability.CapaStorage;
-import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.passive.EntityHuman;
-import com.dretha.drethamod.entity.registry.InitEntities;
+import com.dretha.drethamod.capability.InitCapabilities;
+import com.dretha.drethamod.client.gui.GuiHandler;
+import com.dretha.drethamod.init.InitBlocks;
+import com.dretha.drethamod.init.InitEntities;
+import com.dretha.drethamod.main.Main;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.dretha.drethamod.utils.handlers.GhoulAbilityEventsHandler;
-import com.dretha.drethamod.utils.handlers.KaguneEventsHandler;
 import com.dretha.drethamod.utils.handlers.KeyEventsHandler;
-import com.dretha.drethamod.utils.handlers.RegisterHandler;
-
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.init.Biomes;
 import net.minecraft.item.Item;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomePlains;
-import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.BiomeManager.BiomeType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class CommonProxy {
 	
@@ -39,16 +23,19 @@ public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent event)
     {
 		MinecraftForge.EVENT_BUS.register(new EventsHandler());
-		MinecraftForge.EVENT_BUS.register(new KaguneEventsHandler());
 		MinecraftForge.EVENT_BUS.register(new GhoulAbilityEventsHandler());
 		MinecraftForge.EVENT_BUS.register(new KeyEventsHandler());
-		CapabilityManager.INSTANCE.register(ICapaHandler.class, new CapaStorage(), CapaHandler.class);
+		InitCapabilities.init();
 		InitEntities.init();
+
+		InitBlocks.init();
     }
 
     public void init(FMLInitializationEvent event)
     {
-  
+    	NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
+		InitBlocks.initRender();
+		//NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler1());
     }
 
     public void postInit(FMLPostInitializationEvent event) {

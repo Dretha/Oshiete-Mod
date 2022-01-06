@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "##",
+        "##"
+    ],
+    "key": {
+        "#": {
+            "item": "dm:fireclay_bar"
+        }
+    },
+    "result": {
+        "item": "dm:fireclay_brick",
+        "count": 1
+    }
+}

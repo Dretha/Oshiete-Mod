@@ -10,6 +10,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
@@ -33,6 +34,8 @@ public class LayerShard implements LayerRenderer<EntityPlayer>
            for (int j = 0; j < i; ++j)
            {
                GlStateManager.pushMatrix();
+               GlStateManager.disableLighting();
+               OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
                RenderPlayer renderPlayer = Minecraft.getMinecraft().getRenderManager().getSkinMap().get(((AbstractClientPlayer)player).getSkinType());
                ModelRenderer modelrenderer = renderPlayer.getMainModel().getRandomModelBox(random);
                ModelBox modelbox = modelrenderer.cubeList.get(random.nextInt(modelrenderer.cubeList.size()));
@@ -59,6 +62,7 @@ public class LayerShard implements LayerRenderer<EntityPlayer>
                double d1 = 0.0D;
                double d2 = 0.0D;
                renderPlayer.getRenderManager().renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, partialTicks, false);
+               GlStateManager.enableLighting();
                GlStateManager.popMatrix();
            }
 
@@ -69,6 +73,6 @@ public class LayerShard implements LayerRenderer<EntityPlayer>
    @Override
    public boolean shouldCombineTextures()
    {
-       return false;
+       return true;
    }
 }

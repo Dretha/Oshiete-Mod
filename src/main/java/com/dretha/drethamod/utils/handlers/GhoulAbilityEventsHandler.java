@@ -1,57 +1,36 @@
 package com.dretha.drethamod.utils.handlers;
 
-import java.util.Random;
-
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.client.keybinds.KeybindsRegister;
-import com.dretha.drethamod.entity.passive.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
-import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.items.ItemGhoulFood;
 import com.dretha.drethamod.main.Main;
 import com.dretha.drethamod.reference.Reference;
-import com.dretha.drethamod.utils.interfaces.IGhoul;
-import com.dretha.drethamod.utils.interfaces.IGhoulFood;
-import com.dretha.drethamod.utils.interfaces.IKuinke;
-
+import com.dretha.drethamod.server.GhoulEatMessage;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
-import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Random;
 
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
@@ -135,25 +114,23 @@ public class GhoulAbilityEventsHandler {
     
     
     //ghoul eat
-    
+    @SubscribeEvent
+    public static void ghoulEat(LivingEntityUseItemEvent.Tick e) { 
+		if (e.getEntity() instanceof EntityPlayer && e.getItem().getItem() instanceof ItemFood) {
+			EntityPlayer player = (EntityPlayer) e.getEntity();
+			ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+			capa.setLastFoodAmount(player.getFoodStats().getFoodLevel());
+		}
+    }
     @SubscribeEvent
     public static void ghoulEat(LivingEntityUseItemEvent.Finish e) { 
-    	if (e.getEntity() instanceof EntityPlayer) { 
-    		if (EventsHandler.getCapaMP((EntityPlayer) e.getEntity()).isGhoul()) {
-    		if (!(e.getItem().getItem() instanceof IGhoulFood) && ((e.getItem().getItem() instanceof ItemFood) || (e.getItem().getItem() instanceof ItemSoup)) && !(ItemStack.areItemsEqual(e.getItem(), rottenflesh))) {
-    			((EntityLivingBase) e.getEntity()).addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 240, 1)); 
-    			EntityPlayer player = (EntityPlayer) e.getEntity();
-    			ItemFood itemFood = (ItemFood) e.getItem().getItem();
-    			player.getFoodStats().setFoodLevel(player.getFoodStats().getFoodLevel()-itemFood.getHealAmount(e.getItem()));
-    			player.getFoodStats().setFoodSaturationLevel(player.getFoodStats().getSaturationLevel()-itemFood.getSaturationModifier(e.getItem()));
+    	if (e.getEntity() instanceof EntityPlayer) {
+    		EntityPlayer player = (EntityPlayer) e.getEntity();
+    		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+    		if (capa.isGhoul() && !(e.getItem().getItem() instanceof ItemGhoulFood) && e.getItem().getItem() instanceof ItemFood && !(ItemStack.areItemsEqual(e.getItem(), rottenflesh))) {
+    			Main.NETWORK.sendToServer(new GhoulEatMessage(e.getItem()));
     		}
-    		if (e.getItem().getItem() instanceof IGhoulFood) {
-    			ICapaHandler capa = ((EntityPlayer) e.getEntity()).getCapability(CapaProvider.PLAYER_CAP, null);
-    			capa.addRCpoints(7);
-    		}
-    		}
-        }        
-    	
+    	}
     }
     
     @SubscribeEvent
@@ -226,6 +203,7 @@ public class GhoulAbilityEventsHandler {
     
     
   //Regenerate RC level and remove food level
+    /*
   	@SubscribeEvent
       public void regenerateRClevel(PlayerTickEvent e) {
       	//e.player.world.spawnParticle(EnumParticleTypes.REDSTONE, e.player.posX, e.player.posY, e.player.posZ, e.player.motionX, e.player.motionY, e.player.motionZ);
@@ -254,6 +232,35 @@ public class GhoulAbilityEventsHandler {
       	}
       	
       }
+  	*/
+  	
+  	@SubscribeEvent
+    public static void onPlayerUpdate(LivingUpdateEvent event) {
+  		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
+            EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+            ICapaHandler capa = EventsHandler.getCapaMP(player);
+            int foodlevel = player.getFoodStats().getFoodLevel();
+            
+            
+            
+            int upicks = 20; //update ticks
+            int tofull = 40; //40 secs to full level
+            
+            int i = (upicks * tofull)/20; //40
+            
+            if (player.ticksExisted%upicks==0 && capa.isGhoul()) {
+            	capa.updateRClevel();
+            	
+            	if (foodlevel>6 && !capa.RClevelFull()) {
+            		capa.addRClevel((capa.getRCpoints()/10)/i);
+            		player.getFoodStats().addExhaustion((float)48/i); //1.2
+            		player.sendMessage(new TextComponentString(capa.getRClevel()+" RC Level"));
+            	}
+            	
+            }
+  		}
+  	}
+  	
   	
   	
   	
@@ -311,8 +318,8 @@ public class GhoulAbilityEventsHandler {
   	
       @SubscribeEvent
       public void spawnKagunePatricles(PlayerTickEvent e) {
-    	  ICapaHandler capa = EventsHandler.getCapaMP(e.player);
-      	  if (capa.getSpawnKagunePatriclesFlag()) {
+    	  ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
+      	  if (capa!=null && capa.getSpawnKagunePatriclesFlag()) {
       		this.spawnPatricleSpine(e.player);
       		if (capa.getSpawnKagunePatriclesTicksPre()+30<=e.player.ticksExisted) 
       			capa.setSpawnKagunePatriclesFlag(false);

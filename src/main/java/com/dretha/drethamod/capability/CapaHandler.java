@@ -1,26 +1,23 @@
 package com.dretha.drethamod.capability;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
-import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
+import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.init.InitSounds;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
-
-import net.minecraft.entity.Entity;
+import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import scala.actors.threadpool.Arrays;
-import scala.collection.Map;
+
+import javax.annotation.Nonnull;
+import java.util.Random;
 
 public class CapaHandler implements ICapaHandler {
 	
@@ -30,20 +27,23 @@ public class CapaHandler implements ICapaHandler {
 	private int RCpoints = random.nextInt(501)+200;
 	private int RClevel = RCpoints/10;
 	private boolean isGhoul = false;
-	private int ghoulType = 0;
+	private boolean isDove = false;
+	private GhoulType ghoulType = GhoulType.NONE;
+	private UkakuState ukakuState = UkakuState.NONE;
+	private HandType handType = HandType.RIGHT;
 	
 	//less main
-	private EntityLivingBase master = null;
-	private EntityKagune entityKagune;
+	private EntityPlayer master = null;
+	private EntityKagune entityKagune = null;
+	
+	public final ClothesInventory inventory = new ClothesInventory();
 	
 	private int MODEL_VARIANT = 1;
 	private int TEXTURE_VARIANT = 1;
 	
-	private final int toGhoulType = 5;
 	private int skillPoints = 0;
 	
 	private ImpactType impactType = ImpactType.THRUST;
-	private int impactSpeed = 10;
 	
 	private int kaguneActivatedTicksGap = 20;
 	private int kaguneActivatedTicksPre = 0;
@@ -56,23 +56,35 @@ public class CapaHandler implements ICapaHandler {
 	
 	private int thrustTicksPre = 0;
 	
+	private boolean isBlock = false;
+	
 	private boolean isKaguneActive = false;
 	private boolean isKakuganActive = false;
-	private boolean ukakuShooting = false;
 	
 	private int shardCountInEntity = 0;
 	
 	private int spawnKagunePatriclesTicksPre = 0;
 	private boolean spawnKagunePatriclesFlag = false;
 	
+	private int lastFoodAmount = 0;
+	
+	private int shootTicksPre = 0;
+	
+	private int smellTicksPre = -1000;
+	private int smellDuration = 400;
+	private int smellRadius = 20;
+	
 	@Override
-	public void attachMaster(EntityLivingBase master) {
+	public void attachMaster(EntityPlayer master) {
 		this.master = master;
 	}
 	
 	@Override
 	public EntityKagune getKagune() {
 		return entityKagune;
+	}
+	public void nullKagune() {
+		entityKagune = null;
 	}
 	
 	
@@ -84,7 +96,7 @@ public class CapaHandler implements ICapaHandler {
 
 	@Override
 	public String getTextureLocation() {
-		return String.format("textures/entity/kagune/kagune%d%02d%d.geo.json", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
+		return String.format("textures/entity/kagune/kagune%d%02d%02d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
 	}
 
 	@Override
@@ -92,9 +104,38 @@ public class CapaHandler implements ICapaHandler {
 		return String.format("animations/kagune/kagune%d%02d.animation.json", getNNGT(), this.MODEL_VARIANT);
 	}
 	
-	private int getNNGT() {
-		return this.getGhoulType() == 0 ? 2 : this.getGhoulType();
+	@Override
+	public int getModelVariant() {
+		return this.MODEL_VARIANT;
 	}
+	
+	@Override
+	public int getTextureVariant() {
+		return this.TEXTURE_VARIANT;
+	}
+	
+	private int getNNGT() {
+		return this.getGhoulType() == null ? 2 : GhoulType.indexOf(this.getGhoulType())+1;
+	}
+	
+	
+	
+	public String getEnumId() {
+		return String.format("KAGUNE%d%02d", this.getGhoulType().id(), this.getModelVariant());
+	}
+	
+	
+	
+
+    @Override
+    public ClothesInventory getInventory(){
+        return this.inventory;
+    }
+
+    @Override
+    public void copyInventory(ICapaHandler capa) {
+        this.inventory.copy(capa.getInventory());
+    }
 	
 	
 	
@@ -121,13 +162,24 @@ public class CapaHandler implements ICapaHandler {
 	
 	
 	@Override
-	public int getImpactSpeed() {
-		return this.impactSpeed;
+	public boolean isBlock() {
+		return this.isBlock;
 	}
+	
 	@Override
-	public void setImpactSpeed(int speed) {
-		this.impactSpeed = speed;
+	public void setBlock(boolean b) {
+		this.isBlock = b;
 	}
+	
+	@Override
+	public float getResponseValue() {
+		//0.0 - 2.0 (1.0 - 2.0 normal, 0.025-1.0 low)
+		float hearts = this.isGhoul() ? 40F : 20F;
+		float healthm = (float)master.getHealth()/hearts > 1F ? 1F : (float)master.getHealth()/40F;
+		float response = healthm + ((float)this.getRClevel()/(this.getRCpoints()/10));
+		return response;
+	}
+	
 	
 	
 	
@@ -159,13 +211,15 @@ public class CapaHandler implements ICapaHandler {
 	
 	@Override
 	public void removeRClevel(int points) {
-		this.RClevel = (this.RCpoints/10 - (this.RCpoints/10 - this.RClevel)) - points;
+		updateRClevel();
+		this.RClevel -= points;
 		if (this.RClevel<0) this.RClevel=0;
 	}
 
 	@Override
 	public void addRClevel(int points) {
-		this.RClevel = (this.RCpoints/10 - (this.RCpoints/10 - this.RClevel)) + points;	
+		updateRClevel();
+		this.RClevel += points;	
 		if (this.RClevel>this.RCpoints/10) this.RClevel=this.RCpoints/10;
 	}
 
@@ -184,6 +238,11 @@ public class CapaHandler implements ICapaHandler {
 		return this.RClevel;
 	}
 	
+	@Override
+	public boolean RClevelFull() {
+		return this.RClevel == this.RCpoints/10;
+	}
+	
 	
 	
 	
@@ -193,30 +252,33 @@ public class CapaHandler implements ICapaHandler {
 	}
 
 	@Override
-	public void becomeGhoul(boolean isGhoul, int ghoulType, EntityLivingBase entity) {
-		if (isGhoul && ghoulType>0 && ghoulType<toGhoulType && !this.isGhoul) {
-			this.isGhoul = isGhoul;
-			this.ghoulType = ghoulType;
-			this.RCpoints+=801;
-			updateRClevel();
-			entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
-			entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
-			entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
-			
-		}
+	public void becomeGhoul(GhoulType ghoulType, EntityLivingBase entity) {
+		this.isGhoul = true;
+		this.ghoulType = ghoulType;
+		if (ghoulType==GhoulType.UKAKU)
+			this.ukakuState = UkakuState.generateState();
+		this.RCpoints+=801;
+		updateRClevel();
+		entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4D);
+		entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
+		entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
+		entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
 	}
 
 	@Override
 	public void becomeHuman(EntityLivingBase entity) {
-		if (this.isGhoul) {
 			this.setIsGhoul(false);
 			Random random = new Random();
 			this.setRCpoints(random.nextInt(501)+200);
 			this.updateRClevel();
-			this.setGhoulType(0);
-		} else if (entity instanceof EntityPlayer){
+			this.setGhoulType(GhoulType.NONE);
+			entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1D);
+			entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20);
+			entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(0);
+			entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0);
+		
 			((EntityPlayer) entity).sendMessage(new TextComponentString("You are already human."));
-		}
+		
 	}
 	
 	//Ќе использовать если это не чтение данных
@@ -224,41 +286,78 @@ public class CapaHandler implements ICapaHandler {
 	public void setIsGhoul(boolean isGhoul) {
 		this.isGhoul=isGhoul;
 	}
+	
+	@Override
+	public void updateSpeedAttribute() {
+		IAttributeInstance ins = master.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+		ins.removeAllModifiers();
+		if (this.isKaguneActive) ins.applyModifier(speedghoul);
+		if (this.isSpeedModeActive) ins.applyModifier(speedmode);
+	}
+	
+	AttributeModifier speedmode = new AttributeModifier("speedmode", 1.6, 2);
+	@Override
+	public void applyAtrSpeedMode() {
+		master.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(speedmode);
+	}
+	
+	@Override
+	public void removeAtrSpeedMode() {
+		master.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(speedmode);
+	}
+	
+	
+	
 
 	@Override
-	public int getGhoulType() {
+	public GhoulType getGhoulType() {
 		return this.ghoulType;
 	}
 	
 	@Override
-	public void setGhoulType(int ghoulType) {
+	public void setGhoulType(@Nonnull GhoulType ghoulType) {
 		this.ghoulType=ghoulType;
 	}
-
-	
-	
 	
 	@Override
-	public int getGhoulRank() {
-		if (RCpoints>999 && RCpoints<2000) {
-			return 1;
-		}
-		if (RCpoints>999 && RCpoints<2000) {
-			return 2;
-		}
-		if (RCpoints>1999 && RCpoints<3000) {
-			return 3;
-		}
-		if (RCpoints>2999 && RCpoints<4000) {
-			return 4;
-		}
-		return 0;
+	public boolean ukaku() {
+		return this.isGhoul && this.ghoulType==GhoulType.UKAKU;
+	}
+	
+	@Override
+	public UkakuState ukakuState() {
+		return this.ukakuState;
+	}
+	
+	@Override
+	public void setUkakuState(UkakuState state) {
+		this.ukakuState = state;
+	}
+	
+	@Override 
+	public HandType handType() {
+		return this.handType;
+	}
+	
+	public void setHandType(HandType type) {
+		this.handType = type;
+	}
+	
+	@Override
+	public boolean rightHanded() {
+		return this.handType==HandType.RIGHT;
 	}
 
+	
+	
+	
 	@Override
-	public int getDoveRank() {
-		// TODO јвтоматически созданна€ заглушка метода
-		return 0;
+	public int rank()
+	{
+		int rankmeter = isGhoul ? skillPoints/2+RCpoints : skillPoints+1000;
+		int rank = Math.round(rankmeter/1000)-1;
+		System.out.println(rank);
+		return rank>7 ? 7 : rank;
 	}
 	
 	
@@ -292,7 +391,7 @@ public class CapaHandler implements ICapaHandler {
 	
 	@Override
 	public boolean isKaguneActive() {
-		return this.isKaguneActive;
+		return this.isKaguneActive && this.isGhoul;
 	}
 	
 	@Override
@@ -313,8 +412,8 @@ public class CapaHandler implements ICapaHandler {
 		this.isKaguneActive = true;
 		this.isKakuganActive = true;
 
-		entityKagune=new EntityKagune(master);
-		entityKagune.getThreadLivingUpdate().start();
+		this.updateEntityKagune();
+		entityKagune.setReleaseTicks(master.ticksExisted);
 		
 		if (master instanceof EntityPlayer) {
 		    ((EntityPlayer) master).world.playSound(null, ((EntityPlayer) master).getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1F, 1F);
@@ -324,13 +423,14 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public void admitKagune() {
 		master.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(master.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getModifier(speedghoul.getID()));
-		this.isKaguneActive = false;
-		if (!this.isSpeedModeActive)
-		this.isKakuganActive = false;
 		
-		entityKagune.getThreadLivingUpdate().interrupt();
-		if (entityKagune!=null) entityKagune.setDead();
-		entityKagune=null;
+		entityKagune.setAdmit(true);
+		entityKagune.setAdmitTicks(master.ticksExisted);
+	}
+	
+	@Override
+	public void updateEntityKagune() {
+		entityKagune=EnumKagune.valueOf(this.getEnumId()).getEntity(master);
 	}
 
 	
@@ -341,32 +441,13 @@ public class CapaHandler implements ICapaHandler {
 	
 	@Override
 	public boolean canKaguneActivated(int ticks) {
-		return this.kaguneActivatedTicksPre + this.kaguneActivatedTicksGap <= ticks;
+		return this.isGhoul && this.kaguneActivatedTicksPre + this.kaguneActivatedTicksGap <= ticks;
 	}
 
 	@Override
 	public void setKaguneActivatedTicksPre(int ticks) {
 		this.kaguneActivatedTicksPre = ticks;
 	}
-	
-	
-	
-	
-	@Override
-	public boolean canUseHit(int ticks) {
-		return this.thrustTicksPre + this.impactType.speed(this) <= ticks;
-	}
-	
-	@Override
-	public boolean canAttackEntityFrom(int ticks) {
-		return this.thrustTicksPre + (this.impactType.speed(this)/2) == ticks;
-	}
-
-	@Override
-	public void setHitTicksPre(int ticks) {
-		this.thrustTicksPre = ticks;
-	}
-	
 	
 	
 	
@@ -385,19 +466,6 @@ public class CapaHandler implements ICapaHandler {
 	public void setShardCountInEntity(int count) {
 		this.shardCountInEntity = count;
 	}
-	
-	
-	
-
-	@Override
-	public boolean isUkakuShooting() {
-		return this.ukakuShooting;
-	}
-
-	@Override
-	public void changeUkakuShooting() {
-		this.ukakuShooting=!this.ukakuShooting;
-	}
 
 	
 	
@@ -405,7 +473,7 @@ public class CapaHandler implements ICapaHandler {
 	
 	@Override
 	public boolean isKakuganActive() {
-		return this.isKakuganActive;
+		return this.isKakuganActive && this.isGhoul;
 	}
 
 	@Override
@@ -430,7 +498,7 @@ public class CapaHandler implements ICapaHandler {
 
 	@Override
 	public boolean isSpeedModeActive() {
-		return this.isSpeedModeActive;
+		return this.isGhoul && this.isSpeedModeActive;
 	}
 
 	@Override
@@ -453,6 +521,52 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public void setSpawnKagunePatriclesFlag(boolean flag) {
 		this.spawnKagunePatriclesFlag = flag;
+	}
+
+	
+	
+	@Override
+	public void setLastFoodAmount(int amount) {
+		this.lastFoodAmount = amount;
+	}
+	@Override
+	public int getLastFoodAmount() {
+		return this.lastFoodAmount;
+	}
+
+	
+	
+	
+	@Override
+	public int getShootTicksPre() {
+		return this.shootTicksPre;
+	}
+
+	@Override
+	public void setShootTicksPre(int ticks) {
+		this.shootTicksPre = ticks;
+	}
+	
+	
+
+	@Override
+	public int getSmellRadius() {
+		return smellRadius;
+	}
+	
+	@Override
+	public int getSmellDuration() {
+		return smellDuration;
+	}
+
+	@Override
+	public int getSmellTicksPre() {
+		return smellTicksPre;
+	}
+
+	@Override
+	public void setSmellTicksPre(int ticks) {
+		smellTicksPre = ticks;
 	}
 
 	

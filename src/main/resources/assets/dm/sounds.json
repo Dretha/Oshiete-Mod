@@ -28,5 +28,41 @@
                             "sounds": [
                                 "dm:ukaku_shooting"
                             ]
-                    }
+                    },
+			"hk33shoot": {
+                        "category": "player",
+                            "sounds": [
+                                "dm:hk33shoot"
+                            	]
+                    	},
+			    "hk33replace": {
+                            "category": "player",
+                           	"sounds": [
+                                    "dm:hk33replace"
+                                    ]
+                            },
+				"hk33reload": {
+                        	"category": "player",
+                            	    "sounds": [
+                                	"dm:hk33reload"
+                            	    	]
+                            	},
+				    "kuinke_block": {
+                        	    "category": "player",
+                            	    	"sounds": [
+                                	    "dm:kuinke_block"
+                            	    	    ]
+                            	    },
+					"kuinke_air": {
+                        		"category": "player",
+                            	  	  "sounds": [
+                                		"dm:kuinke_air"
+                            	    		]
+                            		},
+					    "kuinke_hit": {
+                        		    "category": "player",
+                            	 	   	"sounds": [
+                                		    "dm:kuinke_hit"
+                            	    		    ]
+                            	  	    }
 }

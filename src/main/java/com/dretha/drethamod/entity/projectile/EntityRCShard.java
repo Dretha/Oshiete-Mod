@@ -1,31 +1,25 @@
 package com.dretha.drethamod.entity.projectile;
 
 import com.dretha.drethamod.capability.CapaProvider;
+import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityRCShard extends EntityArrow{
 
@@ -36,7 +30,7 @@ public class EntityRCShard extends EntityArrow{
 	private int zTile;
 	private Block inTile;
 	private int inData;*/
-	
+
 	private Block inTile;
 
 	public EntityRCShard(World worldIn) {
@@ -58,12 +52,10 @@ public class EntityRCShard extends EntityArrow{
 		Entity entity = raytraceResultIn.entityHit;
 
         if (entity != null) {
-            float f = MathHelper.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
-            int i = MathHelper.ceil((double)f * super.getDamage());
 
             if (this.getIsCritical())
             {
-                i += this.rand.nextInt(i / 2 + 2);
+                
             }
 
             DamageSource damagesource;
@@ -81,8 +73,11 @@ public class EntityRCShard extends EntityArrow{
                 entity.setFire(5);
             }
 
-            if (entity.attackEntityFrom(damagesource, (float)i))
+            int savedResistantTime = entity.hurtResistantTime;
+        	entity.hurtResistantTime = 0;
+            if (entity.attackEntityFrom(damagesource, (float)super.getDamage()))
             {
+            	entity.hurtResistantTime = savedResistantTime;
                 if (entity instanceof EntityLivingBase)
                 {
                     EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
@@ -104,8 +99,6 @@ public class EntityRCShard extends EntityArrow{
                         EnchantmentHelper.applyArthropodEnchantments((EntityLivingBase)this.shootingEntity, entitylivingbase);
                     }
 
-                    entity.attackEntityFrom(damagesource, 5);
-
                     if (this.shootingEntity != null && entitylivingbase != this.shootingEntity && entitylivingbase instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP)
                     {
                         ((EntityPlayerMP)this.shootingEntity).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
@@ -116,7 +109,9 @@ public class EntityRCShard extends EntityArrow{
                 if (entity instanceof EntityPlayer) {
                 	((EntityPlayer) entity).getCapability(CapaProvider.PLAYER_CAP, null).addShardCountInEntity();
                 }
-                
+                if (entity instanceof EntityHuman) {
+                	((EntityHuman) entity).addShard();
+                }
 
                 if (!(entity instanceof EntityEnderman))
                 {

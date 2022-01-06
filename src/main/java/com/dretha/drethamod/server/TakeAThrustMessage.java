@@ -1,14 +1,8 @@
 package com.dretha.drethamod.server;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.dretha.drethamod.init.InitSounds;
-import com.dretha.drethamod.utils.handlers.KeyEventsHandler;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -16,7 +10,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
@@ -27,10 +20,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 public class TakeAThrustMessage implements IMessage{
 	
 	private String text;
-	private static DamageSource damagesource = null;
+	private DamageSource damagesource = null;
 
     public TakeAThrustMessage() { }
 
@@ -51,7 +47,7 @@ public class TakeAThrustMessage implements IMessage{
     public static class Handler implements IMessageHandler<TakeAThrustMessage, IMessage> {
         
         @Override
-        public IMessage onMessage(TakeAThrustMessage message, MessageContext ctx) {
+        public IMessage onMessage(TakeAThrustMessage m, MessageContext ctx) {
             /*IThreadListener mainThread = (WorldServer) ctx.getServerHandler().player.world; // or Minecraft.getMinecraft() on the client
             mainThread.addScheduledTask(new Runnable() {
                 @Override
@@ -64,22 +60,22 @@ public class TakeAThrustMessage implements IMessage{
         	WorldServer world = (WorldServer) ctx.getServerHandler().player.world;
         	System.out.println("server!!!!!!! Thrust");
         	
-        	damagesource = DamageSource.causePlayerDamage(player);
+        	m.damagesource = DamageSource.causePlayerDamage(player);
         	
         	Entity entity1 = getMouseOver(world, player, -1, 5, false);
         	Entity entity2 = getMouseOver(world, player, 0, 5, false);
         	Entity entity3 = getMouseOver(world, player, 1, 5, false);
         	
         	if (entity1 != null || entity2 != null || entity3 != null) {
-            	if (entity1!=null)
-        		takeAThrust(entity1);
-            	else if (entity2!=null)
-            	takeAThrust(entity2);
-            	else if (entity3!=null)
-            	takeAThrust(entity3);
-        		world.playSound(null, player.getPosition(), InitSounds.hit_of_kagune, SoundCategory.PLAYERS, 1F, 1F);
+            	if (entity1!=null && entity1 instanceof EntityLivingBase)
+        		takeAThrust(entity1, m);
+            	else if (entity2!=null && entity2 instanceof EntityLivingBase)
+            	takeAThrust(entity2, m);
+            	else if (entity3!=null && entity3 instanceof EntityLivingBase)
+            	takeAThrust(entity3, m);
+        		world.playSound(null, player.getPosition(), InitSounds.hit_of_kagune, SoundCategory.PLAYERS, 0.7F, 1F);
         	} else {
-        		world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 1F, 1F);
+        		world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 0.4F, 1F);
         	}
         	
             return null;
@@ -191,11 +187,11 @@ public class TakeAThrustMessage implements IMessage{
         return null;
     }
     
-    private static void takeAThrust(Entity entity) {
+    private static void takeAThrust(Entity entity, TakeAThrustMessage m) {
     	if (entity!=null) {
     	int savedResistantTime = entity.hurtResistantTime;
     	entity.hurtResistantTime = 0;
-    	entity.attackEntityFrom(damagesource, 10);
+    	entity.attackEntityFrom(m.damagesource, 10);
     	entity.hurtResistantTime = savedResistantTime;
     	}
     }

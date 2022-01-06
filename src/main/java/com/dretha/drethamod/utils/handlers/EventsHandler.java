@@ -1,111 +1,62 @@
 package com.dretha.drethamod.utils.handlers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Random;
-import java.util.UUID;
-
-import org.lwjgl.input.Keyboard;
-
 import com.dretha.drethamod.capability.CapaProvider;
-import com.dretha.drethamod.capability.CapaStorage;
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
-import com.dretha.drethamod.client.geckolib.kagunes.KaguneGeoRenderer;
-import com.dretha.drethamod.client.geckolib.kagunes.ModelKagune;
-import com.dretha.drethamod.client.keybinds.KeybindsRegister;
-import com.dretha.drethamod.entity.passive.EntityHuman;
-import com.dretha.drethamod.entity.projectile.EntityRCShard;
-import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.items.firearm.ItemFirearm;
+import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
+import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
+import com.dretha.drethamod.client.inventory.ClothesInventory;
+import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.items.kuinkes.IColdSteel;
+import com.dretha.drethamod.items.kuinkes.IKuinke;
+import com.dretha.drethamod.items.kuinkes.kakuken1.Kakuken;
 import com.dretha.drethamod.reference.Reference;
-import com.dretha.drethamod.utils.interfaces.IGhoul;
-import com.dretha.drethamod.utils.interfaces.IGhoulFood;
-import com.dretha.drethamod.utils.interfaces.IKuinke;
-import com.jcraft.jogg.Packet;
-
-import ibxm.Player;
-import io.netty.handler.codec.http.multipart.Attribute;
-import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemArrow;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.stats.StatList;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.swing.event.Key;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
+import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Random;
 
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
@@ -121,14 +72,9 @@ public class EventsHandler {
         return null;
     }
 
-	
-	
-	private static void returnKagune(ItemStack item, EntityPlayer player) {
-		player.inventory.addItemStackToInventory(item);   		   
-		player.inventoryContainer.detectAndSendChanges();
-	}
-	
+
     public static final ResourceLocation PLAYER_CAP = new ResourceLocation(Reference.MODID, "capa");
+    public static final ResourceLocation FIREARM_CAP = new ResourceLocation(Reference.MODID, "firearmcapa");
     
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
@@ -136,29 +82,29 @@ public class EventsHandler {
         try {
             event.addCapability(PLAYER_CAP, new CapaProvider());
         } catch (Exception e) {
-	    }/*
+	    }
+    }
+    @SubscribeEvent
+    public void attachFirearmCapability(AttachCapabilitiesEvent<ItemStack> event) {
+        if (!(((ItemStack)event.getObject()).getItem() instanceof ItemFirearm)) return;
         try {
-        ((EntityPlayer) event.getObject()).getCapability(CapaProvider.PLAYER_CAP, null).attachMaster((EntityPlayer) event.getObject());
-        } catch (Exception ee) {
-        	
-        }*/
+            event.addCapability(FIREARM_CAP, new CapaFirearmProvider());
+        } catch (Exception e) {
         }
-    
-    /*@SubscribeEvent
-    public static void playerLoggedIn(PlayerLoggedInEvent e) {
-    	EntityPlayer player = (EntityPlayer) e.player;
-        ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-        capa.setIsGhoul(true, 1);
-        capa.setRClevel(capa.getRCpoints()/10);
-    }*/
+    }
 	
     @SubscribeEvent
     public static void cloneCapa(PlayerEvent.Clone e) {
         final ICapaHandler original = getHandler(e.getOriginal());
         final ICapaHandler clone = getHandler(e.getEntity());
-        clone.setRCpoints(original.getRCpoints());
+        
+        clone.attachMaster(e.getEntityPlayer());
         clone.setIsGhoul(original.isGhoul());
         clone.setGhoulType(original.getGhoulType());
+        clone.setUkakuState(original.ukakuState());
+        clone.setHandType(original.handType());
+        clone.setRCpoints(original.getRCpoints());
+        clone.setSkill(original.getSkill());
     }
     
     
@@ -172,7 +118,8 @@ public class EventsHandler {
     		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
     		capa.attachMaster(e.player);
     		if (capa.isKaguneActive()) 
-    			capa.releaseKagune();
+    			capa.updateEntityKagune();
+    		capa.updateSpeedAttribute();
     	}
     }
     @SubscribeEvent
@@ -190,12 +137,50 @@ public class EventsHandler {
     		player_list.add(e.getEntityPlayer());
     	}
     }
+    @SubscribeEvent
+    public void playerJoinWorld(EntityJoinWorldEvent e) {
+    	if (e.getEntity() instanceof EntityPlayer) {
+    	}
+    }
+    
     public static EntityPlayer getPlayerMP(EntityPlayer player) {
     	return player_list.get(player_list.indexOf(player));
     }
     public static ICapaHandler getCapaMP(EntityPlayer player) {
     	return player_list.get(player_list.indexOf(player)).getCapability(CapaProvider.PLAYER_CAP, null);
     }
+    
+    
+    
+    
+    //humanslist
+    private static LinkedList<EntityHuman> human_list = new LinkedList<EntityHuman>();
+    @SubscribeEvent
+    public void humanLoggedInList(EntityJoinWorldEvent e) {
+    	if (e.getEntity() instanceof EntityHuman && !human_list.contains(e.getEntity())) {
+            EntityHuman human = (EntityHuman) e.getEntity();
+    		human_list.add(human);
+    		if (human.isKaguneActive())
+                human.updateEntityKagune();
+            human.updateSpeedAttribute();
+    	}
+    }
+    @SubscribeEvent
+    public void humanLoggedOutList(LivingDeathEvent e) {
+    	if (human_list.contains(e.getEntity()) && e.getEntity() instanceof EntityHuman) {
+    		human_list.remove(e.getEntity());
+    	}
+    }
+    
+    public static EntityHuman getHumanMP(EntityHuman human) {
+    	return human_list.get(human_list.indexOf(human));
+    }
+    public static boolean hasHumanMP(EntityHuman human) {
+        return human_list.contains(human);
+    }
+    
+    
+    
     
     public static final ItemStack ghoulFood = new ItemStack(InitItems.HUMAN_MEAT);
     public static final Item bottle = Item.getItemById(374);
@@ -212,21 +197,41 @@ public class EventsHandler {
     	    e.getEntity().world.playSound(e.getEntityPlayer(), e.getEntityPlayer().getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1F, 1F);
     	}
     }
-    
+
+    public static Random random = new Random();
     @SubscribeEvent
     public static void villagerDeath(LivingDeathEvent e) {
-    	if (e.getEntityLiving() instanceof EntityVillager) {
-    		e.getEntityLiving().world.spawnEntity(new EntityItem(e.getEntityLiving().world, e.getEntityLiving().posX, e.getEntityLiving().posY, e.getEntityLiving().posZ, ghoulFood));
-    	}
+    	if (e.getEntityLiving() instanceof EntityVillager && !e.getEntity().world.isRemote) {
+            e.getEntityLiving().entityDropItem(new ItemStack(InitItems.HUMAN_MEAT, random.nextInt(2) + 1), 0);
+        }
     }
-    
+
+    /**on a destroy kuinke*/
+    @SubscribeEvent
+    public static void destroyKuinke(PlayerDestroyItemEvent e) {
+        if (e.getOriginal().getItem() instanceof IKuinke) {
+            IKuinke kuinke = (IKuinke) e.getOriginal().getItem();
+            if (e.getEntityLiving() instanceof EntityPlayer) {
+                ICapaHandler capa = EventsHandler.getCapaMP((EntityPlayer) e.getEntityLiving());
+                capa.setBlock(false);
+            } else if (e.getEntityLiving() instanceof EntityHuman) {
+                EntityHuman human = (EntityHuman) e.getEntityLiving();
+                human.setBlock(false);
+            }
+            e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KUINKE_STEEL_SHARD, kuinke.getCountShards()), 0);
+        }
+    }
+
+    @SubscribeEvent
+    public static void fqwgwgw(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent e) {
+    }
     
     //worked
     @SubscribeEvent
     public static void kaguneFirstView(RenderSpecificHandEvent e) { 
     	ICapaHandler capa = EventsHandler.getCapaMP(Minecraft.getMinecraft().player);
     	EntityPlayer player = Minecraft.getMinecraft().player;
-    	if (capa.getGhoulType()==2 && EventsHandler.getCapaMP(player).isKaguneActive() && EventsHandler.getCapaMP(player).getKagune()!=null) {
+    	if (capa.isKaguneActive() && capa.getKagune()!=null) {
         	GlStateManager.enableRescaleNormal();
         	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             
@@ -241,8 +246,8 @@ public class EventsHandler {
 			float scale=0;
 			
 			do {
-	        	kagune = EventsHandler.getCapaMP(player).getKagune();
-	        } while (EventsHandler.getCapaMP(player).getKagune()==null);
+	        	kagune = capa.getKagune();
+	        } while (capa.getKagune()==null);
 			
 			limbSwing = kagune.getListF().get(0);
 			limbSwingAmount = kagune.getListF().get(1);
@@ -252,7 +257,7 @@ public class EventsHandler {
 			headPitch = kagune.getListF().get(5);
 			scale = kagune.getListF().get(6);
 			
-        	renderKagune(player, EventsHandler.getCapaMP(player).getGhoulType(), limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
+        	renderKagune(player, capa.getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
         
         	GlStateManager.disableRescaleNormal();
         }
@@ -260,8 +265,8 @@ public class EventsHandler {
     private static void renderKagune(EntityPlayer player, int ghoulType, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, boolean b)
     {
     	ICapaHandler capa = EventsHandler.getCapaMP(player);
-    	GeoEntityRenderer<EntityKagune> kaguneRenderer = (GeoEntityRenderer) new KaguneGeoRenderer(Minecraft.getMinecraft().getRenderManager(), capa.getModelLocation(), capa.getTextureLocation(), capa.getAnimationLocation());
-    	ModelKagune kaguneModel = new ModelKagune(capa.getModelLocation(), capa.getTextureLocation(), capa.getAnimationLocation());
+    	AnimatedGeoModel kaguneModel = EnumKagune.valueOf(capa.getEnumId()).getModel(capa.getTextureLocation());
+    	GeoEntityRenderer<EntityKagune> kaguneRenderer = EnumKagune.valueOf(capa.getEnumId()).getRender(Minecraft.getMinecraft().getRenderManager());
     	EntityKagune kagune = null;
         
         
@@ -293,7 +298,11 @@ public class EventsHandler {
         GlStateManager.popMatrix();
     }
     
-    
+    @SubscribeEvent
+    public void onCameraUpdate(EntityViewRenderEvent.CameraSetup e) {
+    	
+        //GL11.glTranslatef(-0.75F, 0, 0);
+    }
     
     
     
@@ -330,4 +339,92 @@ public class EventsHandler {
     }*/
     
     
+    //clothes inventory
+    @SubscribeEvent
+    public void onPlayerClone(PlayerEvent.Clone event) 
+    {
+        if (event.isWasDeath()) return;
+        ICapaHandler capa = event.getEntityPlayer().getCapability(CapaProvider.PLAYER_CAP, null);
+        ICapaHandler old = EventsHandler.getCapaMP(event.getOriginal());
+        capa.copyInventory(old);
+    }
+
+    @SubscribeEvent
+    public void onPlayerDeath(LivingDeathEvent event) {
+        if(event.getEntity() instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer)event.getEntity();
+            ICapaHandler capa = EventsHandler.getCapaMP(player);
+            ClothesInventory inv = capa.getInventory();
+            dropAllItems(player, inv);
+            inv.clear();
+        }
+    }
+    private static void dropAllItems(EntityPlayer player, ClothesInventory inventory){
+        NonNullList<ItemStack> aitemstack = inventory.getStacks();
+        for (int i = 0; i < aitemstack.size(); ++i) {
+            if (!aitemstack.get(i).isEmpty()) {
+                player.dropItem(aitemstack.get(i), true, false);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderFirearmPose(RenderPlayerEvent.Specials.Pre e)
+    {
+        EntityPlayer player = getPlayerMP(e.getEntityPlayer());
+        if (player.getHeldItemMainhand().getItem() instanceof ItemFirearm)
+        {
+            ModelPlayer modelplayer = e.getRenderer().getMainModel();
+
+            ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
+            ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
+
+            if (e.getEntityPlayer().getPrimaryHand() == EnumHandSide.RIGHT)
+            {
+                modelplayer.rightArmPose = modelbiped$armpose;
+                modelplayer.leftArmPose = modelbiped$armpose1;
+            }
+            else
+            {
+                modelplayer.rightArmPose = modelbiped$armpose1;
+                modelplayer.leftArmPose = modelbiped$armpose;
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void impactKuinkeAir(PlayerInteractEvent.LeftClickEmpty e)
+    {
+        EntityPlayer player = getPlayerMP(e.getEntityPlayer());
+        if (player.getHeldItemMainhand().getItem() instanceof IColdSteel) {
+            if (!player.world.isRemote)
+                player.world.playSound(null, player.getPosition(), InitSounds.kuinke_air, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            IColdSteel coldSteel = (IColdSteel) player.getHeldItemMainhand().getItem();
+            coldSteel.playImpact(player.getHeldItemMainhand(), player, player.world);
+        }
+    }
+    @SubscribeEvent
+    public static void impactKuinkeBlock(PlayerInteractEvent.LeftClickBlock e)
+    {
+        EntityPlayer player = getPlayerMP(e.getEntityPlayer());
+        if (player.getHeldItemMainhand().getItem() instanceof IColdSteel) {
+            if (!player.world.isRemote)
+                player.world.playSound(null, player.getPosition(), InitSounds.kuinke_air, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            IColdSteel coldSteel = (IColdSteel) player.getHeldItemMainhand().getItem();
+            coldSteel.playImpact(player.getHeldItemMainhand(), player, player.world);
+        }
+    }
+    @SubscribeEvent
+    public static void impactKuinkeEntity(LivingAttackEvent e)
+    {
+        if (e.getSource().getTrueSource() instanceof EntityLivingBase) {
+            EntityLivingBase base = (EntityLivingBase) e.getSource().getTrueSource();
+            if (base.getHeldItemMainhand().getItem() instanceof IColdSteel) {
+                if (!base.world.isRemote)
+                    base.world.playSound(null, base.getPosition(), InitSounds.kuinke_hit, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                IColdSteel coldSteel = (IColdSteel) base.getHeldItemMainhand().getItem();
+                coldSteel.playImpact(base.getHeldItemMainhand(), base, base.world);
+            }
+        }
+    }
 }

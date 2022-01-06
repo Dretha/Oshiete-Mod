@@ -1,36 +1,117 @@
 package com.dretha.drethamod.init;
 
+import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.items.firearm.Bullets;
+import com.dretha.drethamod.items.firearm.ItemBullet;
+import com.dretha.drethamod.items.firearm.ItemMagazine;
+import com.dretha.drethamod.items.firearm.assault_rifle_hk33.HK33Item;
+import com.dretha.drethamod.client.geckolib.clothes.blue_blouse.BlueBlouseArmor;
+import com.dretha.drethamod.client.geckolib.clothes.grandpa_hat.GrandpaHatArmor;
+import com.dretha.drethamod.client.geckolib.clothes.kureo_cape.KureoArmor;
+import com.dretha.drethamod.client.geckolib.clothes.test_hat.ClothesArmor;
+import com.dretha.drethamod.items.*;
+import com.dretha.drethamod.items.clothes.ItemCloth;
+import com.dretha.drethamod.items.clothes.ItemMask;
+import com.dretha.drethamod.items.kuinkes.kakuken1.Kakuken;
+import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.handlers.EventsHandler;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemStack;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dretha.drethamod.items.ItemGhoulFood;
-import com.dretha.drethamod.items.RenderingItem;
-import com.dretha.drethamod.items.ItemTabletCreative;
-import com.dretha.drethamod.reference.Reference;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.EnumHelper;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 public class InitItems {
 	
-	public static final List<Item> ITEMS = new ArrayList<Item>();
+	public static final List<Item> ITEMS = new ArrayList<>();
 	
-	//items
-	public static final Item KAKUGAN2 = new RenderingItem("kakugan2");
+	//tablets
+	public static final Item TABLET_HUMAN = new ItemTabletCreative("tablet_human", I18n.format("info.tablethuman"), GhoulType.NONE);
+	public static final Item TABLET_UKAKU = new ItemTabletCreative("tablet_ukaku", I18n.format("info.none"), GhoulType.UKAKU);
+	public static final Item TABLET_KOUKAKU = new ItemTabletCreative("tablet_koukaku", I18n.format("info.none"), GhoulType.KOUKAKU);
+	public static final Item TABLET_RINKAKU = new ItemTabletCreative("tablet_rinkaku", I18n.format("info.none"), GhoulType.RINKAKU);
+	public static final Item TABLET_BIKAKU = new ItemTabletCreative("tablet_bikaku", I18n.format("info.none"), GhoulType.BIKAKU);
+
+	//food
+	public static final Item HUMAN_MEAT = new ItemGhoulFood("human_meat", I18n.format("info.human_meat"), 8, 10, 16, 32, true, EnumKeeper.LOW_SATIATION);
+	public static final Item HUMAN_EYE = new ItemGhoulFood("human_eye", I18n.format("info.human_eye"), 2, 12, 3, 32, true, EnumKeeper.LOW_SATIATION);
+	public static final Item HUMAN_BLOOD_BOTTLE = new ItemGhoulFood("human_blood_bottle", I18n.format("info.blood_bottle"), 3, 8, 6, 32, true, EnumKeeper.LOW_SATIATION);
+
+	public static final Item KAKUHO = new Kakuho("kakuho", I18n.format("info.kakuho"), 4, 8);
+	public static final Item GHOUL_MEAT = new ItemGhoulFood("ghoul_meat", I18n.format("info.kakuho"), 8, 10, 32, 64, true, EnumKeeper.LOW_SATIATION);
+	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 3, 4, 32, 96, true, EnumKeeper.HIGH_SATIATION);
+
+	//technical items
+	public static final Item UKAKU_FLAME_BIG_01 = new RenderingItem("ukaku_flame_big_01");
+	public static final Item KAKUGAN31 = new RenderingItem("kakugan31");
+	public static final Item KAKUGAN12 = new RenderingItem("kakugan12");
+	public static final Item KAKUGAN11 = new RenderingItem("kakugan11");
+
+	//clothes
+	public static final Item CLOTHESITEM1 = new ClothesArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "hat");
+	public static final Item TEST_HAT = new ItemCloth("testhat", 2, new ItemStack(CLOTHESITEM1));
+
+	public static final Item BLUE_BLOUSE_HEAD = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "blue_blouse_head");
+	public static final Item BLUE_BLOUSE_BODY = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.CHEST, "blue_blouse_body");
+	public static final Item BLUE_BLOUSE = new ItemCloth("blue_blouse", 1, new ItemStack(BLUE_BLOUSE_HEAD), new ItemStack(BLUE_BLOUSE_BODY));
+
+	public static final Item GRANDPA_HAT_HEAD = new GrandpaHatArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "grandpa_hat_head");
+	public static final Item GRANDPA_HAT = new ItemCloth("grandpa_hat", 2, new ItemStack(GRANDPA_HAT_HEAD));
+
+	public static final Item KUREO_BODY = new KureoArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.CHEST, "kureo_body");
+	public static final Item KUREO_LEGS = new KureoArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.LEGS, "kureo_legs");
+	public static final Item KUREO_CAPE = new ItemCloth("kureo_cape", 3, new ItemStack(KUREO_BODY), new ItemStack(KUREO_LEGS));
+
+	public static final Item BLACK_TUX_BODY = new KureoArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.CHEST, "black_tux_body");
+	public static final Item BLACK_TUX_LEGS = new KureoArmor(ArmorMaterial.DIAMOND, 0, EntityEquipmentSlot.LEGS, "black_tux_legs");
+	public static final Item BLACK_TUX = new ItemCloth("black_tux", 1, new ItemStack(BLACK_TUX_BODY), new ItemStack(BLACK_TUX_LEGS));
+
+	public static final Item GOURMET_TUX_BODY = new KureoArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.CHEST, "gourmet_tux_body");
+	public static final Item GOURMET_TUX_LEGS = new KureoArmor(ArmorMaterial.DIAMOND, 2, EntityEquipmentSlot.LEGS, "gourmet_tux_legs");
+	public static final Item GOURMET_TUX = new ItemCloth("gourmet_tux", 1, new ItemStack(GOURMET_TUX_BODY), new ItemStack(GOURMET_TUX_LEGS));
+
+	public static final Item BLACK_BLOUSE_HEAD = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.CHEST, "black_blouse_head");
+	public static final Item BLACK_BLOUSE_BODY = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.LEGS, "black_blouse_body");
+	public static final Item BLACK_BLOUSE = new ItemCloth("black_blouse", 1, new ItemStack(BLACK_BLOUSE_HEAD), new ItemStack(BLACK_BLOUSE_BODY));
+
+	//tuners
+	public static final Item UKAKU_STATE_TUNER = new Tuner("ukaku_state_tuner", player -> {
+		ICapaHandler capa = EventsHandler.getCapaMP(player);
+		if (!capa.ukaku()) return;
+		capa.setUkakuState(capa.ukakuState().next());
+	});
 	
-	//public static final Item TABLET_HUMAN = new ItemTabletCreative("tablet_human", "Will make you human again.", 0);
-	public static final Item TABLET_UKAKU = new ItemTabletCreative("tablet_ukaku", "", 1);
-	public static final Item TABLET_KOUKAKU = new ItemTabletCreative("tablet_koukaku", "", 2);
-	public static final Item TABLET_RINKAKU = new ItemTabletCreative("tablet_rinkaku", "", 3);
-	public static final Item TABLET_BIKAKU = new ItemTabletCreative("tablet_bikaku", "", 4);
-	
-	public static final Item HUMAN_MEAT = new ItemGhoulFood("human_meat", "\"human, human, human, child, human...\"", 8, 10);
-	public static final Item HUMAN_EYE = new ItemGhoulFood("human_eye", "Uta approves.", 2, 12);
-	public static final Item HUMAN_BLOOD_BOTTLE = new ItemGhoulFood("human_blood_bottle", "This is not wine.", 3, 8);
-	
-	public static final Item KAGUNE_UKAKU = new RenderingItem("kagune_ukaku");
+	//masks
+	public static final Item UTA_MASK = new ItemMask("mask_uta");
+	public static final Item NORO_MASK = new ItemMask("mask_noro");
+	public static final Item AOGIRI_MASK = new ItemMask("mask_aogiri");
+
+	//kuinkies
+	public static final Item KAKUKEN1 = new Kakuken("kakuken1", 10, 15, 128, 6, EnumKeeper.Q_STEEL_RARITY);
+	public static final Item KAKUKEN3 = new Kakuken("kakuken3", 30, 35, 128, 6, EnumKeeper.Q_STEEL_RARITY);
+
+	//materials
+	public static final Item KUINKE_STEEL_SHARD = new ItemMaterial("q_steel_shard", EnumKeeper.Q_STEEL_RARITY);
+	public static final Item KUINKE_STEEL = new ItemMaterial("kuinke_steel", EnumKeeper.Q_STEEL_RARITY);
+	public static final Item STEEL = new ItemMaterial("steel_ingot");
+	public static final Item FIRECLAY_BAR = new ItemMaterial("fireclay_bar");
+	public static final Item CHAMOTTE = new ItemMaterial("chamotte");
+	public static final Item FIRE_CLAY = new ItemMaterial("fire_clay");
+	public static final Item IRON_PLATE = new ItemMaterial("iron_plate");
+	public static final Item STEEL_PLATE = new ItemMaterial("steel_plate");
+
+	//instruments
+	public static final Item STEEL_HAMMER = new ItemTool("steel_hammer", EnumKeeper.STEEL, Tool.HAMMER);
+
+	//weapon
+	public static final Item MAGAZINE = new ItemMagazine("magazine");
+
+	public static final Item IRON_BULLET = new ItemBullet("iron_bullet", Bullets.IRON);
+	public static final Item STEEL_BULLET = new ItemBullet("steel_bullet", Bullets.STEEL);
+	public static final Item Q_BULLET = new ItemBullet("q_bullet", Bullets.Q_STEEL, EnumKeeper.Q_STEEL_RARITY);
+
+	public static final Item HK33 = new HK33Item("assault_rifle_hk33");
 }

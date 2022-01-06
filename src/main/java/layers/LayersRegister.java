@@ -1,7 +1,7 @@
 package layers;
 
-import layers.kagune.LayerKoukaku;
-import layers.kagune.LayerUkaku;
+import layers.kagune.LayerKagune;
+import layers.kagune.LayerFlame;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -11,9 +11,13 @@ public class LayersRegister {
 	public static void register()
     {
 		setLayer(new LayerKakugan());
-        setLayer(new LayerUkaku());
+        setLayer(new LayerFlame());
         setLayer(new LayerShard());
-        setLayer(new LayerKoukaku());
+        setLayer(new LayerKagune());
+        setLayer(new LayerMask());
+
+        Minecraft.getMinecraft().getRenderManager().getSkinMap().get("default").addLayer(new LayerClothes(Minecraft.getMinecraft().getRenderManager().getSkinMap().get("default")));
+        Minecraft.getMinecraft().getRenderManager().getSkinMap().get("slim").addLayer(new LayerClothes(Minecraft.getMinecraft().getRenderManager().getSkinMap().get("slim")));
     }
 
     private static void setLayer(final LayerRenderer layer)
