@@ -59,6 +59,7 @@ public interface ICapaHandler {
     public boolean ukaku();
     
 	public int rank();
+	float exactRank();
 	
 	public int getSkill();
 	public void addSkill(int points);
@@ -111,5 +112,8 @@ public interface ICapaHandler {
 	public int getSmellDuration();
 	public int getSmellTicksPre();
 	public void setSmellTicksPre(int ticks);
+
+	int getAttackKuinkeTicksPre();
+	void setAttackKuinkeTicksPre(int ticks);
 }
 

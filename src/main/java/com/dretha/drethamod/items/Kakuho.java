@@ -16,8 +16,11 @@ import java.util.List;
 
 public class Kakuho extends ItemGhoulFood {
 
-    public Kakuho(String name, String description, int amount, float saturation) {
+    private final GhoulType ghoulType;
+
+    public Kakuho(String name, String description, GhoulType ghoulType, int amount, float saturation) {
         super(name, description, amount, saturation, 1024, 128, false);
+        this.ghoulType = ghoulType;
     }
 
     @Override
@@ -25,8 +28,6 @@ public class Kakuho extends ItemGhoulFood {
     {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setInteger("RCpoints", satiation);
-        String type = GhoulType.random().toString();
-        compound.setString("type", type.substring(0, 1) + type.substring(1).toLowerCase());
         stack.setTagCompound(compound);
     }
 
@@ -36,8 +37,6 @@ public class Kakuho extends ItemGhoulFood {
         if (!stack.hasTagCompound()) {
             NBTTagCompound compound = new NBTTagCompound();
             compound.setInteger("RCpoints", satiation);
-            String type = GhoulType.random().toString();
-            compound.setString("type", type.substring(0, 1) + type.substring(1).toLowerCase());
             stack.setTagCompound(compound);
         }
     }
@@ -48,8 +47,6 @@ public class Kakuho extends ItemGhoulFood {
         if (!stack.hasTagCompound()) return;
         int RCpoints = stack.getTagCompound().getInteger("RCpoints");
         desc.add(RCpoints + " RC Cells");
-        String type = stack.getTagCompound().getString("type");
-        desc.add(type + " Type");
     }
 
     @Override
@@ -65,15 +62,16 @@ public class Kakuho extends ItemGhoulFood {
                 NBTTagCompound compound = stack.getTagCompound();
                 ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
                 satiation = compound.getInteger("RCpoints");
-                GhoulType type = GhoulType.valueOf(compound.getString("type").toUpperCase());
                 if (capa.isGhoul()) {
                     capa.addRCpoints((int) ((float) satiation / 7.8125F));
-                    if (capa.getGhoulType() == type)
+                    if (capa.getGhoulType() == ghoulType)
                         capa.addRCpoints((int) ((float) satiation / 7.8125F));
                 }
             }
         }
     }
 
-
+    public GhoulType getGhoulType() {
+        return ghoulType;
+    }
 }

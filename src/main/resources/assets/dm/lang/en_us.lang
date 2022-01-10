@@ -31,6 +31,7 @@ item.tablet_ukaku.name=Yellow Tablet
 item.tablet_koukaku.name=Blue Tablet
 item.tablet_rinkaku.name=Red Tablet
 item.tablet_bikaku.name=Cyan Tablet
+item.shock_resistant_handle.name=Shock-Resistant Handle
 
 tile.fusion_blast_furnace.name=Fusion Blast Furnace
 tile.fireclay_brick.name=Fireclay Brick
@@ -51,6 +52,7 @@ desk.none=
 desk.ironbullets=Iron Bullets
 desk.steelbullets=Steel Bullets
 desk.qbullets=Q-Bullets
+desk.kuinke0= Damage
 desk.kuinke1= Damage Absorption
 desk.kuinke2= Hardness
 

@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "##",
+        "##"
+    ],
+    "key": {
+        "#": {
+            "item": "dm:kuinke_steel"
+        }
+    },
+    "result": {
+        "item": "dm:q_steel_bar",
+        "count": 1
+    }
+}

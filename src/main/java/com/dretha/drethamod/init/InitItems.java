@@ -12,7 +12,10 @@ import com.dretha.drethamod.client.geckolib.clothes.test_hat.ClothesArmor;
 import com.dretha.drethamod.items.*;
 import com.dretha.drethamod.items.clothes.ItemCloth;
 import com.dretha.drethamod.items.clothes.ItemMask;
-import com.dretha.drethamod.items.kuinkes.kakuken1.Kakuken;
+import com.dretha.drethamod.items.kuinkes.IKuinke;
+import com.dretha.drethamod.items.kuinkes.KuinkeMeleeBase;
+import com.dretha.drethamod.items.kuinkes.QColdSteel;
+import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import net.minecraft.client.resources.I18n;
@@ -27,6 +30,7 @@ import java.util.List;
 public class InitItems {
 	
 	public static final List<Item> ITEMS = new ArrayList<>();
+	public static final List<IKuinke> UNIQUE_KUINKIES = new ArrayList<>();
 	
 	//tablets
 	public static final Item TABLET_HUMAN = new ItemTabletCreative("tablet_human", I18n.format("info.tablethuman"), GhoulType.NONE);
@@ -40,9 +44,16 @@ public class InitItems {
 	public static final Item HUMAN_EYE = new ItemGhoulFood("human_eye", I18n.format("info.human_eye"), 2, 12, 3, 32, true, EnumKeeper.LOW_SATIATION);
 	public static final Item HUMAN_BLOOD_BOTTLE = new ItemGhoulFood("human_blood_bottle", I18n.format("info.blood_bottle"), 3, 8, 6, 32, true, EnumKeeper.LOW_SATIATION);
 
-	public static final Item KAKUHO = new Kakuho("kakuho", I18n.format("info.kakuho"), 4, 8);
+	public static final Item RAW_KAKUHO_UKAKU = new Kakuho("kakuho_ukaku", I18n.format("info.kakuho"), GhoulType.UKAKU, 4, 4);
+	public static final Item RAW_KAKUHO_KOUKAKU = new Kakuho("kakuho_koukaku", I18n.format("info.kakuho"), GhoulType.KOUKAKU, 4, 4);
+	public static final Item RAW_KAKUHO_RINKAKU = new Kakuho("kakuho_rinkaku", I18n.format("info.kakuho"), GhoulType.RINKAKU, 4, 4);
+	public static final Item RAW_KAKUHO_BIKAKU = new Kakuho("kakuho_bikaku", I18n.format("info.kakuho"), GhoulType.BIKAKU, 4, 4);
+
+	//public static final Item PREPARED_KAKUHO = new Kakuho("prepared_kakuho", I18n.format("info.kakuho"), 4, 4);
+	//public static final Item INDUCED_KAKUHO = new Kakuho("induced_kakuho", I18n.format("info.kakuho"), 4, 4);
+
 	public static final Item GHOUL_MEAT = new ItemGhoulFood("ghoul_meat", I18n.format("info.kakuho"), 8, 10, 32, 64, true, EnumKeeper.LOW_SATIATION);
-	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 3, 4, 32, 96, true, EnumKeeper.HIGH_SATIATION);
+	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 2, 2, 32, 96, true, EnumKeeper.HIGH_SATIATION);
 
 	//technical items
 	public static final Item UKAKU_FLAME_BIG_01 = new RenderingItem("ukaku_flame_big_01");
@@ -90,8 +101,14 @@ public class InitItems {
 	public static final Item AOGIRI_MASK = new ItemMask("mask_aogiri");
 
 	//kuinkies
-	public static final Item KAKUKEN1 = new Kakuken("kakuken1", 10, 15, 128, 6, EnumKeeper.Q_STEEL_RARITY);
-	public static final Item KAKUKEN3 = new Kakuken("kakuken3", 30, 35, 128, 6, EnumKeeper.Q_STEEL_RARITY);
+	public static final Item KNIFE = new QColdSteel("knife", Weapons.KNIFE);
+	public static final Item KATANA = new QColdSteel("katana", Weapons.KATANA);
+	public static final Item SCYTHE = new QColdSteel("scythe", Weapons.SCYTHE);
+	public static final Item CLEAVER = new QColdSteel("cleaver", Weapons.CLEAVER);
+	public static final Item CUDGEL = new QColdSteel("cudgel", Weapons.CUDGEL);
+
+	//unique kuinkies
+	public static final Item KAKUKEN_SASAKI = new KuinkeMeleeBase("kakuken3", 128, 6, 0, 3, EnumKeeper.LEGENDARY);
 
 	//materials
 	public static final Item KUINKE_STEEL_SHARD = new ItemMaterial("q_steel_shard", EnumKeeper.Q_STEEL_RARITY);
@@ -102,6 +119,8 @@ public class InitItems {
 	public static final Item FIRE_CLAY = new ItemMaterial("fire_clay");
 	public static final Item IRON_PLATE = new ItemMaterial("iron_plate");
 	public static final Item STEEL_PLATE = new ItemMaterial("steel_plate");
+	public static final Item SHOCK_RESISTANT_HANDLE = new ItemMaterial("shock_resistant_handle", EnumKeeper.Q_STEEL_RARITY);
+	public static final Item KUINKE_STEEL_BAR = new ItemMaterial("q_steel_bar", EnumKeeper.Q_STEEL_RARITY);
 
 	//instruments
 	public static final Item STEEL_HAMMER = new ItemTool("steel_hammer", EnumKeeper.STEEL, Tool.HAMMER);

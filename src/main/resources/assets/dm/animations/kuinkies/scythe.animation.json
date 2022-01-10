@@ -1,0 +1,72 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"impact1": {
+			"animation_length": 0.33333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [-56.83961, 18.13913, -81.09769]
+						},
+						"0.1667": {
+							"vector": [101.8768, -8.91488, -84.92721]
+						},
+						"0.3333": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"impact2": {
+			"animation_length": 0.58333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [-40.94102, -8.42106, -95.94102]
+						},
+						"0.1667": {
+							"vector": [127.5, 0, -90]
+						},
+						"0.3333": {
+							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"impact3": {
+			"animation_length": 0.33333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [-1.3378, -14.94159, -84.82456]
+						},
+						"0.3333": {
+							"vector": [360, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"block": {
+			"animation_length": 0.08333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [15, 0, 30]
+						},
+						"0.0833": {
+							"vector": [15, 0, 30]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

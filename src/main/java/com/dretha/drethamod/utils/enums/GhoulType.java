@@ -1,68 +1,44 @@
 package com.dretha.drethamod.utils.enums;
 
 
+import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.init.InitItems;
+import net.minecraft.item.Item;
+
 import java.util.Arrays;
 import java.util.Random;
 
 public enum GhoulType {
-	UKAKU {
-		public float speed() {return 5;}
-		public int index() {return 0;}
-	    public int id() {return 1;}
-	    
-		@Override
-		public float blockDamageModif(float response) {
-			if (response>1.0F) return 0;
-			return 1.025F-response*2;
-		}
-	},
-	KOUKAKU {
-		public float speed() {return 10;}
-		public int index() {return 1;}
-	    public int id() {return 2;}
-	    
-	    @Override
-		public float blockDamageModif(float response) {
-	    	if (response>=1.0F) return 0;
-			return 1.025F-response/2;
-		}
-	},
-	RINKAKU {
-		public float speed() {return 15;}
-		public int index() {return 2;}
-	    public int id() {return 3;}
-	    
-	    @Override
-		public float blockDamageModif(float response) {
-	    	if (response>1.3F) return 0;
-	    	else return 1.0F-(response/1.3F);
-		}
-	},
-	BIKAKU {
-		public float speed() {return 7.5F;}
-		public int index() {return 3;}
-	    public int id() {return 4;}
-	    
-	    @Override
-		public float blockDamageModif(float response) {
-	    	if (response>1.0F) return 0;
-			return 1.025F-response;
-		}
-	},
-	NONE {
-		public float speed() {return 0;}
-		public int index() {return 4;}
-	    public int id() {return 0;}
-	    
-	    @Override
-		public float blockDamageModif(float response) {
-			return 0;
-		}
-	};
-	public abstract float speed();
-	public abstract int index();
-	public abstract int id();
-	public abstract float blockDamageModif(float response);
+	UKAKU(InitItems.RAW_KAKUHO_UKAKU, 5, 0.5F),
+	KOUKAKU(InitItems.RAW_KAKUHO_KOUKAKU, 10, 1.5F),
+	RINKAKU(InitItems.RAW_KAKUHO_RINKAKU, 15, 0.7F),
+	BIKAKU(InitItems.RAW_KAKUHO_BIKAKU, 7, 1F),
+	NONE (null, 0, 0);
+
+	public int index() {
+		return GhoulType.indexOf(this);
+	}
+	public int id() {
+		return GhoulType.indexOf(this) + 1;
+	}
+
+	public final Item kakuho;
+	public final int speed;
+	public final float blockMultiplier;
+
+	GhoulType(Item kakuho, int speed, float blockMultiplier) {
+		this.kakuho = kakuho;
+		this.speed = speed;
+		this.blockMultiplier = blockMultiplier;
+	}
+
+	public Item getKakuho() {
+		return kakuho;
+	}
+
+	public int getProtection(ICapaHandler capa) {
+		return (int) (capa.exactRank() * 10 * this.blockMultiplier);
+	}
 	
 	public static int indexOf(GhoulType type) {
 		return Arrays.asList(GhoulType.values()).indexOf(type);

@@ -36,7 +36,7 @@ public class CapaHandler implements ICapaHandler {
 	private EntityPlayer master = null;
 	private EntityKagune entityKagune = null;
 	
-	public final ClothesInventory inventory = new ClothesInventory();
+	private final ClothesInventory inventory = new ClothesInventory();
 	
 	private int MODEL_VARIANT = 1;
 	private int TEXTURE_VARIANT = 1;
@@ -73,6 +73,8 @@ public class CapaHandler implements ICapaHandler {
 	private int smellTicksPre = -1000;
 	private int smellDuration = 400;
 	private int smellRadius = 20;
+
+	private int attackKuinkeTicksPre = 0;
 	
 	@Override
 	public void attachMaster(EntityPlayer master) {
@@ -356,8 +358,15 @@ public class CapaHandler implements ICapaHandler {
 	{
 		int rankmeter = isGhoul ? skillPoints/2+RCpoints : skillPoints+1000;
 		int rank = Math.round(rankmeter/1000)-1;
-		System.out.println(rank);
-		return rank>7 ? 7 : rank;
+		return rank;
+	}
+	@Override
+	public float exactRank() {
+		float rankmeter = isGhoul ? (skillPoints+RCpoints)/2F : skillPoints+1000F;
+		float rank = Math.round(rankmeter/1000) - 1;
+		if (rank<0.3F)
+			rank=0.3F;
+		return rank;
 	}
 	
 	
@@ -569,6 +578,16 @@ public class CapaHandler implements ICapaHandler {
 		smellTicksPre = ticks;
 	}
 
-	
-	
+
+	@Override
+	public int getAttackKuinkeTicksPre() {
+		return attackKuinkeTicksPre;
+	}
+
+	@Override
+	public void setAttackKuinkeTicksPre(int ticks) {
+		this.attackKuinkeTicksPre = ticks;
+	}
+
+
 }

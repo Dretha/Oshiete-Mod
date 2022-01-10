@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "# ",
+        "#M",
+        "O "
+    ],
+    "key": {
+        "#": {
+            "item": "dm:q_steel_bar"
+        },
+        "M": {
+            "item": "dm:kakuho_ukaku"
+        },
+        "O": {
+            "item": "dm:shock_resistant_handle"
+        }
+    },
+    "result": {
+        "item": "dm:cleaver",
+        "count": 1
+    }
+}

@@ -7,7 +7,7 @@ import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.keybinds.KeybindsRegister;
 import com.dretha.drethamod.entity.projectile.EntityRCShard;
 import com.dretha.drethamod.init.InitSounds;
-import com.dretha.drethamod.items.kuinkes.IKuinke;
+import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.main.Main;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.*;
@@ -185,40 +185,48 @@ public class KeyEventsHandler {
 
 			   e.setCanceled(true);
 
-			   if (immediate instanceof EntityLivingBase) {
-				   EntityLivingBase base = (EntityLivingBase) e.getSource().getTrueSource();
-				   base.knockBack(player, 0.5F, player.posX - base.posX, player.posZ - base.posZ);
-			   }
+			   if (immediate instanceof EntityLivingBase)
+				   knockback(player, (EntityLivingBase) immediate, 0.5F);
+
+
+			   int blockValue = 0;
 
 			   if (capa.isKaguneActive())
 			   {
 				   player.world.playSound(null, player.getPosition(), InitSounds.hit_ground_kagune_2, SoundCategory.PLAYERS, 1.0F, 1.0F);
+				   blockValue = capa.getGhoulType().getProtection(capa);
 
-				   int damage = (int) Math.round((e.getAmount() * capa.getGhoulType().blockDamageModif(capa.getResponseValue())));
-				   if (damage != 0)
-					   player.setHealth(player.getHealth() - damage);
+				   if (blockValue < (int)e.getAmount()) {
+					   capa.removeRClevel((int)e.getAmount()-blockValue);
+					   if (immediate instanceof EntityLivingBase)
+						   knockback(player, (EntityLivingBase) immediate, 1F);
+				   }
 			   }
-			   else if (player.getActiveItemStack().getItem() instanceof IKuinke)
+			   else if (player.getActiveItemStack().getItem() instanceof IKuinkeMelee)
 			   {
 				   player.world.playSound(null, player.getPosition(), InitSounds.kuinke_block, SoundCategory.PLAYERS, 1.0F, 1.0F);
-
 				   ItemStack kuinkeStack = player.getActiveItemStack();
-				   IKuinke kuinke = (IKuinke) player.getActiveItemStack().getItem();
+				   IKuinkeMelee kuinke = (IKuinkeMelee) player.getActiveItemStack().getItem();
+				   blockValue = kuinke.getBlockValue(player.getActiveItemStack());
 
-				   if (kuinke.getBlockValue() < (int)e.getAmount())
-				   {
-					   kuinkeStack.damageItem((int)e.getAmount()-kuinke.getBlockValue(), (EntityLivingBase) e.getSource().getTrueSource());
-
-					   if (kuinke.getBlockValue()*2 < (int)e.getAmount())
-					   {
-						   player.setHealth(player.getHealth() - (kuinke.getBlockValue()*2 - (int)e.getAmount()));
-						   //setHurt(player, entity, immediate, source.getDamageType(),  (int)e.getAmount() - kuinke.getBlockValue()*2);
-					   }
+				   if (blockValue < (int)e.getAmount()) {
+					   kuinkeStack.damageItem((int)e.getAmount()-blockValue, (EntityLivingBase) e.getSource().getTrueSource());
+					   if (immediate instanceof EntityLivingBase)
+						   knockback(player, (EntityLivingBase) immediate, 1F);
 				   }
 			   }
 
-		   }
+			   if (blockValue * 2 < (int)e.getAmount())
+				   {
+					   player.setHealth(player.getHealth() - (blockValue * 2 - (int)e.getAmount()));
+					   //setHurt(player, entity, immediate, source.getDamageType(),  (int)e.getAmount() - kuinke.getBlockValue()*2);
+				   }
+			   }
 	   }
+   }
+
+   private static void knockback(EntityLivingBase attacker, EntityLivingBase target, float strength) {
+	   target.knockBack(attacker, strength, attacker.posX - target.posX, attacker.posZ - target.posZ);
    }
 
    public static void setHurt(EntityPlayer target, EntityLivingBase attacker, Entity immediate, String source, int damage) {

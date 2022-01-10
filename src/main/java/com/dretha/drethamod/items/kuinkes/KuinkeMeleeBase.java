@@ -5,7 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
-import com.dretha.drethamod.items.firearm.Bullets;
+import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -19,53 +19,60 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
+public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAnimatable {
 
     public AnimationFactory factory = new AnimationFactory(this);
     protected String controllerName = "popupController";
-    protected int block_value;
-    protected int damage_value;
-    protected int shards;
+    protected final int QSteelShards;
+    protected final int kaguneShards;
     protected EnumRarity rarity = EnumKeeper.Q_STEEL_RARITY;
+    protected final float attackSpeed;
 
-    public KuinkeMeleeBase(String name, int damage_value, int block_value, int hardness, int shards) {
+    public KuinkeMeleeBase(String name, int hardness, int QSteelShards, int kaguneShards, float attackSpeed) {
         setRegistryName(name);
         setUnlocalizedName(name);
         setCreativeTab(ModCreativeTabs.WEAPON);
         this.maxStackSize = 1;
         this.setMaxDamage(hardness);
-        this.damage_value = damage_value;
-        this.block_value = block_value;
-        this.shards = shards;
+        this.QSteelShards = QSteelShards;
+        this.kaguneShards = kaguneShards;
+        this.attackSpeed = attackSpeed;
 
         InitItems.ITEMS.add(this);
     }
-    public KuinkeMeleeBase(String name, int damage_value, int block_value, int hardness, int shards, EnumRarity rarity) {
+    public KuinkeMeleeBase(String name, int hardness, int QSteelShards, int kaguneShards, float attackSpeed, EnumRarity rarity) {
         setRegistryName(name);
         setUnlocalizedName(name);
         setCreativeTab(ModCreativeTabs.WEAPON);
         this.maxStackSize = 1;
         this.setMaxDamage(hardness);
-        this.damage_value = damage_value;
-        this.block_value = block_value;
-        this.shards = shards;
+        this.QSteelShards = QSteelShards;
+        this.kaguneShards = kaguneShards;
         this.rarity = rarity;
+        this.attackSpeed = attackSpeed;
+
+        if (rarity!=EnumKeeper.Q_STEEL_RARITY)
+            InitItems.UNIQUE_KUINKIES.add(this);
 
         InitItems.ITEMS.add(this);
     }
@@ -77,22 +84,39 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
     }
 
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
-    {
-        if (!stack.hasTagCompound()) {
-            NBTTagCompound compound = new NBTTagCompound();
-            compound.setUniqueId("uuid", UUID.randomUUID());
-            stack.setTagCompound(compound);
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> desc, ITooltipFlag flagIn) {
+        if (stack.hasTagCompound()) {
+            desc.add(getDamageValue(stack) + I18n.format("desk.kuinke0"));
+            desc.add(getBlockValue(stack) + I18n.format("desk.kuinke1"));
+            desc.add(this.getMaxDamage(stack) + I18n.format("desk.kuinke2"));
         }
     }
 
     @Override
-    public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-        if (!stack.hasTagCompound()) {
-            NBTTagCompound compound = new NBTTagCompound();
-            compound.setUniqueId("uuid", UUID.randomUUID());
-            stack.setTagCompound(compound);
+    public void playImpact(ItemStack stack, EntityLivingBase base, World world) {
+        AnimationController controller = GeckoLibUtil.getControllerForStack(this.factory, stack, controllerName);
+        if (controller.getAnimationState() == AnimationState.Stopped)
+        {
+            controller.markNeedsReload();
+            controller.setAnimation(new AnimationBuilder().addAnimation("impact" + EventsHandler.random.nextInt(3)+1, false));
         }
+    }
+
+    @Override
+    public int getBlockValue(ItemStack stack) {
+        int block = stack.getTagCompound().getInteger("block");
+        return block;
+    }
+
+    @Override
+    public int getDamageValue(ItemStack stack) {
+        int damage = stack.getTagCompound().getInteger("damage");
+        return damage;
+    }
+
+    @Override
+    public float getSpeedAttack() {
+        return attackSpeed;
     }
 
     @Override
@@ -111,8 +135,18 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
         return this.factory;
     }
 
-    public int getCountShards() {
-        return shards;
+    public int getCountQSteelShards() {
+        return QSteelShards;
+    }
+
+    @Override
+    public int getCountKaguneShards() {
+        return kaguneShards;
+    }
+
+    @Override
+    public int pointsToGet() {
+        return 0;
     }
 
     @Override
@@ -120,12 +154,7 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
         return 14;
     }
 
-    @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
-    {
-        //stack.damageItem(1, attacker);
-        return true;
-    }
+
 
     @Override
     public boolean canHarvestBlock(IBlockState blockIn)
@@ -138,18 +167,12 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         playerIn.setActiveHand(handIn);
 
-        ICapaHandler capa = playerIn.getCapability(CapaProvider.PLAYER_CAP, null);
+        EntityPlayer player = EventsHandler.getPlayerMP(playerIn);
+        ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
         if (!capa.isKaguneActive())
             capa.setBlock(true);
 
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
-    }
-
-
-    @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> desc, ITooltipFlag flagIn) {
-        desc.add(block_value + I18n.format("desk.kuinke1"));
-        desc.add(this.getMaxDamage(stack) + I18n.format("desk.kuinke2"));
     }
 
     @Override
@@ -183,8 +206,8 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
 
         if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
         {
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", damage_value, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.4000000953674316D, 0));
+            //multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", damage_value, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", attackSpeed, 0));
         }
 
         return multimap;
@@ -194,8 +217,7 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
     {
         if (entityLiving instanceof EntityPlayer) {
             ICapaHandler capa = entityLiving.getCapability(CapaProvider.PLAYER_CAP, null);
-            if (!capa.isKaguneActive())
-                capa.setBlock(false);
+            capa.setBlock(false);
         }
     }
 
@@ -207,10 +229,5 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IAnimatable {
                 capa.setBlock(false);
         }
         return stack;
-    }
-
-    @Override
-    public int getBlockValue() {
-        return block_value;
     }
 }

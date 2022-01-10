@@ -31,6 +31,7 @@ item.tablet_ukaku.name=Желтая таблетка
 item.tablet_koukaku.name=Синяя таблетка
 item.tablet_rinkaku.name=Красная таблетка
 item.tablet_bikaku.name=Бирюзовая таблетка
+item.shock_resistant_handle.name=Ударопрочная рукоять
 
 tile.fusion_blast_furnace.name=Доменная печь сплавов
 tile.fireclay_brick.name=Шамотный кирпич
@@ -51,6 +52,7 @@ desk.none=
 desk.ironbullets=Железные пули
 desk.steelbullets=Стальные пули
 desk.qbullets=Q-Пули
+desk.kuinke0= Урона
 desk.kuinke1= Поглощение урона
 desk.kuinke2= Прочность
 

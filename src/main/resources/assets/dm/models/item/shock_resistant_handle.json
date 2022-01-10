@@ -1,0 +1,6 @@
+{
+   "parent": "item/generated",
+   "textures": {
+       "layer0": "dm:items/materials/shock_resistant_handle"
+   }
+}

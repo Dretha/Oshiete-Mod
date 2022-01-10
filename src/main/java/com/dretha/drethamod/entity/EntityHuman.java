@@ -15,7 +15,6 @@ import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
-import com.dretha.drethamod.utils.handlers.LootTableHandler;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
@@ -41,7 +40,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -148,20 +146,21 @@ public class EntityHuman extends EntityMob implements IAnimals{
 	public void onDeath(DamageSource cause) {
 		super.onDeath(cause);
 		if (!world.isRemote) {
-			if (!isGhoul) {
+			if (!isGhoul)
+			{
 				this.entityDropItem(new ItemStack(InitItems.HUMAN_EYE, 2), 0);
 				this.entityDropItem(new ItemStack(InitItems.HUMAN_MEAT, random.nextInt(2) + 1), 0);
-			} else {
-				ItemStack kakuho = new ItemStack(InitItems.KAKUHO, 1);
+			}
+			else
+			{
+				ItemStack kakuho = new ItemStack(ghoulType.kakuho, 1);
 				NBTTagCompound compound = new NBTTagCompound();
 				compound.setInteger("RCpoints", this.RCpoints);
-				String type = this.ghoulType.toString();
-				compound.setString("type", type.substring(0, 1) + type.substring(1).toLowerCase());
 				kakuho.setTagCompound(compound);
 				if (random.nextBoolean()) {
 					this.entityDropItem(kakuho, 0);
 				}
-				this.entityDropItem(new ItemStack(InitItems.GHOUL_MEAT, random.nextInt(2) + 1/* + this.rank()*/), 0);
+				this.entityDropItem(new ItemStack(InitItems.GHOUL_MEAT, random.nextInt(2) + 1), 0);
 				if (this.isKaguneActive)
 					this.entityDropItem(new ItemStack(InitItems.KAGUNE_SHARD, random.nextInt(2) + 2 + this.rank()), 0);
 			}
@@ -301,7 +300,7 @@ public class EntityHuman extends EntityMob implements IAnimals{
 	{
 		float rankmeter = isGhoul ? (float)skillPoints/2+RCpoints : skillPoints+1000;
 		int rank = Math.round(rankmeter/1000)-1;
-		return 7;
+		return rank;
 	}
 	public float exactRank() {
 		float rankmeter = isGhoul ? (float)skillPoints/2+RCpoints : skillPoints+1000;

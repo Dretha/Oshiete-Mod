@@ -4,15 +4,17 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
-import com.dretha.drethamod.items.kuinkes.IColdSteel;
+import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
-import com.dretha.drethamod.items.kuinkes.kakuken1.Kakuken;
+import com.dretha.drethamod.items.kuinkes.QColdSteel;
+import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -26,12 +28,12 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -57,6 +59,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.UUID;
 
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
@@ -218,7 +221,11 @@ public class EventsHandler {
                 EntityHuman human = (EntityHuman) e.getEntityLiving();
                 human.setBlock(false);
             }
-            e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KUINKE_STEEL_SHARD, kuinke.getCountShards()), 0);
+            int rand = random.nextInt(5)-2;
+            if (kuinke.getCountQSteelShards() > 0)
+                e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KUINKE_STEEL_SHARD, kuinke.getCountQSteelShards()+rand), 0);
+            if (kuinke.getCountKaguneShards() > 0)
+                e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KAGUNE_SHARD, kuinke.getCountKaguneShards()+rand), 0);
         }
     }
 
@@ -396,10 +403,12 @@ public class EventsHandler {
     public static void impactKuinkeAir(PlayerInteractEvent.LeftClickEmpty e)
     {
         EntityPlayer player = getPlayerMP(e.getEntityPlayer());
-        if (player.getHeldItemMainhand().getItem() instanceof IColdSteel) {
-            if (!player.world.isRemote)
-                player.world.playSound(null, player.getPosition(), InitSounds.kuinke_air, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            IColdSteel coldSteel = (IColdSteel) player.getHeldItemMainhand().getItem();
+        if (player.getHeldItemMainhand().getItem() instanceof IKuinkeMelee) {
+            if (!player.world.isRemote && player.getHeldItemMainhand().getItem() instanceof QColdSteel) {
+                QColdSteel weapon = (QColdSteel) player.getHeldItemMainhand().getItem();
+                player.world.playSound(null, player.getPosition(), weapon.getWeapon().soundAir, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            }
+            IKuinkeMelee coldSteel = (IKuinkeMelee) player.getHeldItemMainhand().getItem();
             coldSteel.playImpact(player.getHeldItemMainhand(), player, player.world);
         }
     }
@@ -407,10 +416,12 @@ public class EventsHandler {
     public static void impactKuinkeBlock(PlayerInteractEvent.LeftClickBlock e)
     {
         EntityPlayer player = getPlayerMP(e.getEntityPlayer());
-        if (player.getHeldItemMainhand().getItem() instanceof IColdSteel) {
-            if (!player.world.isRemote)
-                player.world.playSound(null, player.getPosition(), InitSounds.kuinke_air, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            IColdSteel coldSteel = (IColdSteel) player.getHeldItemMainhand().getItem();
+        if (player.getHeldItemMainhand().getItem() instanceof IKuinkeMelee) {
+            if (!player.world.isRemote && player.getHeldItemMainhand().getItem() instanceof QColdSteel) {
+                QColdSteel weapon = (QColdSteel) player.getHeldItemMainhand().getItem();
+                player.world.playSound(null, player.getPosition(), weapon.getWeapon().soundAir, SoundCategory.PLAYERS, 1.0F, 1.0F);
+            }
+            IKuinkeMelee coldSteel = (IKuinkeMelee) player.getHeldItemMainhand().getItem();
             coldSteel.playImpact(player.getHeldItemMainhand(), player, player.world);
         }
     }
@@ -419,12 +430,36 @@ public class EventsHandler {
     {
         if (e.getSource().getTrueSource() instanceof EntityLivingBase) {
             EntityLivingBase base = (EntityLivingBase) e.getSource().getTrueSource();
-            if (base.getHeldItemMainhand().getItem() instanceof IColdSteel) {
-                if (!base.world.isRemote)
-                    base.world.playSound(null, base.getPosition(), InitSounds.kuinke_hit, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                IColdSteel coldSteel = (IColdSteel) base.getHeldItemMainhand().getItem();
+            if (base.getHeldItemMainhand().getItem() instanceof IKuinkeMelee) {
+                if (!base.world.isRemote && base.getHeldItemMainhand().getItem() instanceof QColdSteel) {
+                    QColdSteel weapon = (QColdSteel) base.getHeldItemMainhand().getItem();
+                    base.world.playSound(null, base.getPosition(), weapon.getWeapon().soundAttack, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                }
+                IKuinkeMelee coldSteel = (IKuinkeMelee) base.getHeldItemMainhand().getItem();
                 coldSteel.playImpact(base.getHeldItemMainhand(), base, base.world);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void craftingQColdSteel(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent e)
+    {
+        if (e.crafting.getItem() instanceof QColdSteel) {
+            for (int i=0; i<e.craftMatrix.getSizeInventory(); i++) {
+                if (e.craftMatrix.getStackInSlot(i).getItem() instanceof Kakuho)
+                {
+                    ItemStack kakuho = e.craftMatrix.getStackInSlot(i);
+                    int modif = kakuho.getTagCompound().getInteger("RCpoints")/120;
+
+                    Weapons weapons = ((QColdSteel)e.crafting.getItem()).getWeapon();
+                    QColdSteel.modificateWeapon(e.crafting, modif, weapons);
+                    return;
+                }
+            }
+        }
+    }
+    public static int getKakuhoRank(Kakuho kakuho) {
+
+        return 0;
     }
 }

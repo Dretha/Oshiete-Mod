@@ -1,0 +1,35 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "  S",
+        "#SQ",
+        "S K"
+    ],
+    "key": {
+        "K": {
+            "item": "dm:kuinke_steel"
+        },
+        "Q": {
+            "item": "dm:q_steel_bar"
+        },
+        "M": {
+            "item": "dm:kakuho_ukaku"
+        },
+        "M": {
+            "item": "dm:kakuho_koukaku"
+        },
+        "M": {
+            "item": "dm:kakuho_rinkaku"
+        },
+        "M": {
+            "item": "dm:kakuho_bikaku"
+        },
+        "S": {
+            "item": "dm:shock_resistant_handle"
+        }
+    },
+    "result": {
+        "item": "dm:scythe",
+        "count": 1
+    }
+}

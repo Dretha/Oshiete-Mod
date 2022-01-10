@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"thrust": {
+		"impact1": {
 			"animation_length": 0.33333,
 			"bones": {
 				"bone": {
@@ -19,22 +19,7 @@
 				}
 			}
 		},
-		"block": {
-			"animation_length": 0.08333,
-			"bones": {
-				"bone": {
-					"rotation": {
-						"0.0": {
-							"vector": [15, 0, 30]
-						},
-						"0.0833": {
-							"vector": [15, 0, 30]
-						}
-					}
-				}
-			}
-		},
-		"slash": {
+		"impact2": {
 			"animation_length": 0.58333,
 			"bones": {
 				"bone": {
@@ -47,6 +32,36 @@
 						},
 						"0.3333": {
 							"vector": [0, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"impact3": {
+			"animation_length": 0.33333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [-11.17505, -10.07026, -41.5123]
+						},
+						"0.3333": {
+							"vector": [360, 0, 0]
+						}
+					}
+				}
+			}
+		},
+		"block": {
+			"animation_length": 0.08333,
+			"bones": {
+				"bone": {
+					"rotation": {
+						"0.0": {
+							"vector": [15, 0, 30]
+						},
+						"0.0833": {
+							"vector": [15, 0, 30]
 						}
 					}
 				}

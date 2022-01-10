@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "dm:q_steel_bar"
+        }
+    ],
+    "result": {
+        "item": "dm:kuinke_steel",
+        "count": 4
+    }
+}
