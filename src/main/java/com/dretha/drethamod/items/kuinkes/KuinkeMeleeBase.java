@@ -5,6 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
+import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
@@ -88,6 +89,7 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAni
         if (stack.hasTagCompound()) {
             desc.add(getDamageValue(stack) + I18n.format("desk.kuinke0"));
             desc.add(getBlockValue(stack) + I18n.format("desk.kuinke1"));
+
             desc.add(this.getMaxDamage(stack) + I18n.format("desk.kuinke2"));
         }
     }
@@ -115,8 +117,16 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAni
     }
 
     @Override
-    public float getSpeedAttack() {
-        return attackSpeed;
+    public GhoulType getType(ItemStack stack) {
+        return GhoulType.valueOf(stack.getTagCompound().getString("type"));
+    }
+
+    @Override
+    public int getSpeedValue(ItemStack stack) {
+        if (stack.getItem() instanceof QColdSteel)
+            return stack.getTagCompound().getInteger("speed");
+        else
+            return 0;
     }
 
     @Override

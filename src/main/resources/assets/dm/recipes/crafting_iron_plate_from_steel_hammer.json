@@ -2,7 +2,8 @@
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
         {
-            "item": "dm:steel_hammer"
+            "item": "dm:steel_hammer",
+	    "data": 32767
         },
         {
             "item": "minecraft:iron_ingot"

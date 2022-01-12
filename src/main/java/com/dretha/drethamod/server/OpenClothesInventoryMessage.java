@@ -1,7 +1,7 @@
 package com.dretha.drethamod.server;
 
 import com.dretha.drethamod.client.gui.GuiHandler;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -22,7 +22,7 @@ public class OpenClothesInventoryMessage implements IMessage{
         @Override
         public IMessage onMessage(OpenClothesInventoryMessage message, MessageContext ctx) {
         	EntityPlayerMP player = ctx.getServerHandler().player;
-            player.openGui(Main.instance, GuiHandler.INVENTORY_GUI_ID, player.getEntityWorld(), (int)player.posX, (int)player.posY, (int)player.posZ);
+            player.openGui(Oshiete.instance, GuiHandler.INVENTORY_GUI_ID, player.getEntityWorld(), (int)player.posX, (int)player.posY, (int)player.posZ);
 			return null;
         }
     }    

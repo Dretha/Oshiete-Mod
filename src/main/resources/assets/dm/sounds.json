@@ -59,10 +59,22 @@
                                 		"dm:kuinke_air"
                             	    		]
                             		},
-					    "kuinke_hit": {
+					    "sweep_medium": {
                         		    "category": "player",
                             	 	   	"sounds": [
-                                		    "dm:kuinke_hit"
+                                		    "dm:sweep_medium"
                             	    		    ]
-                            	  	    }
+                            	  	    },
+  "sweep_light": {
+    "category": "player",
+    "sounds": [
+      "dm:sweep_light"
+    ]
+  },
+  "sweep_heavy": {
+    "category": "player",
+    "sounds": [
+      "dm:sweep_heavy"
+    ]
+  }
 }

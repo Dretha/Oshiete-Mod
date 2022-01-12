@@ -1,7 +1,7 @@
 package com.dretha.drethamod.items;
 
 import com.dretha.drethamod.init.InitItems;
-import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
 import com.google.common.collect.Multimap;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -11,17 +11,16 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
 import net.minecraftforge.client.model.ModelLoader;
 
 public class ItemTool extends Item implements IHasModel {
 
-    private final float speed;
+    protected final float speed;
     protected Item.ToolMaterial toolMaterial;
-    private final int attackDamage;
-    private Tool tool;
+    protected final int attackDamage;
+    protected final Tools tool;
 
-    public ItemTool(String name, ToolMaterial material, Tool tool)
+    public ItemTool(String name, ToolMaterial material, Tools tool)
     {
             setRegistryName(name);
             setUnlocalizedName(name);
@@ -32,7 +31,11 @@ public class ItemTool extends Item implements IHasModel {
             this.speed = material.getAttackDamage() + 1.0F;
             this.attackDamage = tool.getDamage((int) material.getAttackDamage());
             this.tool = tool;
-            setContainerItem(this);
+
+            if (tool.isContainerItem) {
+                setContainerItem(this);
+                this.setNoRepair();
+            }
 
             InitItems.ITEMS.add(this);
     }
@@ -60,7 +63,7 @@ public class ItemTool extends Item implements IHasModel {
         if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
         {
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)this.attackDamage, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", 1.5, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -3.2F, 0));
         }
 
         return multimap;
@@ -68,9 +71,17 @@ public class ItemTool extends Item implements IHasModel {
 
     @Override
     public ItemStack getContainerItem(ItemStack stack) {
-        stack.setItemDamage(stack.getItemDamage() + 1);
+        //stack.setItemDamage(stack.getItemDamage() + 1);
 
-        return super.getContainerItem(stack);
+        if (tool.isContainerItem) {
+            ItemStack ret = stack.copy();
+            if (ret.attemptDamageItem(1, Oshiete.random, null)) //Если прочность ноль то...
+                return ItemStack.EMPTY; //предмет исчезнет
+            else
+                return ret;
+        }
+        else
+            return super.getContainerItem(stack);
     }
 
     public float getAttackDamage()
@@ -78,7 +89,7 @@ public class ItemTool extends Item implements IHasModel {
         return this.toolMaterial.getAttackDamage();
     }
 
-    public Tool getTool() {
+    public Tools getTool() {
         return tool;
     }
 }

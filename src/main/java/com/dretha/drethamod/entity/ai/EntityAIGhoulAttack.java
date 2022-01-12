@@ -213,14 +213,14 @@ public class EntityAIGhoulAttack extends EntityAIBase
 
         if (speedTowardsTarget <= d0 && this.attackTick <= 0)
         {
-            this.attackTick = 16;
+            this.attackTick = attackInterval;
             
             //this.attacker.swingArm(EnumHand.MAIN_HAND);
             //this.attacker.attackEntityAsMob(base);
             
             DamageSource damagesource = DamageSource.causeMobDamage(attacker);
             if (attacker.getKagune()!=null && !attacker.getKagune().transform()) {
-            	base.attackEntityFrom(damagesource, 10);
+            	base.attackEntityFrom(damagesource, attacker.getDamage());
             	attacker.getKagune().setHit(true);
             	attacker.getKagune().setHitTicksPre(attacker.ticksExisted);
             } else {

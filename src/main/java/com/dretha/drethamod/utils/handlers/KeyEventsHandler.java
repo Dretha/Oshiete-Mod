@@ -8,7 +8,7 @@ import com.dretha.drethamod.client.keybinds.KeybindsRegister;
 import com.dretha.drethamod.entity.projectile.EntityRCShard;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.*;
 import com.dretha.drethamod.utils.enums.ImpactType;
@@ -86,20 +86,15 @@ public class KeyEventsHandler {
    @SubscribeEvent
    public void impactcontroller(KeyInputEvent e) {
     	if (KeybindsRegister.KEY_HIT_KAGUNE.isKeyDown()) {
-    		EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
-    		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-    		EntityKagune kagune = capa.getKagune();
-    		
-    		if (kagune!=null && capa.isKaguneActive() && kagune.canCloseHit() && !kagune.isHit() && !kagune.transform()) {
-    			if (capa.ukaku() && !UkakuState.haveLimb(capa)) return;
-    			if (capa.getImpactType() == ImpactType.THRUST) {
-    				if (capa.isBlock())
-    					Main.NETWORK.sendToServer(new TakeAThrustMessage("foobar"));
-    				else
-    					Main.NETWORK.sendToServer(new TakeAThrustMessage("foobar"));
-    			} else if (!capa.isBlock()){
-        			Main.NETWORK.sendToServer(new TakeASlashMessage("fo1111obar"));
-    			} else return;
+			EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
+			ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+			EntityKagune kagune = capa.getKagune();
+
+			if (kagune != null && capa.isKaguneActive() && kagune.canCloseHit() && !kagune.isHit() && !kagune.transform() && !capa.isBlock()) {
+				if (capa.ukaku() && !UkakuState.haveLimb(capa)) return;
+
+				Oshiete.NETWORK.sendToServer(new KaguneImpactMessage(capa.getDamage(), capa.getImpactType() == ImpactType.THRUST));
+
     			kagune.setHit(true);
     			kagune.setHitTicksPre(player.ticksExisted);
     		}
@@ -236,7 +231,7 @@ public class KeyEventsHandler {
 		   compound.setString("source", source);
 		   compound.setUniqueId("entity", attacker.getUniqueID());
 		   compound.setUniqueId("immediate", immediate.getUniqueID());
-		   Main.NETWORK.sendToServer(new KillPlayerMessage(compound, damage));
+		   Oshiete.NETWORK.sendToServer(new KillPlayerMessage(compound, damage));
 	   }
 	   else
 	   {
@@ -254,7 +249,7 @@ public class KeyEventsHandler {
    		   if (capa.isGhoul() && capa.getSmellTicksPre()+1000<=player.ticksExisted) {
 			   System.out.println("smell");
    			   capa.setSmellTicksPre(player.ticksExisted);
-   			   Main.NETWORK.sendToServer(new SniffMessage(capa.getSmellRadius(), capa.getSmellDuration()));
+   			   Oshiete.NETWORK.sendToServer(new SniffMessage(capa.getSmellRadius(), capa.getSmellDuration()));
    		   }
 	   }
    }
@@ -263,7 +258,7 @@ public class KeyEventsHandler {
    @SubscribeEvent
    public void onKey(KeyInputEvent event) {
        if (KeybindsRegister.KEY_OPEN_CLOTHES_INVENTORY.isPressed()) {
-    	   Main.NETWORK.sendToServer(new OpenClothesInventoryMessage());
+    	   Oshiete.NETWORK.sendToServer(new OpenClothesInventoryMessage());
        }
    }
 }

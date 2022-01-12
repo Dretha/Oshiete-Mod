@@ -5,7 +5,6 @@ import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.utils.enums.GhoulType;
-import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
@@ -30,7 +29,6 @@ public class CapaHandler implements ICapaHandler {
 	private boolean isDove = false;
 	private GhoulType ghoulType = GhoulType.NONE;
 	private UkakuState ukakuState = UkakuState.NONE;
-	private HandType handType = HandType.RIGHT;
 	
 	//less main
 	private EntityPlayer master = null;
@@ -172,19 +170,17 @@ public class CapaHandler implements ICapaHandler {
 	public void setBlock(boolean b) {
 		this.isBlock = b;
 	}
-	
+
+
+
 	@Override
-	public float getResponseValue() {
-		//0.0 - 2.0 (1.0 - 2.0 normal, 0.025-1.0 low)
-		float hearts = this.isGhoul() ? 40F : 20F;
-		float healthm = (float)master.getHealth()/hearts > 1F ? 1F : (float)master.getHealth()/40F;
-		float response = healthm + ((float)this.getRClevel()/(this.getRCpoints()/10));
-		return response;
+	public int getDamage() {
+		int damage = RCpoints/100;
+		return damage;
 	}
-	
-	
-	
-	
+
+
+
 	@Override
 	public void removeRCpoints(int points) {
 		this.RCpoints -= points;
@@ -334,20 +330,6 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public void setUkakuState(UkakuState state) {
 		this.ukakuState = state;
-	}
-	
-	@Override 
-	public HandType handType() {
-		return this.handType;
-	}
-	
-	public void setHandType(HandType type) {
-		this.handType = type;
-	}
-	
-	@Override
-	public boolean rightHanded() {
-		return this.handType==HandType.RIGHT;
 	}
 
 	

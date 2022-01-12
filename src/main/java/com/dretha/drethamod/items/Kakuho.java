@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Kakuho extends ItemGhoulFood {
 
-    private final GhoulType ghoulType;
+    public final GhoulType ghoulType;
 
     public Kakuho(String name, String description, GhoulType ghoulType, int amount, float saturation) {
         super(name, description, amount, saturation, 1024, 128, false);

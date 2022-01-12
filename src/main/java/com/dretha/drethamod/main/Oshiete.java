@@ -2,7 +2,6 @@ package com.dretha.drethamod.main;
 
 import com.dretha.drethamod.client.geckolib.clothes.InitClothes;
 import com.dretha.drethamod.entity.human.HumanTexHandler;
-import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitCraftings;
 import com.dretha.drethamod.proxy.CommonProxy;
 import com.dretha.drethamod.reference.Reference;
@@ -21,17 +20,20 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import software.bernie.geckolib3.GeckoLib;
 
+import java.util.Random;
+
 
 @Mod(modid=Reference.MODID, name=Reference.NAME, version = Reference.VERSION, 
 acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSION)
-public class Main {
+public class Oshiete {
 	
 	public static final String ID = "dm";
 	public static int idpacket = 0;
 	public static SimpleNetworkWrapper NETWORK;
+	public static final Random random = new Random();
 	
 	@Instance
-	public static Main instance;
+	public static Oshiete instance;
 	
 	@SidedProxy(clientSide = Reference.CLIENT, serverSide = Reference.COMMON)
 	public static CommonProxy proxy;
@@ -51,7 +53,7 @@ public class Main {
 	    //NetworkHandler.register(CPacketParticles.class, Side.SERVER);
 	    
 	    NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("Channel_0001");
-	    NETWORK.registerMessage(TakeAThrustMessage.Handler.class, TakeAThrustMessage.class, idpacket++, Side.SERVER);
+	    NETWORK.registerMessage(KaguneImpactMessage.Handler.class, KaguneImpactMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(TakeASlashMessage.Handler.class, TakeASlashMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(GhoulEatMessage.Handler.class, GhoulEatMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(KillPlayerMessage.Handler.class, KillPlayerMessage.class, idpacket++, Side.SERVER);

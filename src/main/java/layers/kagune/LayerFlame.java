@@ -45,11 +45,11 @@ public class LayerFlame implements LayerRenderer<EntityPlayer> {
 	   if (capa.ukaku() && capa.isKaguneActive() && UkakuState.haveFlame(capa)) {
 		   
 		   if (capa.ukakuState()==UkakuState.FLAME) {
-			   renderFlame(player, capa.rightHanded(), true, capa);
-			   renderFlame(player, !capa.rightHanded(), true, capa);
+			   renderFlame(player, true, true, capa);
+			   renderFlame(player, false, true, capa);
 		   }
 		   if (capa.ukakuState()==UkakuState.FLAMELIMB) {
-			   renderFlame(player, !capa.rightHanded(), true, capa);
+			   renderFlame(player, false, true, capa);
 		   }
 	   }
    }

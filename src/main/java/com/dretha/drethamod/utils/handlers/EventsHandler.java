@@ -16,6 +16,7 @@ import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.reference.Reference;
+import com.dretha.drethamod.utils.enums.GhoulType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
@@ -105,7 +106,6 @@ public class EventsHandler {
         clone.setIsGhoul(original.isGhoul());
         clone.setGhoulType(original.getGhoulType());
         clone.setUkakuState(original.ukakuState());
-        clone.setHandType(original.handType());
         clone.setRCpoints(original.getRCpoints());
         clone.setSkill(original.getSkill());
     }
@@ -413,19 +413,6 @@ public class EventsHandler {
         }
     }
     @SubscribeEvent
-    public static void impactKuinkeBlock(PlayerInteractEvent.LeftClickBlock e)
-    {
-        EntityPlayer player = getPlayerMP(e.getEntityPlayer());
-        if (player.getHeldItemMainhand().getItem() instanceof IKuinkeMelee) {
-            if (!player.world.isRemote && player.getHeldItemMainhand().getItem() instanceof QColdSteel) {
-                QColdSteel weapon = (QColdSteel) player.getHeldItemMainhand().getItem();
-                player.world.playSound(null, player.getPosition(), weapon.getWeapon().soundAir, SoundCategory.PLAYERS, 1.0F, 1.0F);
-            }
-            IKuinkeMelee coldSteel = (IKuinkeMelee) player.getHeldItemMainhand().getItem();
-            coldSteel.playImpact(player.getHeldItemMainhand(), player, player.world);
-        }
-    }
-    @SubscribeEvent
     public static void impactKuinkeEntity(LivingAttackEvent e)
     {
         if (e.getSource().getTrueSource() instanceof EntityLivingBase) {
@@ -449,10 +436,13 @@ public class EventsHandler {
                 if (e.craftMatrix.getStackInSlot(i).getItem() instanceof Kakuho)
                 {
                     ItemStack kakuho = e.craftMatrix.getStackInSlot(i);
+                    Kakuho kakuhoItem = (Kakuho)kakuho.getItem();
                     int modif = kakuho.getTagCompound().getInteger("RCpoints")/120;
 
+                    GhoulType ghoulType = kakuhoItem.ghoulType;
+
                     Weapons weapons = ((QColdSteel)e.crafting.getItem()).getWeapon();
-                    QColdSteel.modificateWeapon(e.crafting, modif, weapons);
+                    QColdSteel.modificateWeapon(e.crafting, modif, weapons, ghoulType);
                     return;
                 }
             }

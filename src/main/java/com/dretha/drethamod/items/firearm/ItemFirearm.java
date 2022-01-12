@@ -7,7 +7,7 @@ import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.server.ReloadMessage;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -89,7 +89,7 @@ public class ItemFirearm extends Item implements IAnimatable
                 {
                     player.inventory.offHandInventory.clear();
                     capa.setAmmo(magazineCount, magazineBullets);
-                    Main.NETWORK.sendToServer(new ReloadMessage(firearm, magazineBullets.toString(), magazineCount));
+                    Oshiete.NETWORK.sendToServer(new ReloadMessage(firearm, magazineBullets.toString(), magazineCount));
 
                     player.setHeldItem(EnumHand.OFF_HAND, magazineFactory(firearmBullets.toString(), firearmCount));
                     return true;

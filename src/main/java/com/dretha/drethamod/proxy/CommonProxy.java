@@ -5,7 +5,7 @@ import com.dretha.drethamod.capability.InitCapabilities;
 import com.dretha.drethamod.client.gui.GuiHandler;
 import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitEntities;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.dretha.drethamod.utils.handlers.GhoulAbilityEventsHandler;
 import com.dretha.drethamod.utils.handlers.KeyEventsHandler;
@@ -33,7 +33,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent event)
     {
-    	NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
+    	NetworkRegistry.INSTANCE.registerGuiHandler(Oshiete.instance, new GuiHandler());
 		InitBlocks.initRender();
 		//NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler1());
     }

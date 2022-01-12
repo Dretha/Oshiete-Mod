@@ -3,7 +3,6 @@ package com.dretha.drethamod.capability;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.utils.enums.GhoulType;
-import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
@@ -52,9 +51,6 @@ public interface ICapaHandler {
     public void setGhoulType(@Nonnull GhoulType ghoulType);
     public UkakuState ukakuState();
     public void setUkakuState(UkakuState state);
-    public HandType handType();
-    public void setHandType(HandType type);
-    public boolean rightHanded();
     
     public boolean ukaku();
     
@@ -81,15 +77,16 @@ public interface ICapaHandler {
 	
 	public boolean canSpeedModeActivated(int ticks);
 	public void setSpeedModeTicksPre(int ticks);
-	public boolean isSpeedModeActive();
-	public void setActivatedSpeedMode(boolean b);
+	boolean isSpeedModeActive();
+	void setActivatedSpeedMode(boolean b);
 	
-	public void setImpactModeTicksPre(int ticks);
-	public int getImpactModeTicksPre();
+	void setImpactModeTicksPre(int ticks);
+	int getImpactModeTicksPre();
 	
-	public boolean isBlock();
-	public void setBlock(boolean b);
-	public float getResponseValue();
+	boolean isBlock();
+	void setBlock(boolean b);
+
+	int getDamage();
 	
 	public ImpactType getImpactType();
 	public void changeImpactType();

@@ -1,7 +1,6 @@
 package com.dretha.drethamod.capability;
 
 import com.dretha.drethamod.utils.enums.GhoulType;
-import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.nbt.NBTBase;
@@ -21,7 +20,6 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 	    compound.setBoolean("isGhoul", instance.isGhoul());
 	    compound.setString("ghoulType", instance.getGhoulType().toString());
 	    compound.setString("ukakuState", instance.ukakuState().toString());
-	    compound.setString("handType", instance.handType().toString());
 	    compound.setInteger("RCpoints", instance.getRCpoints());
 	    compound.setInteger("RClevel", instance.getRClevel());
 	    compound.setInteger("skillPoints", instance.getSkill());
@@ -42,7 +40,6 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 		instance.setIsGhoul(compound.getBoolean("isGhoul"));
 		instance.setGhoulType(GhoulType.valueOf(compound.getString("ghoulType")));
 		instance.setUkakuState(UkakuState.valueOf(compound.getString("ukakuState")));
-		instance.setHandType(HandType.valueOf(compound.getString("handType")));
 		instance.setRCpoints(compound.getInteger("RCpoints"));
 		instance.setRClevel(compound.getInteger("RClevel"));
 		instance.setSkill(compound.getInteger("skillPoints"));

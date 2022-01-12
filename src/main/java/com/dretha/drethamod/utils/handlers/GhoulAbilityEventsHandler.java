@@ -4,7 +4,7 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.ItemGhoulFood;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.GhoulEatMessage;
 import net.minecraft.block.Block;
@@ -128,7 +128,7 @@ public class GhoulAbilityEventsHandler {
     		EntityPlayer player = (EntityPlayer) e.getEntity();
     		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
     		if (capa.isGhoul() && !(e.getItem().getItem() instanceof ItemGhoulFood) && e.getItem().getItem() instanceof ItemFood && !(ItemStack.areItemsEqual(e.getItem(), rottenflesh))) {
-    			Main.NETWORK.sendToServer(new GhoulEatMessage(e.getItem()));
+    			Oshiete.NETWORK.sendToServer(new GhoulEatMessage(e.getItem()));
     		}
     	}
     }

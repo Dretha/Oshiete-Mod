@@ -7,10 +7,8 @@ import com.dretha.drethamod.entity.projectile.EntityRCShard;
 import com.dretha.drethamod.entity.render.RenderBullet;
 import com.dretha.drethamod.entity.render.RenderHuman;
 import com.dretha.drethamod.entity.render.RenderRCShard;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
-import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
@@ -39,13 +37,13 @@ public class InitEntities {
 
 
 
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "bullet"), EntityBullet.class, "bullet", ID++, Main.instance, 64, 20, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "bullet"), EntityBullet.class, "bullet", ID++, Oshiete.instance, 64, 20, true);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, RenderBullet::new);
 	}
 	
 	private static void registerArrow(String name, Class<? extends Entity> entity, int id)
 	{
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entity, name, id, Main.instance, 64, 1, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entity, name, id, Oshiete.instance, 64, 1, true);
 	}
 	
 	public static void init() {

@@ -12,10 +12,10 @@ import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.utils.enums.GhoulType;
-import com.dretha.drethamod.utils.enums.HandType;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -54,7 +54,6 @@ public class EntityHuman extends EntityMob implements IAnimals{
 	private int skillPoints = 0;
 	private GhoulType ghoulType = GhoulType.NONE;
 	private UkakuState ukakuState = UkakuState.NONE;
-	private HandType handType = HandType.RIGHT;
 	private ImpactType impactType = ImpactType.THRUST;
 	
 	private EntityKagune entityKagune = null;
@@ -115,7 +114,6 @@ public class EntityHuman extends EntityMob implements IAnimals{
 		compound.setBoolean("isGhoul", this.isGhoul());
 	    compound.setString("ghoulType", this.getGhoulType().toString());
 	    compound.setString("ukakuState", this.ukakuState().toString());
-	    compound.setString("handType", this.handType().toString());
 	    compound.setInteger("RCpoints", this.getRCpoints());
 	    compound.setInteger("RClevel", this.getRClevel());
 	    compound.setInteger("skillPoints", this.getSkill());
@@ -132,7 +130,6 @@ public class EntityHuman extends EntityMob implements IAnimals{
 		this.isGhoul = compound.getBoolean("isGhoul");
 		this.ghoulType = GhoulType.valueOf(compound.getString("ghoulType"));
 		this.setUkakuState(UkakuState.valueOf(compound.getString("ukakuState")));
-		this.setHandType(HandType.valueOf(compound.getString("handType")));
 		this.setRCpoints(compound.getInteger("RCpoints"));
 		this.setRClevel(compound.getInteger("RClevel"));
 		this.setSkill(compound.getInteger("skillPoints"));
@@ -318,7 +315,12 @@ public class EntityHuman extends EntityMob implements IAnimals{
 		this.isBlock = b;
 	}
 
-	
+
+	public int getDamage() {
+		int damage = RCpoints/100;
+		return damage;
+	}
+
 	
 	public boolean isKakuganActive() {
 		return this.isKakuganActive && this.isGhoul;
@@ -434,7 +436,8 @@ public class EntityHuman extends EntityMob implements IAnimals{
 			}
 		}
 
-
+		player.swingArm(EnumHand.MAIN_HAND);
+		//player.swingArm(EnumHand.OFF_HAND);
 
 
 
@@ -485,18 +488,6 @@ public class EntityHuman extends EntityMob implements IAnimals{
 	
 	public void setUkakuState(UkakuState state) {
 		this.ukakuState = state;
-	}
-	
-	public HandType handType() {
-		return this.handType;
-	}
-	
-	public void setHandType(HandType type) {
-		this.handType = type;
-	}
-	
-	public boolean rightHanded() {
-		return this.handType==HandType.RIGHT;
 	}
 	
 	

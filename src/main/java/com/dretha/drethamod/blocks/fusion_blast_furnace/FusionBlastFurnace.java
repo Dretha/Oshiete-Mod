@@ -2,7 +2,7 @@ package com.dretha.drethamod.blocks.fusion_blast_furnace;
 
 import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.items.ModCreativeTabs;
-import com.dretha.drethamod.main.Main;
+import com.dretha.drethamod.main.Oshiete;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -12,7 +12,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -112,7 +111,7 @@ public class FusionBlastFurnace extends Block implements ITileEntityProvider {
             EntityPlayerMP player = (EntityPlayerMP) playerSP;
             TileEntityFusionBlastFurnace tileEntity = getTileEntity(world, position);
 
-            player.openGui(Main.instance, 1, player.getEntityWorld(), position.getX(), position.getY(), position.getZ());
+            player.openGui(Oshiete.instance, 1, player.getEntityWorld(), position.getX(), position.getY(), position.getZ());
         }
 
         return true;

@@ -1,16 +1,18 @@
 package com.dretha.drethamod.items;
 
-public enum Tool {
+public enum Tools {
 
-    HAMMER(3, 3);
+    HAMMER(3, 3, true);
 
 
     private final int damage;
     private final float hardness;
+    public final boolean isContainerItem;
 
-    Tool(int damage, float hardness) {
+    Tools(int damage, float hardness, boolean isContainerItem) {
         this.damage = damage;
         this.hardness = hardness;
+        this.isContainerItem = isContainerItem;
     }
 
     public int getDamage(int damage1) {

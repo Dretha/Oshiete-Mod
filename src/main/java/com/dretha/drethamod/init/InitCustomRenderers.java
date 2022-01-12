@@ -21,12 +21,13 @@ public class InitCustomRenderers {
         InitItems.KATANA.setTileEntityItemStackRenderer(new Kakuken1Render());
 
         //kakuken3
-        ModelLoader.setCustomModelResourceLocation(InitItems.KAKUKEN_SASAKI, 0, new ModelResourceLocation(Reference.MODID + ":kakuken.item", "inventory"));
-        InitItems.KAKUKEN_SASAKI.setTileEntityItemStackRenderer(new Kakuken3Render());
+        ModelLoader.setCustomModelResourceLocation(InitItems.KATANA_SASAKI, 0, new ModelResourceLocation(Reference.MODID + ":kakuken.item", "inventory"));
+        InitItems.KATANA_SASAKI.setTileEntityItemStackRenderer(new Kakuken3Render());
 
         registerItemRender("knife", InitItems.KNIFE);
         registerItemRender("cleaver", InitItems.CLEAVER);
         registerItemRender("scythe", InitItems.SCYTHE);
+        registerItemRender("cudgel", InitItems.CUDGEL);
     }
 
     private static void registerItemRender(String name, Item item) {

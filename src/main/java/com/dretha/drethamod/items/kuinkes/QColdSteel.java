@@ -2,6 +2,10 @@ package com.dretha.drethamod.items.kuinkes;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.utils.enums.GhoulType;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,6 +19,8 @@ import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,19 +43,32 @@ public class QColdSteel extends KuinkeMeleeBase{
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
         if (!stack.hasTagCompound()) {
-            modificateWeapon(stack, 10, weapons);
+            modificateWeapon(stack, 10, weapons, GhoulType.BIKAKU);
         }
     }
 
-    public static ItemStack modificateWeapon(ItemStack stack, int modif, Weapons weapons) {
+    public static ItemStack modificateWeapon(ItemStack stack, int RCpool, Weapons weapons, GhoulType ghoulType) {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setUniqueId("uuid", UUID.randomUUID());
 
-        compound.setInteger("damage", (int) (modif * weapons.damageMultiplier));
-        compound.setInteger("block", (int) (modif * weapons.blockMultiplier));
+        compound.setInteger("damage", (int) (RCpool * weapons.damageMultiplier * ghoulType.kuinkeDamageMultiplier));
+        compound.setInteger("block", (int) (RCpool * weapons.blockMultiplier * ghoulType.blockMultiplier));
+        compound.setString("type", ghoulType.toString());
+        compound.setInteger("speed", (int) (weapons.attackTick * ghoulType.kuinkeSpeedMultiplier));
 
         stack.setTagCompound(compound);
         return stack;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> desc, ITooltipFlag flagIn) {
+        if (stack.hasTagCompound()) {
+            desc.add(getDamageValue(stack) + I18n.format("desk.kuinke0"));
+            desc.add(getBlockValue(stack) + I18n.format("desk.kuinke1"));
+            desc.add(getSpeedValue(stack)/20F + I18n.format("desk.kuinke2"));
+            desc.add(I18n.format("desk." + getType(stack).toString().toLowerCase()) + I18n.format("desk.kuinke3"));
+            desc.add(this.getMaxDamage(stack) + I18n.format("desk.kuinke4"));
+        }
     }
 
     @Override
@@ -57,10 +76,11 @@ public class QColdSteel extends KuinkeMeleeBase{
     {
         DamageSource source;
         int damage = stack.getTagCompound().getInteger("damage");
+        GhoulType ghoulType = GhoulType.valueOf(stack.getTagCompound().getString("type"));
 
         if (attacker instanceof EntityPlayer) {
             ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-            if (capa.getAttackKuinkeTicksPre() + ((QColdSteel)stack.getItem()).getWeapon().attackTick >= attacker.ticksExisted)
+            if (capa.getAttackKuinkeTicksPre() + getSpeedValue(stack) >= attacker.ticksExisted)
                 return true;
         }
 
@@ -69,7 +89,23 @@ public class QColdSteel extends KuinkeMeleeBase{
         } else {
             source = DamageSource.causeMobDamage(attacker);
         }
-        target.attackEntityFrom(source, damage);
+
+        GhoulType targetGhoulType = GhoulType.NONE;
+
+        if (target instanceof EntityPlayer) {
+            ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
+            targetGhoulType = capa.getGhoulType();
+        } else if (target instanceof EntityHuman) {
+            targetGhoulType = ((EntityHuman)target).getGhoulType();
+        }
+
+        float coefficient = GhoulType.getWeakType(ghoulType) == targetGhoulType ? GhoulType.damageCoefficient : 1F;
+
+        int savedResistantTime = target.hurtResistantTime;
+        target.hurtResistantTime = 0;
+        target.attackEntityFrom(source, damage * coefficient);
+        target.hurtResistantTime = savedResistantTime;
+
         if (attacker instanceof EntityPlayer) {
             ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
             capa.setAttackKuinkeTicksPre(attacker.ticksExisted);

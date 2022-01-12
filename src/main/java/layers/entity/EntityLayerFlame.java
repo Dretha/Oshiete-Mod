@@ -36,11 +36,11 @@ public class EntityLayerFlame implements LayerRenderer<EntityHuman> {
 		   if (ghoul.ukaku() && ghoul.isKaguneActive() && UkakuState.haveFlame(ghoul)) {
 			   
 			   if (ghoul.ukakuState()==UkakuState.FLAME) {
-				   renderFlame(ghoul, ghoul.rightHanded(), true);
-				   renderFlame(ghoul, !ghoul.rightHanded(), true/*small*/);
+				   renderFlame(ghoul, true, true);
+				   renderFlame(ghoul, false, true/*small*/);
 			   }
 			   if (ghoul.ukakuState()==UkakuState.FLAMELIMB) {
-				   renderFlame(ghoul, !ghoul.rightHanded(), true);
+				   renderFlame(ghoul, false, true);
 			   }
 		   }
 	   }

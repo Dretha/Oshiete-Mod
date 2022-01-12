@@ -18,7 +18,6 @@ item.iron_bullet.name=Железная пуля
 item.steel_bullet.name=Стальная пуля
 item.q_bullet.name=Q-Пуля
 item.assault_rifle_hk33.name=Штурмовая винтовка HK33
-item.kakuken1.name=Какукен Ⅰ стадии
 item.mask_uta.name=Маска Уты
 item.mask_noro.name=Маска Норо
 item.mask_aogiri.name=Маска Аогири
@@ -32,6 +31,14 @@ item.tablet_koukaku.name=Синяя таблетка
 item.tablet_rinkaku.name=Красная таблетка
 item.tablet_bikaku.name=Бирюзовая таблетка
 item.shock_resistant_handle.name=Ударопрочная рукоять
+
+item.knife.name=Куинке-нож
+item.katana.name=Куинке-катана
+item.scythe.name=Куинке-коса
+item.cleaver.name=Куинке-тесак
+item.cudgel.name=Куинке-дубина
+
+item.katana_sasaki.name=Катана Сасаки Хаисе
 
 tile.fusion_blast_furnace.name=Доменная печь сплавов
 tile.fireclay_brick.name=Шамотный кирпич
@@ -54,7 +61,13 @@ desk.steelbullets=Стальные пули
 desk.qbullets=Q-Пули
 desk.kuinke0= Урона
 desk.kuinke1= Поглощение урона
-desk.kuinke2= Прочность
+desk.kuinke2= секунд
+desk.kuinke3=-тип
+desk.kuinke4= Прочность
+desk.ukaku=Укаку
+desk.koukaku=Коукаку
+desk.rinkaku=Ринкаку
+desk.bikaku=Бикаку
 
 itemGroup.general=Oshiete Mod: Основное
 itemGroup.masks=Oshiete Mod: Маски

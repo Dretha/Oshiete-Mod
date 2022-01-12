@@ -108,7 +108,7 @@ public class InitItems {
 	public static final Item CUDGEL = new QColdSteel("cudgel", Weapons.CUDGEL);
 
 	//unique kuinkies
-	public static final Item KAKUKEN_SASAKI = new KuinkeMeleeBase("kakuken3", 128, 6, 0, 3, EnumKeeper.LEGENDARY);
+	public static final Item KATANA_SASAKI = new KuinkeMeleeBase("katana_sasaki", 128, 6, 0, 3, EnumKeeper.LEGENDARY);
 
 	//materials
 	public static final Item KUINKE_STEEL_SHARD = new ItemMaterial("q_steel_shard", EnumKeeper.Q_STEEL_RARITY);
@@ -123,7 +123,7 @@ public class InitItems {
 	public static final Item KUINKE_STEEL_BAR = new ItemMaterial("q_steel_bar", EnumKeeper.Q_STEEL_RARITY);
 
 	//instruments
-	public static final Item STEEL_HAMMER = new ItemTool("steel_hammer", EnumKeeper.STEEL, Tool.HAMMER);
+	public static final Item STEEL_HAMMER = new ItemTool("steel_hammer", EnumKeeper.STEEL, Tools.HAMMER);
 
 	//weapon
 	public static final Item MAGAZINE = new ItemMagazine("magazine");
