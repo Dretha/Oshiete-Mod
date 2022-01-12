@@ -96,7 +96,7 @@ public class QColdSteel extends KuinkeMeleeBase{
             ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
             targetGhoulType = capa.getGhoulType();
         } else if (target instanceof EntityHuman) {
-            targetGhoulType = ((EntityHuman)target).getGhoulType();
+            targetGhoulType = ((EntityHuman)target).getGhoulType();//
         }
 
         float coefficient = GhoulType.getWeakType(ghoulType) == targetGhoulType ? GhoulType.damageCoefficient : 1F;
