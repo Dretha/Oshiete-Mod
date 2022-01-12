@@ -21,7 +21,7 @@ public class Kakuho extends ItemGhoulFood {
     public Kakuho(String name, String description, GhoulType ghoulType, int amount, float saturation) {
         super(name, description, amount, saturation, 1024, 128, false);
         this.ghoulType = ghoulType;
-    }
+    }//
 
     @Override
     public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn)
