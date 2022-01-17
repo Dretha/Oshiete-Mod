@@ -37,7 +37,7 @@ public class CapaHandler implements ICapaHandler {
 	private final ClothesInventory inventory = new ClothesInventory();
 	
 	private int MODEL_VARIANT = 1;
-	private int TEXTURE_VARIANT = 1;
+	private int TEXTURE_VARIANT = 2;
 	
 	private int skillPoints = 0;
 	

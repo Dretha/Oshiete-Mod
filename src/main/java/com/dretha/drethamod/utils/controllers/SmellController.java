@@ -6,7 +6,7 @@ public class SmellController extends ActionController {
     public final int duration;
 
     public SmellController(int radius, int duration) {
-        super(duration, true);
+        super(duration);
         this.ticksPre = -duration;
         this.radius = radius;
         this.duration = duration;
