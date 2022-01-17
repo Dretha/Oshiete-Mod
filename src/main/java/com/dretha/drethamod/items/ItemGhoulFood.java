@@ -24,12 +24,10 @@ public class ItemGhoulFood extends ItemFood implements IHasModel{
 	
 	private String description;
 	protected int satiation;
-	protected final int itemUseDuration;
 	protected EnumRarity rarity = EnumRarity.COMMON;
 
-	public ItemGhoulFood(String name, String description, int amount, float saturation, int satiation, int itemUseDuration, boolean isWolfFood) {
+	public ItemGhoulFood(String name, String description, int amount, float saturation, int satiation, boolean isWolfFood) {
 		super(amount, saturation, isWolfFood);
-		this.itemUseDuration = itemUseDuration;
 		setRegistryName(name);
         setUnlocalizedName(name);
         setCreativeTab(ModCreativeTabs.GENERAL);
@@ -43,9 +41,8 @@ public class ItemGhoulFood extends ItemFood implements IHasModel{
         InitItems.ITEMS.add(this);
 	}
 
-	public ItemGhoulFood(String name, String description, int amount, float saturation, int satiation, int itemUseDuration, boolean isWolfFood, EnumRarity rarity) {
+	public ItemGhoulFood(String name, String description, int amount, float saturation, int satiation, boolean isWolfFood, EnumRarity rarity) {
 		super(amount, saturation, isWolfFood);
-		this.itemUseDuration = itemUseDuration;
 		setRegistryName(name);
 		setUnlocalizedName(name);
 		setCreativeTab(ModCreativeTabs.GENERAL);

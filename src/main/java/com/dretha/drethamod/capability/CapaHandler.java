@@ -4,7 +4,9 @@ import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.utils.Randomizer;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.enums.GrowthStages;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
@@ -37,7 +39,7 @@ public class CapaHandler implements ICapaHandler {
 	private final ClothesInventory inventory = new ClothesInventory();
 	
 	private int MODEL_VARIANT = 1;
-	private int TEXTURE_VARIANT = 2;
+	private int TEXTURE_VARIANT = 1;
 	
 	private int skillPoints = 0;
 	
@@ -51,8 +53,6 @@ public class CapaHandler implements ICapaHandler {
 	private int speedModeTicksGap = 20;
 	private int speedModeTicksPre = 0;
 	private boolean isSpeedModeActive = false;
-	
-	private int thrustTicksPre = 0;
 	
 	private boolean isBlock = false;
 	
@@ -69,8 +69,9 @@ public class CapaHandler implements ICapaHandler {
 	private int shootTicksPre = 0;
 	
 	private int smellTicksPre = -1000;
-	private int smellDuration = 400;
-	private int smellRadius = 20;
+	public final int smellMult = 25;
+	private int smellRadius = Randomizer.random(new Randomizer(1000, 2001, 0.01), new Randomizer(100, 201, 0.05), new Randomizer(50, 101, 0.14), new Randomizer(17, 26, 0.80));
+	private int smellDuration = smellRadius * smellMult;
 
 	private int attackKuinkeTicksPre = 0;
 	
@@ -96,7 +97,7 @@ public class CapaHandler implements ICapaHandler {
 
 	@Override
 	public String getTextureLocation() {
-		return String.format("textures/entity/kagune/kagune%d%02d%02d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
+		return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
 	}
 
 	@Override
@@ -123,9 +124,20 @@ public class CapaHandler implements ICapaHandler {
 	public String getEnumId() {
 		return String.format("KAGUNE%d%02d", this.getGhoulType().id(), this.getModelVariant());
 	}
-	
-	
-	
+
+
+	@Override
+	public GrowthStages getGrowthStage()
+	{
+		GrowthStages stage = GrowthStages.NONE;
+
+		if (isGhoul) {
+			stage = GrowthStages.getStage(RCpoints);
+		}
+
+		return stage;
+	}
+
 
     @Override
     public ClothesInventory getInventory(){

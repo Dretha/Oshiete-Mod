@@ -19,7 +19,7 @@ public class Kakuho extends ItemGhoulFood {
     public final GhoulType ghoulType;
 
     public Kakuho(String name, String description, GhoulType ghoulType, int amount, float saturation) {
-        super(name, description, amount, saturation, 1024, 128, false);
+        super(name, description, amount, saturation, 1024, false);
         this.ghoulType = ghoulType;
     }//
 

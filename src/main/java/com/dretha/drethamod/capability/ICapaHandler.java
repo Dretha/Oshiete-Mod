@@ -3,6 +3,7 @@ package com.dretha.drethamod.capability;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.enums.GrowthStages;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +27,8 @@ public interface ICapaHandler {
 	public int getTextureVariant();
 	
 	public String getEnumId();
+
+	GrowthStages getGrowthStage();
 	
 	public void removeRCpoints(int points);
 	public void addRCpoints(int points);
