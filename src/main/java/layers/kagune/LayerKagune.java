@@ -1,24 +1,20 @@
 package layers.kagune;
 
 import java.util.Collections;
-
 import javax.annotation.Nonnull;
-
-import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.utils.enums.UkakuState;
-import com.dretha.drethamod.utils.handlers.EventsHandler;
-
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,7 +25,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class LayerKagune implements LayerRenderer<EntityPlayer> {
+public class LayerKagune implements LayerRenderer<EntityLivingBase> {
 	
 	private final RenderManager renderManager;
 
@@ -38,57 +34,56 @@ public class LayerKagune implements LayerRenderer<EntityPlayer> {
     {
         this.renderManager = Minecraft.getMinecraft().getRenderManager();
     }
-
-    public void doRenderLayer(@Nonnull EntityPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public LayerKagune(RenderLiving renderLiving)
     {
-    	ICapaHandler capa = EventsHandler.getCapaMP(player);
-        if (capa.isKaguneActive() && capa.getKagune()!=null) {
-        	if (capa.ukaku() && !UkakuState.haveLimb(capa)) return;
+        this.renderManager = renderLiving.getRenderManager();
+    }
+
+    public void doRenderLayer(@Nonnull EntityLivingBase base, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    {
+        PersonStats stats = PersonStats.getStats(base);
+        if (stats!=null && stats.isKaguneActive() && stats.getKagune()!=null) {
+        	if (stats.ukaku() && !UkakuState.haveLimb(stats)) return;
         	
         	GlStateManager.enableRescaleNormal();
         	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            
-        	try {
-				this.renderKagune(player, capa, EventsHandler.getCapaMP(player).getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
+
+            this.renderKagune(base, stats, stats.getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
         
         	GlStateManager.disableRescaleNormal();
         }
     }
 
-    private void renderKagune(EntityPlayer player, ICapaHandler capa, int ghoulType, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, boolean b) throws CloneNotSupportedException
+    private void renderKagune(EntityLivingBase base, PersonStats stats, int ghoulType, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, boolean b)
     {
-
-        Item mask = capa.getInventory().getStackInSlot(0).getItem();
+        Item mask = stats.getInventory().getStackInSlot(0).getItem();
 
         if (mask != Items.AIR) {
 
-            RenderPlayer renderPlayer = Minecraft.getMinecraft().getRenderManager().getSkinMap().get(((AbstractClientPlayer)player).getSkinType());
+            RenderPlayer renderPlayer = Minecraft.getMinecraft().getRenderManager().getSkinMap().get(((AbstractClientPlayer)base).getSkinType());
             GlStateManager.pushMatrix();
             GlStateManager.disableLighting();
 
             renderPlayer.getMainModel().bipedHead.postRender(0.0625F);
 
-            GlStateManager.translate(/*не трогать*/0, (player.isSneaking() ? 0.2F : 0.0F) + /*вниз*/0.1875F, /*вперед*/-0.045F);
+            GlStateManager.translate(/*не трогать*/0, (base.isSneaking() ? 0.2F : 0.0F) + /*вниз*/0.1875F, /*вперед*/-0.045F);
             GlStateManager.rotate(180, 0, 0, 0);
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(mask), player, ItemCameraTransforms.TransformType.HEAD, false);
+            Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(mask), base, ItemCameraTransforms.TransformType.HEAD, false);
 
 
             GlStateManager.popMatrix();
         }
 
-
-    	AnimatedGeoModel kaguneModel = EnumKagune.valueOf(capa.getEnumId()).getModel(capa.getTextureLocation());
-    	GeoEntityRenderer<EntityKagune> kaguneRenderer = EnumKagune.valueOf(capa.getEnumId()).getRender(renderManager);
+        EnumKagune kaguneParams = EnumKagune.valueOf(stats.getEnumId());
+    	AnimatedGeoModel kaguneModel = kaguneParams.getModel(stats.getTextureLocation());
+    	GeoEntityRenderer<EntityKagune> kaguneRenderer = kaguneParams.getRender(renderManager);
 
         EntityKagune kagune;
         do {
-        	kagune = EventsHandler.getCapaMP(player).getKagune();
-        } while (EventsHandler.getCapaMP(player).getKagune()==null);
+        	kagune = stats.getKagune();
+        } while (stats.getKagune()==null);
         kagune.setListF(limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
         
         
@@ -101,7 +96,7 @@ public class LayerKagune implements LayerRenderer<EntityPlayer> {
         //OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
         
         
-        float heightPoint = (player.isSneaking() ? 0.2F : 0.0F);
+        float heightPoint = (base.isSneaking() ? 0.2F : 0.0F);
         GlStateManager.translate(0.0F, heightPoint, 0.0F);
         GlStateManager.rotate(180, 0, 0, 1);
         
@@ -115,11 +110,6 @@ public class LayerKagune implements LayerRenderer<EntityPlayer> {
         kaguneRenderer.render(geomodelkagune, kagune, partialTicks, 1F, 1F, 1F, 1F);
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
-
-
-
-
-
     }
 
     public boolean shouldCombineTextures()

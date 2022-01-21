@@ -3,6 +3,7 @@ package com.dretha.drethamod.utils.enums;
 
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.item.Item;
 
 import java.util.Arrays;
@@ -42,8 +43,22 @@ public enum GhoulType {
 		return kakuho;
 	}
 
-	public int getProtection(ICapaHandler capa) {
-		return (int) (capa.exactRank() * 10 * this.blockMultiplier);
+	public static Item getKakuho(GhoulType type) {
+		switch (type) {
+			case UKAKU:
+				return InitItems.RAW_KAKUHO_UKAKU;
+			case BIKAKU:
+				return InitItems.RAW_KAKUHO_BIKAKU;
+			case KOUKAKU:
+				return InitItems.RAW_KAKUHO_KOUKAKU;
+			case RINKAKU:
+				return InitItems.RAW_KAKUHO_RINKAKU;
+		}
+		return null;
+	}
+
+	public int getProtection(PersonStats stats) {
+		return (int) (stats.exactRank() * 10 * this.blockMultiplier);
 	}
 	
 	public static int indexOf(GhoulType type) {

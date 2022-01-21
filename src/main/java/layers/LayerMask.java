@@ -1,8 +1,7 @@
 package layers;
 
-import com.dretha.drethamod.capability.CapaProvider;
-import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,9 +18,9 @@ public class LayerMask implements LayerRenderer<EntityPlayer> {
     @Override
     public void doRenderLayer(EntityPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 
-        ICapaHandler capa = EventsHandler.getCapaMP(player);
+        PersonStats stats = EventsHandler.getCapaMP(player).personStats();
 
-        Item mask = capa.getInventory().getStackInSlot(0).getItem();
+        Item mask = stats.getInventory().getStackInSlot(0).getItem();
 
         if (mask != Items.AIR) {
 

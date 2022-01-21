@@ -3,6 +3,7 @@ package com.dretha.drethamod.entity.projectile;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -75,12 +76,11 @@ public class EntityRCShard extends EntityArrow{
 
             int savedResistantTime = entity.hurtResistantTime;
         	entity.hurtResistantTime = 0;
-            if (entity.attackEntityFrom(damagesource, (float)super.getDamage()))
+            if (entity.attackEntityFrom(damagesource, (float)super.getDamage()) && entity instanceof EntityLivingBase)
             {
             	entity.hurtResistantTime = savedResistantTime;
-                if (entity instanceof EntityLivingBase)
-                {
-                    EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
+
+                EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
 
 
                     /*if (knockbackStrength > 0)
@@ -93,24 +93,22 @@ public class EntityRCShard extends EntityArrow{
                         }
                     }*/
 
-                    if (this.shootingEntity instanceof EntityLivingBase)
-                    {
-                        EnchantmentHelper.applyThornEnchantments(entitylivingbase, this.shootingEntity);
-                        EnchantmentHelper.applyArthropodEnchantments((EntityLivingBase)this.shootingEntity, entitylivingbase);
-                    }
+                if (this.shootingEntity instanceof EntityLivingBase)
+                {
+                    EnchantmentHelper.applyThornEnchantments(entitylivingbase, this.shootingEntity);
+                    EnchantmentHelper.applyArthropodEnchantments((EntityLivingBase)this.shootingEntity, entitylivingbase);
+                }
 
-                    if (this.shootingEntity != null && entitylivingbase != this.shootingEntity && entitylivingbase instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP)
-                    {
-                        ((EntityPlayerMP)this.shootingEntity).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
-                    }
+                if (this.shootingEntity != null && entitylivingbase != this.shootingEntity && entitylivingbase instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP)
+                {
+                    ((EntityPlayerMP)this.shootingEntity).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
                 }
 
                 this.playSound(InitSounds.hit_of_kagune, 0.5F, 1.0F);
-                if (entity instanceof EntityPlayer) {
-                	((EntityPlayer) entity).getCapability(CapaProvider.PLAYER_CAP, null).addShardCountInEntity();
-                }
-                if (entity instanceof EntityHuman) {
-                	((EntityHuman) entity).addShard();
+
+                PersonStats stats = PersonStats.getStats((EntityLivingBase) entity);
+                if (stats != null) {
+                    stats.addShardCountInEntity();
                 }
 
                 if (!(entity instanceof EntityEnderman))

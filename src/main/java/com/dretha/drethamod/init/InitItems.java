@@ -18,6 +18,7 @@ import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -91,8 +92,9 @@ public class InitItems {
 	//tuners
 	public static final Item UKAKU_STATE_TUNER = new Tuner("ukaku_state_tuner", player -> {
 		ICapaHandler capa = EventsHandler.getCapaMP(player);
-		if (!capa.ukaku()) return;
-		capa.setUkakuState(capa.ukakuState().next());
+		PersonStats stats = capa.personStats();
+		if (!stats.ukaku()) return;
+		stats.setUkakuState(stats.getUkakuState().next());
 	});
 	
 	//masks

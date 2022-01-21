@@ -7,6 +7,7 @@ import com.dretha.drethamod.items.ItemGhoulFood;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.GhoulEatMessage;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -239,6 +240,7 @@ public class GhoulAbilityEventsHandler {
   		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
             ICapaHandler capa = EventsHandler.getCapaMP(player);
+			PersonStats stats = capa.personStats();
             int foodlevel = player.getFoodStats().getFoodLevel();
             
             
@@ -249,12 +251,12 @@ public class GhoulAbilityEventsHandler {
             int i = (upicks * tofull)/20; //40
             
             if (player.ticksExisted%upicks==0 && capa.isGhoul()) {
-            	capa.updateRClevel();
+            	stats.updateRClevel();
             	
-            	if (foodlevel>6 && !capa.RClevelFull()) {
-            		capa.addRClevel((capa.getRCpoints()/10)/i);
+            	if (foodlevel>6 && !stats.RClevelFull()) {
+            		stats.addRClevel((stats.getRCpoints()/10)/i);
             		player.getFoodStats().addExhaustion((float)48/i); //1.2
-            		player.sendMessage(new TextComponentString(capa.getRClevel()+" RC Level"));
+            		player.sendMessage(new TextComponentString(stats.getRClevel()+" RC Level"));
             	}
             	
             }

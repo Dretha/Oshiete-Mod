@@ -2,6 +2,8 @@ package com.dretha.drethamod.init;
 
 import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityCorpse;
+import com.dretha.drethamod.entity.human.RenderCorpse;
 import com.dretha.drethamod.entity.projectile.EntityBullet;
 import com.dretha.drethamod.entity.projectile.EntityRCShard;
 import com.dretha.drethamod.entity.render.RenderBullet;
@@ -34,8 +36,8 @@ public class InitEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityRCShard.class, RenderRCShard::new);
         EnumKagune.registerEntities();
 
-
-
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "corpse"), EntityCorpse.class, "corpse", ID++, Oshiete.instance, 160, 2, false);
+        RenderingRegistry.registerEntityRenderingHandler(EntityCorpse.class, RenderCorpse::new);
 
 		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "bullet"), EntityBullet.class, "bullet", ID++, Oshiete.instance, 64, 20, true);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, RenderBullet::new);

@@ -1,6 +1,7 @@
 package com.dretha.drethamod.entity.ai;
 
 import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -15,6 +16,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
 {
     World world;
     protected EntityHuman attacker;
+    protected PersonStats stats;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     protected int attackTick;
     /** The speed with which the mob will approach the target */
@@ -31,12 +33,13 @@ public class EntityAIGhoulAttack extends EntityAIBase
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
 
-    public EntityAIGhoulAttack(EntityHuman human, boolean useLongMemory)
+    public EntityAIGhoulAttack(EntityHuman human)
     {
         this.attacker = human;
+        stats = attacker.personStats();
         this.world = human.world;
         this.speedTowardsTarget = human.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
-        this.longMemory = useLongMemory;
+        this.longMemory = true;
         this.setMutexBits(3);
     }
 
@@ -45,13 +48,14 @@ public class EntityAIGhoulAttack extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-    	if (!attacker.isGhoul()) return false;
+        stats = attacker.personStats();
+    	if (stats==null || !stats.isGhoul()) return false;
     	
         EntityLivingBase base = this.attacker.getAttackTarget();
         
         if (base instanceof EntityHuman)
         {
-        	if (((EntityHuman)base).isGhoul()) return false;
+        	if (PersonStats.getStats(base).isGhoul()) return false;
         }
 
         if (base == null)
@@ -128,9 +132,10 @@ public class EntityAIGhoulAttack extends EntityAIBase
     {
         this.attacker.getNavigator().setPath(this.path, this.speedTowardsTarget);
         this.delayCounter = 0;
-        
-        attacker.releaseKagune();
-        attacker.setAdmit(false);
+
+        if (!stats.isKaguneActive())
+            stats.releaseKagune(attacker);
+        //stats.setAdmit(false);
     }
 
     /**
@@ -147,8 +152,8 @@ public class EntityAIGhoulAttack extends EntityAIBase
 
         this.attacker.getNavigator().clearPath();
         
-        attacker.setAdmit(true);
-        attacker.setAdmitTicksPre(attacker.ticksExisted);
+        //attacker.setAdmit(true);
+        //attacker.setAdmitTicksPre(attacker.ticksExisted);
     }
 
     /**
@@ -156,7 +161,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
      */
     public void updateTask()
     {
-    	this.speedTowardsTarget = attacker.isKaguneActive() ? 2.5D : 2D;
+    	this.speedTowardsTarget = stats.isKaguneActive() ? 2.5D : 2D;
     	
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
         this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
@@ -219,10 +224,10 @@ public class EntityAIGhoulAttack extends EntityAIBase
             //this.attacker.attackEntityAsMob(base);
             
             DamageSource damagesource = DamageSource.causeMobDamage(attacker);
-            if (attacker.getKagune()!=null && !attacker.getKagune().transform()) {
-            	base.attackEntityFrom(damagesource, attacker.getDamage());
-            	attacker.getKagune().setHit(true);
-            	attacker.getKagune().setHitTicksPre(attacker.ticksExisted);
+            if (stats.getKagune()!=null && !stats.getKagune().transform()) {
+            	base.attackEntityFrom(damagesource, stats.getDamage());
+            	stats.getKagune().setHit(true);
+            	stats.getKagune().setHitTicksPre(attacker.ticksExisted);
             } else {
             	this.attacker.swingArm(EnumHand.MAIN_HAND);
                 this.attacker.attackEntityAsMob(base);

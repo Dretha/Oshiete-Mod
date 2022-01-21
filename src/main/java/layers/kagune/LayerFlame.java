@@ -1,69 +1,46 @@
 package layers.kagune;
 
-import com.dretha.drethamod.capability.CapaProvider;
-import com.dretha.drethamod.capability.CapaStorage;
-import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.client.geckolib.kagunes.EnumFlame;
-import com.dretha.drethamod.init.InitItems;
-import com.dretha.drethamod.reference.Reference;
-import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.enums.UkakuState;
-import com.dretha.drethamod.utils.handlers.EventsHandler;
-import com.google.common.base.MoreObjects;
-
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.init.MobEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class LayerFlame implements LayerRenderer<EntityPlayer> {
+public class LayerFlame implements LayerRenderer<EntityLivingBase> {
 	
    @Override
-   public void doRenderLayer(EntityPlayer player, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-	   
-	   ICapaHandler capa = EventsHandler.getCapaMP(player);
+   public void doRenderLayer(EntityLivingBase base, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+
+	   PersonStats stats = PersonStats.getStats(base);
 	   //ukaku
-	   if (capa.ukaku() && capa.isKaguneActive() && UkakuState.haveFlame(capa)) {
-		   
-		   if (capa.ukakuState()==UkakuState.FLAME) {
-			   renderFlame(player, true, true, capa);
-			   renderFlame(player, false, true, capa);
+	   if (stats!=null && stats.ukaku() && stats.isKaguneActive() && UkakuState.haveFlame(stats))
+	   {
+		   if (stats.getUkakuState()==UkakuState.FLAME) {
+			   renderFlame(base, true, true, stats);
+			   renderFlame(base, false, true, stats);
 		   }
-		   if (capa.ukakuState()==UkakuState.FLAMELIMB) {
-			   renderFlame(player, false, true, capa);
+		   if (stats.getUkakuState()==UkakuState.FLAMELIMB) {
+			   renderFlame(base, false, true, stats);
 		   }
 	   }
    }
    
-   private void renderFlame(EntityPlayer player, boolean rightFlameRender, boolean big, ICapaHandler capa) {
+   private void renderFlame(EntityLivingBase base, boolean right, boolean big, PersonStats stats) {
 	   
 	   String s = big+"";
-	   Item flame = big ? /*big*/EnumFlame.valueOf(String.format(s.toUpperCase() + "%02d", capa.getTextureVariant())).getFlame() : /*small*/EnumFlame.valueOf(String.format(big + "%02d", capa.getTextureVariant())).getFlame();
+	   Item flame = big ? /*big*/EnumFlame.valueOf(String.format(s.toUpperCase() + "%02d", stats.getTextureVariant())).getFlame() : /*small*/EnumFlame.valueOf(String.format(big + "%02d", stats.getTextureVariant())).getFlame();
        
 	   GlStateManager.pushMatrix();
        GlStateManager.disableLighting();
        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
        
-       if (rightFlameRender) {
+       if (right) {
     	   GlStateManager.rotate(205, 0, 1, 0);
 		   GlStateManager.rotate(10, 0, 0, 1);
 		   GlStateManager.scale(2, 2, 0.5);
@@ -77,12 +54,12 @@ public class LayerFlame implements LayerRenderer<EntityPlayer> {
            GlStateManager.translate(-0.6, 0.4, 0.17);
        }
        
-       if(player.isSneaking())
+       if(base.isSneaking())
        {
     	   GlStateManager.translate(0.0F, -0.2F, 0.0F);
        }
     	   
-       Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(flame), player, ItemCameraTransforms.TransformType.FIXED, false);
+       Minecraft.getMinecraft().getRenderItem().renderItem(new ItemStack(flame), base, ItemCameraTransforms.TransformType.FIXED, false);
        
        GlStateManager.enableLighting();
        

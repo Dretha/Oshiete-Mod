@@ -1,7 +1,7 @@
 package com.dretha.drethamod.main;
 
 import com.dretha.drethamod.client.geckolib.clothes.InitClothes;
-import com.dretha.drethamod.entity.human.HumanTexHandler;
+import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitCraftings;
 import com.dretha.drethamod.proxy.CommonProxy;
 import com.dretha.drethamod.reference.Reference;
@@ -46,7 +46,7 @@ public class Oshiete {
 		MinecraftForge.EVENT_BUS.register(new EventsHandler());
 	    proxy.preInit(event);
 	    GeckoLib.initialize();
-	    HumanTexHandler.init();
+	    SkinHandler.init();
 		InitClothes.init();
 		InitCraftings.init();
 	    //NetworkHandler.NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("MyChannel");
@@ -54,14 +54,13 @@ public class Oshiete {
 	    
 	    NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("Channel_0001");
 	    NETWORK.registerMessage(KaguneImpactMessage.Handler.class, KaguneImpactMessage.class, idpacket++, Side.SERVER);
-	    NETWORK.registerMessage(TakeASlashMessage.Handler.class, TakeASlashMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(GhoulEatMessage.Handler.class, GhoulEatMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(KillPlayerMessage.Handler.class, KillPlayerMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(SniffMessage.Handler.class, SniffMessage.class, idpacket++, Side.SERVER);
 	    NETWORK.registerMessage(OpenClothesInventoryMessage.Handler.class, OpenClothesInventoryMessage.class, idpacket++, Side.SERVER);
 		NETWORK.registerMessage(DoSomeEntityMessage.Handler.class, DoSomeEntityMessage.class, idpacket++, Side.SERVER);
 		NETWORK.registerMessage(ReloadMessage.Handler.class, ReloadMessage.class, idpacket++, Side.CLIENT);
-
+		NETWORK.registerMessage(DropMessage.Handler.class, DropMessage.class, idpacket++, Side.SERVER);
 	}
 
 	@EventHandler

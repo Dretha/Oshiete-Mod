@@ -7,6 +7,7 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.client.inventory.ClothesInventoryContainer;
 import com.dretha.drethamod.client.inventory.ClothesInventoryGUI;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,9 +20,9 @@ public class GuiHandler implements IGuiHandler {
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-    	ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+    	PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
         if(ID == INVENTORY_GUI_ID) {
-            return new ClothesInventoryContainer(player.inventory, capa.getInventory(), player);
+            return new ClothesInventoryContainer(player.inventory, stats.getInventory(), player);
         }
         TileEntityFusionBlastFurnace tile_entity = (TileEntityFusionBlastFurnace) world.getTileEntity(new BlockPos(x, y, z));
         if (ID == 1) {
@@ -33,9 +34,9 @@ public class GuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) 
     {
-    	ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+        PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
         if(ID == INVENTORY_GUI_ID) {
-            return new ClothesInventoryGUI(player, player.inventory, capa.getInventory());
+            return new ClothesInventoryGUI(player, player.inventory, stats.getInventory());
         }
         TileEntityFusionBlastFurnace tile_entity = (TileEntityFusionBlastFurnace) world.getTileEntity(new BlockPos(x, y, z));
         if (ID == 1) {

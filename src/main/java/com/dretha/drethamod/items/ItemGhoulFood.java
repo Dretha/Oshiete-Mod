@@ -4,6 +4,7 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,9 +78,10 @@ public class ItemGhoulFood extends ItemFood implements IHasModel{
 	protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
 		super.onFoodEaten(stack, worldIn, player);
 		if (!worldIn.isRemote) {
-			ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-			if (capa.isGhoul())
-				capa.addRCpoints(satiation);
+			PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+
+			if (stats.isGhoul())
+				stats.addRCpoints(satiation);
 		}
 	}
 

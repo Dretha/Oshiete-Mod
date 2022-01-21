@@ -4,6 +4,7 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -91,12 +92,10 @@ public class QColdSteel extends KuinkeMeleeBase{
         }
 
         GhoulType targetGhoulType = GhoulType.NONE;
+        PersonStats stats = PersonStats.getStats(target);
 
-        if (target instanceof EntityPlayer) {
-            ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-            targetGhoulType = capa.getGhoulType();
-        } else if (target instanceof EntityHuman) {
-            targetGhoulType = ((EntityHuman)target).getGhoulType();
+        if (stats != null) {
+            targetGhoulType = stats.getGhoulType();
         }
 
         float coefficient = GhoulType.getWeakType(ghoulType) == targetGhoulType ? GhoulType.damageCoefficient : 1F;

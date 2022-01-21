@@ -3,6 +3,7 @@ package com.dretha.drethamod.items;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,12 +61,12 @@ public class Kakuho extends ItemGhoulFood {
         {
             if (stack.hasTagCompound()) {
                 NBTTagCompound compound = stack.getTagCompound();
-                ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+                PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
                 satiation = compound.getInteger("RCpoints");
-                if (capa.isGhoul()) {
-                    capa.addRCpoints((int) ((float) satiation / 7.8125F));
-                    if (capa.getGhoulType() == ghoulType)
-                        capa.addRCpoints((int) ((float) satiation / 7.8125F));
+                if (stats.isGhoul()) {
+                    stats.addRCpoints((int) ((float) satiation / 7.8125F));
+                    if (stats.getGhoulType() == ghoulType)
+                        stats.addRCpoints((int) ((float) satiation / 7.8125F));
                 }
             }
         }

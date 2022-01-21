@@ -7,6 +7,7 @@ import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -178,9 +179,9 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAni
         playerIn.setActiveHand(handIn);
 
         EntityPlayer player = EventsHandler.getPlayerMP(playerIn);
-        ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-        if (!capa.isKaguneActive())
-            capa.setBlock(true);
+        PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+        if (!stats.isKaguneActive())
+            stats.setBlock(true);
 
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
     }
@@ -226,17 +227,17 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAni
     public void onPlayerStoppedUsing(ItemStack stack, World worldIn, EntityLivingBase entityLiving, int timeLeft)
     {
         if (entityLiving instanceof EntityPlayer) {
-            ICapaHandler capa = entityLiving.getCapability(CapaProvider.PLAYER_CAP, null);
-            capa.setBlock(false);
+            PersonStats stats = entityLiving.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            stats.setBlock(false);
         }
     }
 
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         if (entityLiving instanceof EntityPlayer) {
-            ICapaHandler capa = entityLiving.getCapability(CapaProvider.PLAYER_CAP, null);
-            if (!capa.isKaguneActive())
-                capa.setBlock(false);
+            PersonStats stats = entityLiving.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            if (!stats.isKaguneActive())
+                stats.setBlock(false);
         }
         return stack;
     }

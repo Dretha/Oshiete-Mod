@@ -5,6 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
@@ -227,30 +228,19 @@ public class KaguneImpactMessage implements IMessage{
 
             base.knockBack(playerMP, 0.9F, playerMP.posX - base.posX, playerMP.posZ - base.posZ);
 
-            PotionEffect potioneffect = null;
+            PotionEffect potioneffect = new PotionEffect(MobEffects.SLOWNESS, 200, 2);
+            PersonStats stats = playerMP.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            PersonStats statsBase = PersonStats.getStats(base);
 
-            if (base instanceof EntityPlayer)
+            if (stats != null)
             {
-                ICapaHandler capaBase = base.getCapability(CapaProvider.PLAYER_CAP, null);
-                ICapaHandler capa = playerMP.getCapability(CapaProvider.PLAYER_CAP, null);
-
-                int rankmeter = capa.rank()-(capaBase.rank() + (capaBase.isBlock() ? 1 : capaBase.isGhoul() ? -1 : -2));
-                if (rankmeter>0)
-                    potioneffect = new PotionEffect(MobEffects.SLOWNESS, 200, rankmeter);
-                System.out.println(rankmeter);
-            }
-            if (base instanceof EntityHuman)
-            {
-                ICapaHandler capa = playerMP.getCapability(CapaProvider.PLAYER_CAP, null);
-                EntityHuman human = (EntityHuman) base;
-
-                int rankmeter = capa.rank() - (human.rank() + (human.isBlock() ? 1 : human.isGhoul() ? -1 : -2));
+                int rankmeter = stats.rank()-(statsBase.rank() + (statsBase.isBlock() ? 1 : statsBase.isGhoul() ? -1 : -2));
                 if (rankmeter>0)
                     potioneffect = new PotionEffect(MobEffects.SLOWNESS, 200, rankmeter);
                 System.out.println(rankmeter);
             }
 
-            if (potioneffect!=null && !base.isDead)
+            if (!base.isDead)
                 base.addPotionEffect(potioneffect);
 
             thereIsEntity = true;
@@ -261,19 +251,12 @@ public class KaguneImpactMessage implements IMessage{
     private static void impact(EntityPlayerMP attacker, EntityLivingBase target, DamageSource source, int damage) {
     	if (target!=null)
         {
-            ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-            GhoulType weakType = GhoulType.getWeakType(capa.getGhoulType());
+            PersonStats stats = attacker.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
 
             boolean isWeak = false;
-            if (target instanceof EntityPlayer) {
-                ICapaHandler capa1 = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-                if (capa1.isGhoul()) {
-                    isWeak = weakType==capa1.getGhoulType();
-                }
-            } else if (target instanceof EntityHuman) {
-                if (((EntityHuman) target).isGhoul()) {
-                    isWeak = weakType==((EntityHuman) target).getGhoulType();
-                }
+            PersonStats stats1 = PersonStats.getStats(target);
+            if (stats1 != null) {
+                isWeak = stats1.getGhoulType() == GhoulType.getWeakType(stats.getGhoulType());
             }
 
             float coefficient = isWeak ? GhoulType.damageCoefficient : 1F;

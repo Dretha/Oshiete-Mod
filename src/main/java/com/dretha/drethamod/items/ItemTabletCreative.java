@@ -5,6 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,16 +44,16 @@ public class ItemTabletCreative extends Item implements IHasModel{
 	
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-		
-		ICapaHandler capa = playerIn.getCapability(CapaProvider.PLAYER_CAP, null);
+
+		PersonStats stats = playerIn.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
 		if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			if (ghoulType!=GhoulType.NONE) {
-				capa.becomeHuman(playerIn);
-				capa.becomeGhoul(ghoulType, playerIn);
-				if (capa.isKaguneActive())
-					capa.updateEntityKagune();
+				stats.becomeHuman(playerIn);
+				stats.becomeGhoul(ghoulType, playerIn);
+				if (stats.isKaguneActive())
+					stats.updateEntityKagune(playerIn);
 			} else {
-				capa.becomeHuman(playerIn);
+				stats.becomeHuman(playerIn);
 			}
 		
 			playerIn.inventory.clearMatchingItems(this, -1, 1, null);
@@ -74,7 +75,7 @@ public class ItemTabletCreative extends Item implements IHasModel{
 
 	@Override
 	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation((Item)this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
 	}
 	
 }

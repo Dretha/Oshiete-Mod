@@ -3,7 +3,6 @@ package com.dretha.drethamod.utils.handlers;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
-import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
@@ -17,6 +16,7 @@ import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
@@ -29,7 +29,6 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -60,7 +59,6 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.UUID;
 
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
@@ -101,13 +99,12 @@ public class EventsHandler {
     public static void cloneCapa(PlayerEvent.Clone e) {
         final ICapaHandler original = getHandler(e.getOriginal());
         final ICapaHandler clone = getHandler(e.getEntity());
-        
-        clone.attachMaster(e.getEntityPlayer());
-        clone.setIsGhoul(original.isGhoul());
-        clone.setGhoulType(original.getGhoulType());
-        clone.setUkakuState(original.ukakuState());
-        clone.setRCpoints(original.getRCpoints());
-        clone.setSkill(original.getSkill());
+
+        clone.personStats().setGhoul(original.isGhoul());
+        clone.personStats().setGhoulType(original.personStats().getGhoulType());
+        clone.personStats().setUkakuState(original.personStats().getUkakuState());
+        clone.personStats().setRCpoints(original.personStats().getRCpoints());
+        clone.personStats().setSkill(original.personStats().getSkill());
     }
     
     
@@ -118,11 +115,10 @@ public class EventsHandler {
     public void PlayerLoggedInList(PlayerLoggedInEvent e) {
     	if (!player_list.contains(e.player)) {
     		player_list.add(e.player);
-    		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
-    		capa.attachMaster(e.player);
-    		if (capa.isKaguneActive()) 
-    			capa.updateEntityKagune();
-    		capa.updateSpeedAttribute();
+    		PersonStats stats = e.player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+    		if (stats.isKaguneActive())
+    			stats.updateEntityKagune(e.player);
+    		stats.updateSpeedAttribute(e.player);
     	}
     }
     @SubscribeEvent
@@ -162,10 +158,11 @@ public class EventsHandler {
     public void humanLoggedInList(EntityJoinWorldEvent e) {
     	if (e.getEntity() instanceof EntityHuman && !human_list.contains(e.getEntity())) {
             EntityHuman human = (EntityHuman) e.getEntity();
-    		human_list.add(human);
-    		if (human.isKaguneActive())
-                human.updateEntityKagune();
-            human.updateSpeedAttribute();
+            PersonStats stats = ((EntityHuman) e.getEntity()).personStats();
+    		human_list.add((EntityHuman) e.getEntity());
+    		if (stats.isKaguneActive())
+                stats.updateEntityKagune(human);
+            stats.updateSpeedAttribute(human);
     	}
     }
     @SubscribeEvent
@@ -214,13 +211,8 @@ public class EventsHandler {
     public static void destroyKuinke(PlayerDestroyItemEvent e) {
         if (e.getOriginal().getItem() instanceof IKuinke) {
             IKuinke kuinke = (IKuinke) e.getOriginal().getItem();
-            if (e.getEntityLiving() instanceof EntityPlayer) {
-                ICapaHandler capa = EventsHandler.getCapaMP((EntityPlayer) e.getEntityLiving());
-                capa.setBlock(false);
-            } else if (e.getEntityLiving() instanceof EntityHuman) {
-                EntityHuman human = (EntityHuman) e.getEntityLiving();
-                human.setBlock(false);
-            }
+            PersonStats stats = PersonStats.getStats(e.getEntityLiving());
+            if (stats!=null) stats.setBlock(false);
             int rand = random.nextInt(5)-2;
             if (kuinke.getCountQSteelShards() > 0)
                 e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KUINKE_STEEL_SHARD, kuinke.getCountQSteelShards()+rand), 0);
@@ -235,10 +227,10 @@ public class EventsHandler {
     
     //worked
     @SubscribeEvent
-    public static void kaguneFirstView(RenderSpecificHandEvent e) { 
-    	ICapaHandler capa = EventsHandler.getCapaMP(Minecraft.getMinecraft().player);
+    public static void kaguneFirstView(RenderSpecificHandEvent e) {
+        PersonStats stats = EventsHandler.getCapaMP(Minecraft.getMinecraft().player).personStats();
     	EntityPlayer player = Minecraft.getMinecraft().player;
-    	if (capa.isKaguneActive() && capa.getKagune()!=null) {
+    	if (stats.isKaguneActive() && stats.getKagune()!=null) {
         	GlStateManager.enableRescaleNormal();
         	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             
@@ -253,8 +245,8 @@ public class EventsHandler {
 			float scale=0;
 			
 			do {
-	        	kagune = capa.getKagune();
-	        } while (capa.getKagune()==null);
+	        	kagune = stats.getKagune();
+	        } while (stats.getKagune()==null);
 			
 			limbSwing = kagune.getListF().get(0);
 			limbSwingAmount = kagune.getListF().get(1);
@@ -264,22 +256,22 @@ public class EventsHandler {
 			headPitch = kagune.getListF().get(5);
 			scale = kagune.getListF().get(6);
 			
-        	renderKagune(player, capa.getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
+        	renderKagune(player, stats.getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
         
         	GlStateManager.disableRescaleNormal();
         }
     }
     private static void renderKagune(EntityPlayer player, int ghoulType, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, boolean b)
     {
-    	ICapaHandler capa = EventsHandler.getCapaMP(player);
-    	AnimatedGeoModel kaguneModel = EnumKagune.valueOf(capa.getEnumId()).getModel(capa.getTextureLocation());
-    	GeoEntityRenderer<EntityKagune> kaguneRenderer = EnumKagune.valueOf(capa.getEnumId()).getRender(Minecraft.getMinecraft().getRenderManager());
+        PersonStats stats = EventsHandler.getCapaMP(player).personStats();
+    	AnimatedGeoModel kaguneModel = EnumKagune.valueOf(stats.getEnumId()).getModel(stats.getTextureLocation());
+    	GeoEntityRenderer<EntityKagune> kaguneRenderer = EnumKagune.valueOf(stats.getEnumId()).getRender(Minecraft.getMinecraft().getRenderManager());
     	EntityKagune kagune = null;
         
         
         do {
-        	kagune = EventsHandler.getCapaMP(player).getKagune();
-        } while (EventsHandler.getCapaMP(player).getKagune()==null);
+        	kagune = stats.getKagune();
+        } while (stats.getKagune()==null);
         
         
         ResourceLocation kaguneTexture = kaguneModel.getTextureLocation(kagune);
@@ -351,17 +343,17 @@ public class EventsHandler {
     public void onPlayerClone(PlayerEvent.Clone event) 
     {
         if (event.isWasDeath()) return;
-        ICapaHandler capa = event.getEntityPlayer().getCapability(CapaProvider.PLAYER_CAP, null);
-        ICapaHandler old = EventsHandler.getCapaMP(event.getOriginal());
-        capa.copyInventory(old);
+        PersonStats novel = event.getEntityPlayer().getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+        PersonStats old = EventsHandler.getCapaMP(event.getOriginal()).personStats();
+        novel.copyInventory(old);
     }
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
         if(event.getEntity() instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer)event.getEntity();
-            ICapaHandler capa = EventsHandler.getCapaMP(player);
-            ClothesInventory inv = capa.getInventory();
+            PersonStats stats = EventsHandler.getCapaMP(player).personStats();
+            ClothesInventory inv = stats.getInventory();
             dropAllItems(player, inv);
             inv.clear();
         }

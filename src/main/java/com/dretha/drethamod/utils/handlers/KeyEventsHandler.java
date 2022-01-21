@@ -11,12 +11,13 @@ import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.*;
+import com.dretha.drethamod.utils.controllers.ActionController;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -42,41 +43,39 @@ public class KeyEventsHandler {
     	if (KeybindsRegister.KEY_ACTIVATE_KAGUNE.isPressed()) {
     		EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
     		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-    		if (capa.isGhoul() && capa.canKaguneActivated(player.ticksExisted) && !(capa.isKaguneActive())) {
-    			
-    			capa.releaseKagune();
-				capa.setKaguneActivatedTicksPre(player.ticksExisted);
+			ActionController controller = capa.getKaguneActivateController();
+			PersonStats stats = capa.personStats();
+    		if (controller.endAct(player.ticksExisted, !stats.isKaguneActive() && stats.isGhoul()))
+			{
+    			stats.releaseKagune(player);
     		}
-    		if (capa.isGhoul() && capa.canKaguneActivated(player.ticksExisted) && capa.isKaguneActive() && capa.getKagune()!=null && !capa.getKagune().transform()) {
-    			
-    			capa.admitKagune();
-				capa.setKaguneActivatedTicksPre(player.ticksExisted);
+    		else if (controller.endAct(player.ticksExisted, stats.isKaguneActive() && ((stats.getKagune()!=null && !stats.getKagune().transform()) || (UkakuState.haveJustFlame(stats)))))
+			{
+    			stats.admitKagune(player);
     		}
     	}
     }
-    
-   
-   AttributeModifier speedmode = new AttributeModifier("speedmode", 1.6, 2);
+
    //key listener activate ghoul speed mode
    @SubscribeEvent
    public void activateSpeedMode(KeyInputEvent e) {
     	if (KeybindsRegister.KEY_ACTIVATE_GHOUL_SPEED_MODE.isPressed()) {
     		EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
     		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-    		if (capa.isGhoul() && capa.canSpeedModeActivated(player.ticksExisted) && !(capa.isSpeedModeActive())) {
-    			
-    			capa.setActivatedSpeedMode(true);
-    			capa.setActivatedKakugan(true);
-				capa.applyAtrSpeedMode();
-				capa.setSpeedModeTicksPre(player.ticksExisted);
+			ActionController controller = capa.getSpeedModeController();
+			PersonStats stats = capa.personStats();
+    		if (controller.endAct(player.ticksExisted, !stats.isSpeedModeActive()))
+			{
+    			stats.setSpeedModeActive(true);
+    			stats.setKaguneActive(true);
+				stats.applyAtrSpeedMode(player);
     		}
-    		if (capa.isGhoul() && capa.canSpeedModeActivated(player.ticksExisted) && capa.isSpeedModeActive()) {
-    			
-    			capa.setActivatedSpeedMode(false);
-    			if (!capa.isKaguneActive())
-    			capa.setActivatedKakugan(false);
-				capa.removeAtrSpeedMode();
-    			capa.setSpeedModeTicksPre(player.ticksExisted);
+    		else if (controller.endAct(player.ticksExisted, stats.isSpeedModeActive()))
+			{
+    			stats.setSpeedModeActive(false);
+    			if (!stats.isKaguneActive())
+    				stats.setKakuganActive(false);
+				stats.removeAtrSpeedMode(player);
     		}
     	}
    }
@@ -87,13 +86,13 @@ public class KeyEventsHandler {
    public void impactcontroller(KeyInputEvent e) {
     	if (KeybindsRegister.KEY_HIT_KAGUNE.isKeyDown()) {
 			EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
-			ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
-			EntityKagune kagune = capa.getKagune();
+			PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+			EntityKagune kagune = stats.getKagune();
 
-			if (kagune != null && capa.isKaguneActive() && kagune.canCloseHit() && !kagune.isHit() && !kagune.transform() && !capa.isBlock()) {
-				if (capa.ukaku() && !UkakuState.haveLimb(capa)) return;
+			if (kagune != null && stats.isKaguneActive() && kagune.canCloseHit() && !kagune.isHit() && !kagune.transform() && !stats.isBlock()) {
+				if (stats.ukaku() && !UkakuState.haveLimb(stats)) return;
 
-				Oshiete.NETWORK.sendToServer(new KaguneImpactMessage(capa.getDamage(), capa.getImpactType() == ImpactType.THRUST));
+				Oshiete.NETWORK.sendToServer(new KaguneImpactMessage(stats.getDamage(), stats.getImpactType() == ImpactType.THRUST));
 
     			kagune.setHit(true);
     			kagune.setHitTicksPre(player.ticksExisted);
@@ -102,32 +101,34 @@ public class KeyEventsHandler {
    }
    
    
-   //key listener impact
-   @SubscribeEvent
-   public void changeImpactMode(KeyInputEvent e) {
-	   if (KeybindsRegister.KEY_HIT_MODE.isKeyDown()) {
-		   EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
-   		   ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+    //key listener impact
+    @SubscribeEvent
+    public void changeImpactMode(KeyInputEvent e) {
+	    if (KeybindsRegister.KEY_HIT_MODE.isKeyDown()) {
+		    EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
+   		    ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+            PersonStats stats = capa.personStats();
    		
-   		   if (capa.getImpactModeTicksPre()+3<=player.ticksExisted) {
-   			   capa.changeImpactType();
-   		   }
-		   if (player.getHeldItemMainhand().getItem() instanceof ItemFirearm) {
-			   ItemFirearm firearm = (ItemFirearm) player.getHeldItemMainhand().getItem();
-			   firearm.reload(player.getHeldItemMainhand(), player.world, player);
-		   }
+   		    if (capa.getImpactModeTicksPre()+3<=player.ticksExisted) {
+   		  	    stats.changeImpactType();
+   		    }
+		    if (player.getHeldItemMainhand().getItem() instanceof ItemFirearm) {
+		 	    ItemFirearm firearm = (ItemFirearm) player.getHeldItemMainhand().getItem();
+			    firearm.reload(player.getHeldItemMainhand(), player.world, player);
+		    }
 
-		   capa.setImpactModeTicksPre(player.ticksExisted);
-	   }
-   }
+		    capa.setImpactModeTicksPre(player.ticksExisted);
+	    }
+    }
    
    //key listener shoot and block
    @SubscribeEvent
    public void keyBlock(PlayerTickEvent e) {
 	   ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
-	   if (capa!= null && KeybindsRegister.KEY_BLOCK_KAGUNE.isKeyDown() && !e.player.world.isRemote && capa.ukaku() && UkakuState.haveFlame(capa) && capa.isKaguneActive() && capa.getKagune()!=null && !capa.getKagune().transform()) {
+	   PersonStats stats = capa.personStats();
+	   if (capa!= null && KeybindsRegister.KEY_BLOCK_KAGUNE.isKeyDown() && !e.player.world.isRemote && stats.ukaku() && UkakuState.haveFlame(stats) && stats.isKaguneActive() && stats.getKagune()!=null && !stats.getKagune().transform()) {
 		   EntityPlayerMP player = (EntityPlayerMP) e.player;
-   		   if (player.ticksExisted%3==0 && capa.getShootTicksPre()+2<=player.ticksExisted && (capa.getRClevel()>15 || player.isCreative())) {
+   		   if (player.ticksExisted%3==0 && capa.getShootTicksPre()+2<=player.ticksExisted && (stats.getRClevel()>15 || player.isCreative())) {
    			   capa.setShootTicksPre(player.ticksExisted);
    			   EntityRCShard entityrcshard = new EntityRCShard(player.world, player);
    			   entityrcshard.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 3.0F, 1F);
@@ -140,13 +141,13 @@ public class KeyEventsHandler {
             
    			   e.player.world.playSound(null, player.getPosition(), InitSounds.ukaku_shooting, SoundCategory.PLAYERS, 0.5F, 1.0F);
    			   if (!player.isCreative()) {
-   				   capa.removeRClevel(15);
+   				   stats.removeRClevel(15);
    			   }
    		   }
-	   } else if (KeybindsRegister.KEY_BLOCK_KAGUNE.isKeyDown() && !e.player.world.isRemote && capa.isKaguneActive() && !capa.ukaku()) {
-	       capa.setBlock(true);
+	   } else if (KeybindsRegister.KEY_BLOCK_KAGUNE.isKeyDown() && !e.player.world.isRemote && stats.isKaguneActive() && !stats.ukaku()) {
+	       stats.setBlock(true);
 	   } else if (!KeybindsRegister.KEY_BLOCK_KAGUNE.isKeyDown() && capa.isGhoul()) {
-		   capa.setBlock(false);
+		   stats.setBlock(false);
 	   }
    }
    @SubscribeEvent
@@ -155,6 +156,7 @@ public class KeyEventsHandler {
 	   if (e.getEntityLiving() instanceof EntityPlayer && !e.getEntityLiving().world.isRemote) {
 		   EntityPlayerMP player = (EntityPlayerMP)e.getEntityLiving();
 		   ICapaHandler capa = EventsHandler.getCapaMP(player);
+		   PersonStats stats = capa.personStats();
 		   Entity immediate = e.getSource().getImmediateSource();
 		   EntityLivingBase entity = null;
 		   if (e.getSource().getTrueSource() instanceof EntityLivingBase)
@@ -171,11 +173,11 @@ public class KeyEventsHandler {
 			   source = DamageSource.causeArrowDamage((EntityArrow) immediate, entity);
 		   }
 		   
-		   if (source!=null && capa.isBlock())
+		   if (source!=null && stats.isBlock())
 		   {
-			   if (capa.getKagune()!=null && !capa.getKagune().isBlockAnim()) {
-				   capa.getKagune().setBlockAnim(true);
-				   capa.getKagune().setBlockAnimPre(player.ticksExisted);
+			   if (stats.getKagune()!=null && !stats.getKagune().isBlockAnim()) {
+				   stats.getKagune().setBlockAnim(true);
+				   stats.getKagune().setBlockAnimPre(player.ticksExisted);
 			   }
 
 			   e.setCanceled(true);
@@ -186,13 +188,13 @@ public class KeyEventsHandler {
 
 			   int blockValue = 0;
 
-			   if (capa.isKaguneActive())
+			   if (stats.isKaguneActive())
 			   {
 				   player.world.playSound(null, player.getPosition(), InitSounds.hit_ground_kagune_2, SoundCategory.PLAYERS, 1.0F, 1.0F);
-				   blockValue = capa.getGhoulType().getProtection(capa);
+				   blockValue = stats.getGhoulType().getProtection(stats);
 
 				   if (blockValue < (int)e.getAmount()) {
-					   capa.removeRClevel((int)e.getAmount()-blockValue);
+					   stats.removeRClevel((int)e.getAmount()-blockValue);
 					   if (immediate instanceof EntityLivingBase)
 						   knockback(player, (EntityLivingBase) immediate, 1F);
 				   }

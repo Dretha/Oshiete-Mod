@@ -1,9 +1,7 @@
 package layers;
 
-import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.items.clothes.IDressable;
-import com.dretha.drethamod.entity.EntityHuman;
-import com.dretha.drethamod.utils.handlers.EventsHandler;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import com.google.common.collect.Maps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -11,7 +9,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
@@ -49,19 +46,16 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
             ItemStack cloth = air;
             if (base.isDead) return;
 
-            if (base instanceof EntityPlayer) {
-                ICapaHandler capa = EventsHandler.getCapaMP((EntityPlayer) base);
-                cloth = capa.getInventory().getStackInSlot(index);
-            } else if (base instanceof EntityHuman && EventsHandler.hasHumanMP((EntityHuman) base)){
-                EntityHuman human = EventsHandler.getHumanMP((EntityHuman) base);
-                cloth = human.getInventory().get(index);
-            }
+            PersonStats stats = PersonStats.getStats(base);
+            if (stats!=null) {
+                cloth = stats.getInventory().getStackInSlot(index);
 
-            if (cloth.getItem() instanceof IDressable) {
-                IDressable dressable = (IDressable) cloth.getItem();
+                if (cloth.getItem() instanceof IDressable) {
+                    IDressable dressable = (IDressable) cloth.getItem();
 
-                for (ItemStack stack : dressable.getArmors()) {
-                    this.renderArmorLayer(base, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, ((ItemArmor) stack.getItem()).getEquipmentSlot(), stack);
+                    for (ItemStack stack : dressable.getArmors()) {
+                        this.renderArmorLayer(base, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, ((ItemArmor) stack.getItem()).getEquipmentSlot(), stack);
+                    }
                 }
             }
         }

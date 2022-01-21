@@ -2,101 +2,29 @@ package com.dretha.drethamod.capability;
 
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
+import com.dretha.drethamod.utils.controllers.ActionController;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.enums.GrowthStages;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import javax.annotation.Nonnull;
 
 public interface ICapaHandler {
-	
-	public void attachMaster(EntityPlayer master);
-	public EntityKagune getKagune();
-	public void nullKagune();
-	
-	public void copyInventory(ICapaHandler capa);
-    public ClothesInventory getInventory();
-	
-	public String getModelLocation();
-	public String getTextureLocation();
-	public String getAnimationLocation();
-	public int getModelVariant();
-	public int getTextureVariant();
-	
-	public String getEnumId();
 
-	GrowthStages getGrowthStage();
+	PersonStats personStats();
+	boolean isGhoul();
 	
-	public void removeRCpoints(int points);
-	public void addRCpoints(int points);
-	public void setRCpoints(int points);
-    public int getRCpoints();
-    
-    public void removeRClevel(int points);
-	public void addRClevel(int points);
-	public void setRClevel(int points);
-	public void updateRClevel();
-    public int getRClevel();
-    public boolean RClevelFull();
-	 
-	public boolean isGhoul();
-	public void becomeGhoul(GhoulType ghoulType, EntityLivingBase entity);
-	public void becomeHuman(EntityLivingBase entity);
-	public void setIsGhoul(boolean isGhoul);
-	public void updateSpeedAttribute();
-	public void applyAtrSpeedMode();
-	public void removeAtrSpeedMode();
-	
-    public GhoulType getGhoulType();
-    public void setGhoulType(@Nonnull GhoulType ghoulType);
-    public UkakuState ukakuState();
-    public void setUkakuState(UkakuState state);
-    
-    public boolean ukaku();
-    
-	public int rank();
-	float exactRank();
-	
-	public int getSkill();
-	public void addSkill(int points);
-	public void removeSkill(int points);
-	public void setSkill(int points);
-	
-	public boolean isKaguneActive();
-	public void setIsKaguneActive(boolean activeKagune);
-	public void releaseKagune();
-	public void admitKagune();
-	public void updateEntityKagune();
-	
-	public boolean isKakuganActive();
-	public void setActivatedKakugan(boolean activeKagune);
-	
-	
-	public boolean canKaguneActivated(int ticks);
-	public void setKaguneActivatedTicksPre(int ticks);
-	
-	public boolean canSpeedModeActivated(int ticks);
-	public void setSpeedModeTicksPre(int ticks);
-	boolean isSpeedModeActive();
-	void setActivatedSpeedMode(boolean b);
+	ActionController getKaguneActivateController();
+	ActionController getSpeedModeController();
 	
 	void setImpactModeTicksPre(int ticks);
 	int getImpactModeTicksPre();
-	
-	boolean isBlock();
-	void setBlock(boolean b);
 
 	int getDamage();
-	
-	public ImpactType getImpactType();
-	public void changeImpactType();
-	
-	public int getShardCountInEntity();
-	public void setShardCountInEntity(int count);
-	public void addShardCountInEntity();
 	
 	public boolean getSpawnKagunePatriclesFlag();
 	public int getSpawnKagunePatriclesTicksPre();

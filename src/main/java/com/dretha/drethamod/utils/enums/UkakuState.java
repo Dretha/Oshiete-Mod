@@ -2,6 +2,7 @@ package com.dretha.drethamod.utils.enums;
 
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import scala.actors.threadpool.Arrays;
 
 import java.util.Random;
@@ -43,22 +44,13 @@ public enum UkakuState {
 	}
 	
 	
-	public static boolean haveLimb(ICapaHandler capa) {
-		return capa.ukakuState()==UkakuState.FLAMELIMB || capa.ukakuState()==UkakuState.LIMB;
+	public static boolean haveLimb(PersonStats stats) {
+		return stats.getUkakuState()==UkakuState.FLAMELIMB || stats.getUkakuState()==UkakuState.LIMB;
 	}
-	public static boolean haveFlame(ICapaHandler capa) {
-		return capa.ukakuState()==UkakuState.FLAMELIMB || capa.ukakuState()==UkakuState.FLAME;
+	public static boolean haveFlame(PersonStats stats) {
+		return stats.getUkakuState()==UkakuState.FLAMELIMB || stats.getUkakuState()==UkakuState.FLAME;
 	}
-	public static boolean haveJustFlame(ICapaHandler capa) {
-		return capa.ukakuState()==UkakuState.FLAME;
-	}
-	public static boolean haveLimb(EntityHuman ghoul) {
-		return ghoul.ukakuState()==UkakuState.FLAMELIMB || ghoul.ukakuState()==UkakuState.LIMB;
-	}
-	public static boolean haveFlame(EntityHuman ghoul) {
-		return ghoul.ukakuState()==UkakuState.FLAMELIMB || ghoul.ukakuState()==UkakuState.FLAME;
-	}
-	public static boolean haveJustFlame(EntityHuman ghoul) {
-		return ghoul.ukakuState()==UkakuState.FLAME;
+	public static boolean haveJustFlame(PersonStats stats) {
+		return stats.getUkakuState()==UkakuState.FLAME;
 	}
 }
