@@ -3,6 +3,7 @@ package com.dretha.drethamod.utils.handlers;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
+import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
@@ -14,6 +15,7 @@ import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
@@ -40,6 +42,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -198,11 +201,10 @@ public class EventsHandler {
     	}
     }
 
-    public static Random random = new Random();
     @SubscribeEvent
     public static void villagerDeath(LivingDeathEvent e) {
     	if (e.getEntityLiving() instanceof EntityVillager && !e.getEntity().world.isRemote) {
-            e.getEntityLiving().entityDropItem(new ItemStack(InitItems.HUMAN_MEAT, random.nextInt(2) + 1), 0);
+            e.getEntityLiving().entityDropItem(new ItemStack(InitItems.HUMAN_MEAT, Oshiete.random.nextInt(2) + 1), 0);
         }
     }
 
@@ -213,7 +215,7 @@ public class EventsHandler {
             IKuinke kuinke = (IKuinke) e.getOriginal().getItem();
             PersonStats stats = PersonStats.getStats(e.getEntityLiving());
             if (stats!=null) stats.setBlock(false);
-            int rand = random.nextInt(5)-2;
+            int rand = Oshiete.random.nextInt(5)-2;
             if (kuinke.getCountQSteelShards() > 0)
                 e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KUINKE_STEEL_SHARD, kuinke.getCountQSteelShards()+rand), 0);
             if (kuinke.getCountKaguneShards() > 0)
@@ -443,5 +445,13 @@ public class EventsHandler {
     public static int getKakuhoRank(Kakuho kakuho) {
 
         return 0;
+    }
+
+    @SubscribeEvent
+    public static void corpseAttack(LivingHurtEvent e) {
+        if (e.getEntityLiving() instanceof EntityCorpse) {
+            if (!e.getSource().isFireDamage())
+                e.setCanceled(true);
+        }
     }
 }

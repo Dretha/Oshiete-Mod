@@ -20,6 +20,7 @@ public interface ICapaHandler {
 	
 	ActionController getKaguneActivateController();
 	ActionController getSpeedModeController();
+	ActionController getForceSpeedController();
 	
 	void setImpactModeTicksPre(int ticks);
 	int getImpactModeTicksPre();

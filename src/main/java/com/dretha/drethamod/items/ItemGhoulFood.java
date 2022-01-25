@@ -2,7 +2,9 @@ package com.dretha.drethamod.items;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -81,7 +83,23 @@ public class ItemGhoulFood extends ItemFood implements IHasModel{
 			PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
 
 			if (stats.isGhoul())
-				stats.addRCpoints(satiation);
+				stats.addRCpoints(satiation, player);
+		}
+	}
+
+	public void onFoodEatenHuman(ItemStack stack, EntityHuman human)
+	{
+		PersonStats stats = PersonStats.getStats(human);
+
+		if (stats.isGhoul()) {
+			if (this instanceof Kakuho) {
+				int satiation = stack.getTagCompound().getInteger("RCpoints");
+				GhoulType ghoulType = ((Kakuho) this).getGhoulType();
+				stats.addRCpoints((int) ((float) satiation / 7.8125F), human);
+				if (stats.getGhoulType() == ghoulType)
+					stats.addRCpoints((int) ((float) satiation / 7.8125F), human);
+			}
+			else stats.addRCpoints(satiation, human);
 		}
 	}
 

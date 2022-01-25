@@ -1,6 +1,7 @@
 package com.dretha.drethamod.entity.ai;
 
 import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -53,7 +54,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
     	
         EntityLivingBase base = this.attacker.getAttackTarget();
         
-        if (base instanceof EntityHuman)
+        if (base instanceof EntityHuman || base instanceof EntityPlayer)
         {
         	if (PersonStats.getStats(base).isGhoul()) return false;
         }
@@ -223,7 +224,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
             //this.attacker.swingArm(EnumHand.MAIN_HAND);
             //this.attacker.attackEntityAsMob(base);
             
-            DamageSource damagesource = DamageSource.causeMobDamage(attacker);
+            DamageSource damagesource = OshieteDamageSource.causeKaguneDamage(attacker);
             if (stats.getKagune()!=null && !stats.getKagune().transform()) {
             	base.attackEntityFrom(damagesource, stats.getDamage());
             	stats.getKagune().setHit(true);

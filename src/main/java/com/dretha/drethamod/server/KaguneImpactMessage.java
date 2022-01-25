@@ -4,6 +4,7 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import com.google.common.base.Predicate;
@@ -77,7 +78,7 @@ public class KaguneImpactMessage implements IMessage{
         {
             EntityPlayerMP player = ctx.getServerHandler().player;
             WorldServer world = (WorldServer) ctx.getServerHandler().player.world;
-            m.damagesource = DamageSource.causePlayerDamage(player);
+            m.damagesource = OshieteDamageSource.causeKaguneDamage(player);
 
             if (m.isThrust)
             {

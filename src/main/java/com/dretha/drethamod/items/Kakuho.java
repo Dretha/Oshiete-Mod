@@ -64,9 +64,9 @@ public class Kakuho extends ItemGhoulFood {
                 PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
                 satiation = compound.getInteger("RCpoints");
                 if (stats.isGhoul()) {
-                    stats.addRCpoints((int) ((float) satiation / 7.8125F));
+                    stats.addRCpoints((int) ((float) satiation / 7.8125F), player);
                     if (stats.getGhoulType() == ghoulType)
-                        stats.addRCpoints((int) ((float) satiation / 7.8125F));
+                        stats.addRCpoints((int) ((float) satiation / 7.8125F), player);
                 }
             }
         }

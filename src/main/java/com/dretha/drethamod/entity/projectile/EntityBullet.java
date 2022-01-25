@@ -1,6 +1,7 @@
 package com.dretha.drethamod.entity.projectile;
 
 import com.dretha.drethamod.items.firearm.Bullets;
+import com.dretha.drethamod.utils.OshieteDamageSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
@@ -56,12 +57,7 @@ public class EntityBullet extends EntityThrowable {
                 patrTicksPre = base.ticksExisted;
                 target = base;
 
-                DamageSource source;
-                if (shooter instanceof EntityPlayer) {
-                    source = DamageSource.causePlayerDamage((EntityPlayer) shooter);
-                } else {
-                    source = DamageSource.causeMobDamage(shooter);
-                }
+                DamageSource source = OshieteDamageSource.causeBulletDamage(this, shooter);
 
                 int savedResistantTime = base.hurtResistantTime;
                 base.hurtResistantTime = 0;

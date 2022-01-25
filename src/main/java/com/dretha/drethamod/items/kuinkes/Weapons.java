@@ -1,7 +1,13 @@
 package com.dretha.drethamod.items.kuinkes;
 
+import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.utils.enums.GhoulType;
+import net.minecraft.item.Item;
 import net.minecraft.util.SoundEvent;
+
+import java.util.Arrays;
 
 public enum Weapons
 {
@@ -30,5 +36,24 @@ public enum Weapons
         this.shards = shards;
         this.soundAir = soundAir;
         this.soundAttack = soundAttack;
+    }
+
+    public static Weapons random() {
+        return Arrays.asList(Weapons.values()).get(Oshiete.random.nextInt(Weapons.values().length));
+    }
+
+    public static Item randomItem() {
+        Weapons weapon = random();
+        if (weapon==Weapons.KNIFE)
+            return InitItems.KNIFE;
+        else if (weapon==Weapons.KATANA)
+            return InitItems.KATANA;
+        else if (weapon==Weapons.SCYTHE)
+            return InitItems.SCYTHE;
+        else if (weapon==Weapons.CLEAVER)
+            return InitItems.CLEAVER;
+        else if (weapon==Weapons.CUDGEL)
+            return InitItems.CUDGEL;
+        return InitItems.KATANA;
     }
 }

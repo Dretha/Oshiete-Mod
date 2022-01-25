@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -50,7 +51,8 @@ public class InitEntities {
 	
 	public static void init() {
 		EntityRegistry.addSpawn(EntityHuman.class, 3, 1, 3, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.JUNGLE, Biomes.DESERT, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.TAIGA);
-	}
+        //LootTableList.register(EntityCorpse.LOOT);
+    }
 
     private static int ID = 0;
 

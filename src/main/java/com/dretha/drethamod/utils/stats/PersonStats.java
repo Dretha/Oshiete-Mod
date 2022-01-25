@@ -8,6 +8,7 @@ import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.utils.DrethaMath;
 import com.dretha.drethamod.utils.controllers.ParticlesController;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.enums.GrowthStages;
@@ -22,6 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 
 import java.util.Random;
@@ -82,7 +84,7 @@ public class PersonStats {
     }
 
     public int getDamage() {
-        int damage = RCpoints/100;
+        int damage = DrethaMath.getNumberOfProportion(1000, 7, RCpoints);
         return damage;
     }
 
@@ -172,10 +174,10 @@ public class PersonStats {
 
     public void becomeGhoul(GhoulType ghoulType, EntityLivingBase entity) {
         setGhoul(true);
-        this.ghoulType = ghoulType;
+        setGhoulType(ghoulType);
         if (ghoulType==GhoulType.UKAKU)
             this.ukakuState = UkakuState.generateState();
-        this.RCpoints+=801;
+        addRCpoints(801, entity);
         updateRClevel();
         entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4D);
         entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
@@ -185,16 +187,35 @@ public class PersonStats {
 
     public void becomeHuman(EntityLivingBase entity) {
         setGhoul(false);
-        Random random = new Random();
-        this.setRCpoints(random.nextInt(501)+200);
+        this.setRCpoints(Oshiete.random.nextInt(501)+200);
         this.updateRClevel();
         this.setGhoulType(GhoulType.NONE);
         entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1D);
+        entity.setHealth(19);
         entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(20);
         entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(0);
         entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(0);
 
         entity.sendMessage(new TextComponentString("You are already human."));
+    }
+
+    public void forceSpeed(EntityLivingBase base, float angle)
+    {
+        float yaw = base.rotationYaw + angle;
+        while (yaw>=360) yaw-=360;
+
+        float strength = (float) DrethaMath.getNumberOfInterval(2000D, 8000D, 1.8D, 3.0D, (double)materialRank()*1000D);
+        System.out.println(strength);
+
+        strength /= (base.isAirBorne?2F:1F);
+
+        double xRatio = Math.cos(yaw * 0.017453292F);
+        double zRatio = Math.sin(yaw * 0.017453292F);
+        float f = MathHelper.sqrt(xRatio * xRatio + zRatio * zRatio);
+        base.motionX /= 2.0D;
+        base.motionZ /= 2.0D;
+        base.motionX -= xRatio / (double)f * (double)strength;
+        base.motionZ -= zRatio / (double)f * (double)strength;
     }
 
     public void updateRClevel() {
@@ -208,8 +229,9 @@ public class PersonStats {
 
     }
 
-    public void addRCpoints(int points) {
+    public void addRCpoints(int points, EntityLivingBase base) {
         this.RCpoints += points;
+        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40 + Math.round(exactRank()*10/1.5F));
     }
 
 
@@ -239,8 +261,9 @@ public class PersonStats {
         this.skill = skill;
     }
 
-    public void addSkill(int points) {
+    public void addSkill(int points, EntityLivingBase base) {
         this.skill +=points;
+        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(isGhoul?40:20 + Math.round((exactRank() * 10 / 1.5F) - (isGhoul?0F:4F)));
     }
 
     public void removeSkill(int points) {
@@ -265,6 +288,13 @@ public class PersonStats {
         if (rank<0.3F)
             rank=0.3F;
         return rank;
+    }
+
+    public int materialRank() {
+        if (isGhoul)
+            return Math.max(Math.round(RCpoints/1000F)-1, 0);
+        else
+            return Math.max(Math.round(skill/1000F)-1, 0);
     }
 
     AttributeModifier speedghoul = new AttributeModifier("speedghoul", 0.5, 2);
@@ -386,6 +416,7 @@ public class PersonStats {
         compound.setInteger("shardCountInEntity", this.getShardCountInEntity());
         compound.setString("impactType", this.getImpactType().toString());
         compound.setString("kakugan", kakugan);
+        compound.setBoolean("isDove", isDove);
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -403,6 +434,7 @@ public class PersonStats {
         if (ImpactType.valueOf(compound.getString("impactType"))!=ImpactType.THRUST) this.changeImpactType();
         this.kakugan = compound.getString("kakugan");
         this.kakuganStack = SkinHandler.getKakuganStack(kakugan);
+        this.isDove = compound.getBoolean("isDove");
     }
 
     public ItemStack getKakugan() {

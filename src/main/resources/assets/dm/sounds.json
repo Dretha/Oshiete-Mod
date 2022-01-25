@@ -76,5 +76,14 @@
     "sounds": [
       "dm:sweep_heavy"
     ]
+  },
+  "burning": {
+    "category": "ambient",
+    "sounds": [
+      "dm:burning1",
+      "dm:burning2",
+      "dm:burning3",
+      "dm:burning4"
+    ]
   }
 }

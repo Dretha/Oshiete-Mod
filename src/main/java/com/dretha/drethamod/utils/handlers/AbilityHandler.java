@@ -9,6 +9,7 @@ import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.GhoulEatMessage;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,11 +24,13 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -36,7 +39,7 @@ import java.util.Random;
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
 		modid = Reference.MODID)
-public class GhoulAbilityEventsHandler {
+public class AbilityHandler {
 
 //for support      
     
@@ -316,88 +319,39 @@ public class GhoulAbilityEventsHandler {
       	}
       }
   	*/
-  	
-  	
-      @SubscribeEvent
-      public void spawnKagunePatricles(PlayerTickEvent e) {
-    	  ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
-      	  if (capa!=null && capa.getSpawnKagunePatriclesFlag()) {
-      		this.spawnPatricleSpine(e.player);
-      		if (capa.getSpawnKagunePatriclesTicksPre()+30<=e.player.ticksExisted) 
-      			capa.setSpawnKagunePatriclesFlag(false);
-      	  }
-      }
-      public void spawnPatricleSpine(EntityLivingBase entity) {
-      	Random random = new Random();
-      	double d0 = entity.posX + ((random.nextGaussian()-0.5D)*0.25D);
-          double d1 = entity.posY + 1D + ((random.nextGaussian()-0.5D)*0.5D);
-          double d2 = entity.posZ + ((random.nextGaussian()-0.5D)*0.25D);
-          float f = 10F / 15.0F;
-          float f1 = f * 0.6F + 0.4F;
-          float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
-          float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
-          entity.world.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, (double)f1, (double)f2, (double)f3);
-      }
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      /*
-      AttributeModifier forcespeed = new AttributeModifier("forcespeed", 12, 2);
-      static boolean firstKeyPressed=false;
-      static boolean secondKeyPressed=false;
-      static boolean isForceSpeedActive=false;
-      static boolean canForceSpeedActive=true;
-      static int forceSpeedTicksPre=0;
-      static int firstKeyPressedTicksPre=0;
-      static int forceSpeedActivedTicksPre=0;
-      @SubscribeEvent
-      public void forceSpeedKeyEvent(KeyInputEvent e) {
-    	  if (Minecraft.getMinecraft().gameSettings.keyBindForward.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindBack.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindLeft.isPressed() || Minecraft.getMinecraft().gameSettings.keyBindRight.isPressed()) {
-    		  if (!firstKeyPressed && canForceSpeedActive) {
-    			  canForceSpeedActive=false;
-    			  firstKeyPressed=true;
-    			  System.out.println("firstKeyPressed=true");
-    			  firstKeyPressedTicksPre=getPlayerMP(Minecraft.getMinecraft().player).ticksExisted;
-    			  System.out.println(getPlayerMP(Minecraft.getMinecraft().player).ticksExisted);
-    		  }
-    		  if (firstKeyPressed && !secondKeyPressed) {
-    			  secondKeyPressed=true;
-    			  System.out.println("secondKeyPressed=true");
-    		  }
-    	  }
-      }
-      @SubscribeEvent
-      public void forceSpeedTickEvent(PlayerTickEvent e) {
-    	  //if more than 10 ticks have passed (forcespeed fail)
-    	  if (firstKeyPressed && firstKeyPressedTicksPre+15<=e.player.ticksExisted) {
-    		  firstKeyPressed=false;
-    		  System.out.println("forcespeed fail");
-    		  System.out.println(e.player.ticksExisted);
-    	  }
-    	  if (firstKeyPressed && secondKeyPressed) {
-    		  forceSpeedActivedTicksPre=e.player.ticksExisted;
-    		  e.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(forcespeed);
-    		  firstKeyPressed=false;
-    		  secondKeyPressed=false;
-    		  isForceSpeedActive=true;
-    		  System.out.println("forcespeed start");
-    	  }
-    	  if (isForceSpeedActive && forceSpeedActivedTicksPre+3<=e.player.ticksExisted) {
-    			  e.player.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(forcespeed);
-    			  isForceSpeedActive=false;
-    			  System.out.println("forcespeed finish");
-    			  forceSpeedTicksPre=e.player.ticksExisted;
-    	  }
-    	  if (!canForceSpeedActive && forceSpeedTicksPre+20<=e.player.ticksExisted) canForceSpeedActive=true;
-    	  
-     }
-    */
-	
+
+
+	@SubscribeEvent
+	public void spawnKagunePatricles(PlayerTickEvent e) {
+		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
+		if (capa!=null && capa.getSpawnKagunePatriclesFlag()) {
+			this.spawnPatricleSpine(e.player);
+			if (capa.getSpawnKagunePatriclesTicksPre()+30<=e.player.ticksExisted)
+				capa.setSpawnKagunePatriclesFlag(false);
+		}
+	}
+	public void spawnPatricleSpine(EntityLivingBase entity) {
+		Random random = new Random();
+		double d0 = entity.posX + ((random.nextGaussian()-0.5D)*0.25D);
+		double d1 = entity.posY + 1D + ((random.nextGaussian()-0.5D)*0.5D);
+		double d2 = entity.posZ + ((random.nextGaussian()-0.5D)*0.25D);
+		float f = 10F / 15.0F;
+		float f1 = f * 0.6F + 0.4F;
+		float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
+		float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
+		entity.world.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, (double)f1, (double)f2, (double)f3);
+	}
+
+	@SubscribeEvent
+	public static void jump(LivingEvent.LivingJumpEvent e)
+	{
+		PersonStats stats = PersonStats.getStats(e.getEntityLiving());
+		if (stats!=null && (!stats.isGhoul() || stats.isSpeedModeActive()))
+		{
+			double d = stats.isGhoul()?10D:20D;
+			double height = stats.materialRank()/d;
+			height = stats.isGhoul() ? Math.max(height, 0.1) : height;
+			e.getEntityLiving().motionY+=height;
+		}
+	}
 }

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import scala.tools.nsc.settings.RC;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -59,6 +60,13 @@ public class QColdSteel extends KuinkeMeleeBase{
 
         stack.setTagCompound(compound);
         return stack;
+    }
+
+    public static ItemStack randomModificateWeapon(int RCpool) {
+        ItemStack coldSteel = new ItemStack(Weapons.randomItem());
+        Weapons weapons = ((QColdSteel)coldSteel.getItem()).getWeapon();
+        GhoulType ghoulType = GhoulType.random();
+        return modificateWeapon(coldSteel, RCpool, weapons, ghoulType);
     }
 
     @Override

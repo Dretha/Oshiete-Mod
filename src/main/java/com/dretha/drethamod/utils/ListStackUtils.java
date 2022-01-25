@@ -1,6 +1,5 @@
 package com.dretha.drethamod.utils;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -15,9 +14,12 @@ public class ListStackUtils
         compound.setInteger("listSize", list.size());
         for (int i=0; i<list.size(); i++)
         {
-            compound.setString(i + "listItemDomain", list.get(i).getItem().getRegistryName().getResourceDomain());
-            compound.setString(i + "listItemPath", list.get(i).getItem().getRegistryName().getResourcePath());
-            compound.setInteger(i + "itemStackCount", list.get(i).getCount());
+            ItemStack stack = list.get(i);
+            compound.setString(i + "listItemDomain", stack.getItem().getRegistryName().getResourceDomain());
+            compound.setString(i + "listItemPath", stack.getItem().getRegistryName().getResourcePath());
+            compound.setInteger(i + "itemStackCount", stack.getCount());
+            if (stack.hasTagCompound())
+                compound.setTag(i + "tagItemStack", stack.getTagCompound());
         }
     }
 
@@ -31,8 +33,12 @@ public class ListStackUtils
             String domain = compound.getString(i + "listItemDomain");
             String path = compound.getString(i + "listItemPath");
             int count = compound.getInteger(i + "itemStackCount");
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(domain, path));
-            list.add(new ItemStack(item, count));
+            ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(domain, path)), count);
+
+            if (compound.hasKey(i + "tagItemStack"))
+                stack.setTagCompound((NBTTagCompound) compound.getTag(i + "tagItemStack"));
+
+            list.add(stack);
         }
         return list;
     }

@@ -31,6 +31,7 @@ public class CapaHandler implements ICapaHandler {
 	//less main
 	ActionController kaguneActivateController = new ActionController(20);
 	ActionController speedModeController = new ActionController(20);
+	ActionController forceSpeedController = new ActionController(10);
 	
 	private int impactModeTicksPre = 0;
 
@@ -91,8 +92,12 @@ public class CapaHandler implements ICapaHandler {
 		return speedModeController;
 	}
 
+	@Override
+	public ActionController getForceSpeedController() {
+		return forceSpeedController;
+	}
 
-	
+
 	@Override
 	public boolean getSpawnKagunePatriclesFlag() {
 		return this.spawnKagunePatriclesFlag;

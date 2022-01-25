@@ -74,3 +74,7 @@ itemGroup.masks=Oshiete Mod: Маски
 itemGroup.clothes=Oshiete Mod: Одежда
 itemGroup.weapon=Oshiete Mod: Оружие
 itemGroup.tools=Oshiete Mod: Инструменты
+
+death.attack.kagune=%1$s был нарублен в фарш гулем
+death.attack.shard=%1$s был исколот в решето укаку-осколками
+death.attack.bullet=%1$s был застрелен %2$s

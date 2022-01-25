@@ -5,6 +5,7 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.dretha.drethamod.utils.stats.PersonStats;
@@ -101,7 +102,7 @@ public class KuinkeMeleeBase extends Item implements IKuinke, IKuinkeMelee, IAni
         if (controller.getAnimationState() == AnimationState.Stopped)
         {
             controller.markNeedsReload();
-            controller.setAnimation(new AnimationBuilder().addAnimation("impact" + EventsHandler.random.nextInt(3)+1, false));
+            controller.setAnimation(new AnimationBuilder().addAnimation("impact" + Oshiete.random.nextInt(3)+1, false));
         }
     }
 

@@ -74,3 +74,7 @@ itemGroup.masks=Oshiete Mod: Masks
 itemGroup.clothes=Oshiete Mod: Clothes
 itemGroup.weapon=Oshiete Mod: Weapon
 itemGroup.tools=Oshiete Mod: Tools
+
+death.attack.kagune=%1$s was slaughter by a ghoul
+death.attack.shard=%1$s was shot with ukaku-shard
+death.attack.bullet=%1$s was shot by %2$s

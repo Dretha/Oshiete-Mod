@@ -1,5 +1,6 @@
 package com.dretha.drethamod.entity;
 
+import com.dretha.drethamod.entity.ai.EntityAIDoveAttack;
 import com.dretha.drethamod.entity.ai.EntityAIGhoulAttack;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.SkinHandler;
@@ -57,12 +58,18 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		if (skin ==null)
 			skin = SkinHandler.getRandomTexture();
 		stats.setKakugan(SkinHandler.getKey(skin));
-		/*
-		NBTTagCompound compound = new NBTTagCompound();
-		compound.setUniqueId("uuid", this.entityUniqueID);
-		compound.setString("skin", skin_variant);
-		Main.NETWORK.sendToServer(new DoSomeEntityMessage(compound));
-		*/
+	}
+	public EntityHuman(World worldIn, BlockPos pos) {
+		super(worldIn);
+
+		float width = 0.6f;
+		setSize(width, width*3);
+
+		if (skin ==null)
+			skin = SkinHandler.getRandomTexture();
+		stats.setKakugan(SkinHandler.getKey(skin));
+
+		setPosition(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public PersonStats personStats() {
@@ -131,7 +138,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 
-				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.rank(); i++) {
+				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.materialRank(); i++) {
 					drop.add(new ItemStack(InitItems.HUMAN_MEAT));
 				}
 			}
@@ -140,11 +147,11 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 
-				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.rank(); i++) {
+				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.materialRank(); i++) {
 					drop.add(new ItemStack(InitItems.GHOUL_MEAT));
 				}
 
-				for (int i=0; i <= Oshiete.random.nextInt(3) + stats.rank(); i++) {
+				for (int i=0; i <= Oshiete.random.nextInt(3) + stats.materialRank(); i++) {
 					drop.add(new ItemStack(InitItems.KAGUNE_SHARD));
 				}
 
@@ -164,6 +171,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 			else
 				rotationAngle = Oshiete.random.nextInt(270);
 
+			drop.add(ItemStack.EMPTY);
 			Collections.reverse(drop);
 			EntityCorpse corpse = new EntityCorpse(world, this.getPosition(), skin, stats.isGhoul(), stats.getShardCountInEntity(), rotationAngle, stats.getInventory(), drop);
 			world.spawnEntity(corpse);
@@ -219,13 +227,15 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 
 	protected void initEntityAI()
     {
-        this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new EntityAIGhoulAttack(this));
-        this.tasks.addTask(2, new EntityAIPanic(this, 3.0D));
-        this.tasks.addTask(3, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityHuman.class, 6.0F));
-        this.tasks.addTask(5, new EntityAILookIdle(this));
-        this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
+		int AIPriority = -1;
+        this.tasks.addTask(AIPriority++, new EntityAISwimming(this));
+		this.tasks.addTask(AIPriority++, new EntityAIGhoulAttack(this));
+		this.tasks.addTask(AIPriority++, new EntityAIDoveAttack(this));
+        this.tasks.addTask(AIPriority++, new EntityAIPanic(this, 3.0D));
+        this.tasks.addTask(AIPriority++, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(AIPriority++, new EntityAIWatchClosest(this, EntityHuman.class, 6.0F));
+        this.tasks.addTask(AIPriority++, new EntityAILookIdle(this));
+        this.tasks.addTask(AIPriority++, new EntityAIWander(this, 1.0D));
         
         targetTasks.addTask(0, new EntityAINearestAttackableTarget<>(this, EntityPlayer.class, true));
         targetTasks.addTask(1, new EntityAINearestAttackableTarget<>(this, EntityHuman.class, true));
@@ -244,7 +254,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		Item item = player.getHeldItem(hand).getItem();
-		ItemStack itemStack = player.getHeldItem(hand);
+		ItemStack stack = player.getHeldItem(hand);
 
         if (item instanceof ItemTabletCreative && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
         	if (((ItemTabletCreative) item).getGhoulType() == GhoulType.NONE)
@@ -275,13 +285,8 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		}
 
 		if (item instanceof ItemGhoulFood) {
-			if (!(item instanceof Kakuho)) {
-				stats.addRCpoints(((ItemGhoulFood) item).getSatiation());
-			} else {
-				if (itemStack.hasTagCompound())
-					stats.addRCpoints(itemStack.getTagCompound().getInteger("RCpoints"));
-				player.sendMessage(new TextComponentString(stats.getRCpoints() + " RC Points"));
-			}
+			((ItemGhoulFood) item).onFoodEatenHuman(stack, this);
+			player.sendMessage(new TextComponentString(stats.getRCpoints() + " RC Points"));
 		}
 
 		player.swingArm(EnumHand.MAIN_HAND);

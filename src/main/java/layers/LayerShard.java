@@ -41,7 +41,7 @@ public class LayerShard implements LayerRenderer<EntityLivingBase>
         if (i > 0)
         {
             Entity entity = new EntityRCShard(base.world, base.posX, base.posY, base.posZ);
-            Random random = new Random(/*(long)player.getEntityId()*/);
+            Random random = new Random(stats.getRCpoints() + stats.getSkill());
             RenderHelper.disableStandardItemLighting();
 
             for (int j = 0; j < i; ++j)

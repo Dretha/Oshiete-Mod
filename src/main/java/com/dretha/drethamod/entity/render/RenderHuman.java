@@ -11,6 +11,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
+import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import javax.annotation.Nonnull;
@@ -26,6 +28,8 @@ public class RenderHuman extends RenderLiving<EntityHuman>{
         this.addLayer(new LayerKagune(this));
         this.addLayer(new LayerFlame());
         this.addLayer(new LayerClothes(this));
+        this.addLayer(new LayerBipedArmor(this));
+        this.addLayer(new LayerHeldItem(this));
         //this.addLayer(new EntityLayerMask(this));
     }
     

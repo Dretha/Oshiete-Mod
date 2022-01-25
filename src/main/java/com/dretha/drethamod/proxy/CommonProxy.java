@@ -7,7 +7,7 @@ import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitEntities;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
-import com.dretha.drethamod.utils.handlers.GhoulAbilityEventsHandler;
+import com.dretha.drethamod.utils.handlers.AbilityHandler;
 import com.dretha.drethamod.utils.handlers.KeyEventsHandler;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +23,7 @@ public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent event)
     {
 		MinecraftForge.EVENT_BUS.register(new EventsHandler());
-		MinecraftForge.EVENT_BUS.register(new GhoulAbilityEventsHandler());
+		MinecraftForge.EVENT_BUS.register(new AbilityHandler());
 		MinecraftForge.EVENT_BUS.register(new KeyEventsHandler());
 		InitCapabilities.init();
 		InitEntities.init();

@@ -1,0 +1,20 @@
+{
+  "minecraft:husbandry/root": {
+    "criteria": {
+      "consumed_item": "2022-01-24 16:07:17 +0300"
+    },
+    "done": true
+  },
+  "minecraft:adventure/root": {
+    "criteria": {
+      "killed_something": "2022-01-24 16:06:25 +0300"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "desert": "2022-01-24 16:06:20 +0300"
+    },
+    "done": false
+  }
+}

@@ -3,6 +3,7 @@ package com.dretha.drethamod.entity.projectile;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -59,15 +60,7 @@ public class EntityRCShard extends EntityArrow{
                 
             }
 
-            DamageSource damagesource;
-
-            if (this.shootingEntity instanceof EntityPlayer) {
-                damagesource = DamageSource.causePlayerDamage((EntityPlayer) this.shootingEntity);
-            }
-            else
-            {
-            	damagesource = DamageSource.causeMobDamage((EntityLivingBase) this.shootingEntity);
-            }
+            DamageSource damagesource = OshieteDamageSource.causeShardDamage(this, shootingEntity);
 
             if (this.isBurning() && !(entity instanceof EntityEnderman))
             {

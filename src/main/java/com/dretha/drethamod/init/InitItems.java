@@ -123,6 +123,7 @@ public class InitItems {
 	public static final Item STEEL_PLATE = new ItemMaterial("steel_plate");
 	public static final Item SHOCK_RESISTANT_HANDLE = new ItemMaterial("shock_resistant_handle", EnumKeeper.Q_STEEL_RARITY);
 	public static final Item KUINKE_STEEL_BAR = new ItemMaterial("q_steel_bar", EnumKeeper.Q_STEEL_RARITY);
+	public static final Item BALSAM = new ItemMaterial("balsam");
 
 	//instruments
 	public static final Item STEEL_HAMMER = new ItemTool("steel_hammer", EnumKeeper.STEEL, Tools.HAMMER);
@@ -135,4 +136,8 @@ public class InitItems {
 	public static final Item Q_BULLET = new ItemBullet("q_bullet", Bullets.Q_STEEL, EnumKeeper.Q_STEEL_RARITY);
 
 	public static final Item HK33 = new HK33Item("assault_rifle_hk33");
+
+	//spawn eggs
+	public static final Item SPAWNEGG_GHOUL = new SpawnEgg("spawnegg_ghoul");
+	public static final Item SPAWNEGG_DOVE = new SpawnEgg("spawnegg_dove");
 }
