@@ -2,6 +2,10 @@ package com.dretha.drethamod.utils.handlers;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.client.geckolib.kagunes.KaguneUnit;
+import com.dretha.drethamod.client.geckolib.kagunes.rinkaku.kagune301.Entity301;
+import com.dretha.drethamod.client.geckolib.kagunes.rinkaku.kagune301.Model301;
+import com.dretha.drethamod.client.geckolib.kagunes.rinkaku.kagune301.Render301;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.keybinds.KeybindsRegister;
@@ -11,6 +15,7 @@ import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.*;
+import com.dretha.drethamod.utils.SoundPlayer;
 import com.dretha.drethamod.utils.controllers.ActionController;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
@@ -48,12 +53,14 @@ public class KeyEventsHandler {
     		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
 			ActionController controller = capa.getKaguneActivateController();
 			PersonStats stats = capa.personStats();
-    		if (controller.endAct(player.ticksExisted, !stats.isKaguneActive() && stats.isGhoul()))
+    		if (controller.endAct(player.ticksExisted) && !stats.isKaguneActive() && stats.isGhoul())
 			{
+				controller.setTicksPre(player.ticksExisted);
     			stats.releaseKagune(player);
     		}
-    		else if (controller.endAct(player.ticksExisted, stats.isKaguneActive() && ((stats.getKagune()!=null && !stats.getKagune().transform()) || (UkakuState.haveJustFlame(stats)))))
+    		else if (controller.endAct(player.ticksExisted) && stats.isKaguneActive() && ((stats.getKagune()!=null && !stats.getKagune().transform()) || (UkakuState.haveJustFlame(stats))))
 			{
+				controller.setTicksPre(player.ticksExisted);
     			stats.admitKagune(player);
     		}
     	}
@@ -87,18 +94,18 @@ public class KeyEventsHandler {
    //key listener impact
    @SubscribeEvent
    public void impactcontroller(KeyInputEvent e) {
-    	if (KeybindsRegister.KEY_HIT_KAGUNE.isKeyDown()) {
+    	if (KeybindsRegister.KEY_HIT_KAGUNE.isKeyDown() && !(KeybindsRegister.KEY_ACTIVITY.isKeyDown() && WASD())) {
 			EntityPlayer player = EventsHandler.getPlayerMP(Minecraft.getMinecraft().player);
 			PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+			if (stats.ukaku() && !UkakuState.haveLimb(stats)) return;
 			EntityKagune kagune = stats.getKagune();
 
-			if (kagune != null && stats.isKaguneActive() && kagune.canCloseHit() && !kagune.isHit() && !kagune.transform() && !stats.isBlock()) {
-				if (stats.ukaku() && !UkakuState.haveLimb(stats)) return;
+			if (kagune!=null && stats.isKaguneActive() && kagune.getImpactController().endAct(player.ticksExisted) && !kagune.transform() && !stats.isBlock()) {
 
 				Oshiete.NETWORK.sendToServer(new KaguneImpactMessage(stats.getDamage(), stats.getImpactType() == ImpactType.THRUST));
 
-    			kagune.setHit(true);
-    			kagune.setHitTicksPre(player.ticksExisted);
+				kagune.getImpactController().setTicksPre(player.ticksExisted);
+
     		}
     	}
    }
@@ -139,7 +146,7 @@ public class KeyEventsHandler {
 				entityrcshard.setDamage(5);
 				entityrcshard.setKnockbackStrength(0);
 				entityrcshard.setFire(0);
-
+// TODO это добавить в шард
 				e.player.world.spawnEntity(entityrcshard);
 
 				e.player.world.playSound(null, player.getPosition(), InitSounds.ukaku_shooting, SoundCategory.PLAYERS, 0.5F, 1.0F);
@@ -155,7 +162,7 @@ public class KeyEventsHandler {
 	}
 	@SubscribeEvent
 	public static void block(LivingAttackEvent e) {
-
+// TODO это упростить
 		if (e.getEntityLiving() instanceof EntityPlayer && !e.getEntityLiving().world.isRemote) {
 			EntityPlayerMP player = (EntityPlayerMP)e.getEntityLiving();
 			ICapaHandler capa = EventsHandler.getCapaMP(player);
@@ -175,31 +182,36 @@ public class KeyEventsHandler {
 			if (immediate instanceof EntityArrow) {
 				source = DamageSource.causeArrowDamage((EntityArrow) immediate, entity);
 			}
-
+// TODO эти сорсы убрать
 			if (source!=null && stats.isBlock())
 			{
-				if (stats.getKagune()!=null && !stats.getKagune().isBlockAnim()) {
-					stats.getKagune().setBlockAnim(true);
-					stats.getKagune().setBlockAnimPre(player.ticksExisted);
-				}
 
 				e.setCanceled(true);
 
-				if (immediate instanceof EntityLivingBase)
-					knockback(player, (EntityLivingBase) immediate, 0.5F);
+				if (immediate instanceof EntityLivingBase) {
+					EntityLivingBase target = (EntityLivingBase) immediate;
+					PersonStats targetStats = PersonStats.getStats(target);
 
+					float strength = (stats.exactRank() + 0.3F - targetStats.exactRank())/2;
+					if (strength>0)
+						knockback(player, target, strength);
+					else if (strength<0)
+						knockback(target, player, -strength);
+				}
 
-				int blockValue = 0;
+				int protection = 0;
 
 				if (stats.isKaguneActive())
 				{
-					player.world.playSound(null, player.getPosition(), InitSounds.hit_ground_kagune_2, SoundCategory.PLAYERS, 1.0F, 1.0F);
-					blockValue = stats.getGhoulType().getProtection(stats);
+					SoundPlayer.play(player.world, InitSounds.hit_ground_kagune_2, player.getPosition());
+					protection = stats.getProtection();
 
-					if (blockValue < (int)e.getAmount()) {
-						stats.removeRClevel((int)e.getAmount()-blockValue);
-						if (immediate instanceof EntityLivingBase)
-							knockback(player, (EntityLivingBase) immediate, 1F);
+					if (protection < (int)e.getAmount()) {
+						stats.removeRClevel((int)e.getAmount() - protection);
+					}
+
+					if (stats.getKagune()!=null) {
+						stats.getKagune().getBlockAnimController().endAct(player.ticksExisted, true);
 					}
 				}
 				else if (player.getActiveItemStack().getItem() instanceof IKuinkeMelee)
@@ -207,18 +219,17 @@ public class KeyEventsHandler {
 					player.world.playSound(null, player.getPosition(), InitSounds.kuinke_block, SoundCategory.PLAYERS, 1.0F, 1.0F);
 					ItemStack kuinkeStack = player.getActiveItemStack();
 					IKuinkeMelee kuinke = (IKuinkeMelee) player.getActiveItemStack().getItem();
-					blockValue = kuinke.getBlockValue(player.getActiveItemStack());
+					protection = kuinke.getBlockValue(player.getActiveItemStack());
 
-					if (blockValue < (int)e.getAmount()) {
-						kuinkeStack.damageItem((int)e.getAmount()-blockValue, (EntityLivingBase) e.getSource().getTrueSource());
-						if (immediate instanceof EntityLivingBase)
-							knockback(player, (EntityLivingBase) immediate, 1F);
+					if (protection < (int)e.getAmount()) {
+						kuinkeStack.damageItem((int)e.getAmount()-protection, (EntityLivingBase) e.getSource().getTrueSource());
 					}
 				}
 
-				if (blockValue * 2 < (int)e.getAmount())
+				if (protection * 2 < (int)e.getAmount())
 				{
-					player.setHealth(player.getHealth() - (blockValue * 2 - (int)e.getAmount()));
+					int hurt = protection * 2 - (int)e.getAmount();
+					player.setHealth(player.getHealth() + hurt);
 					//setHurt(player, entity, immediate, source.getDamageType(),  (int)e.getAmount() - kuinke.getBlockValue()*2);
 				}
 			}
@@ -252,7 +263,6 @@ public class KeyEventsHandler {
 			ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
 
 			if (capa.isGhoul() && capa.getSmellTicksPre()+1000<=player.ticksExisted) {
-				System.out.println("smell");
 				capa.setSmellTicksPre(player.ticksExisted);
 				Oshiete.NETWORK.sendToServer(new SniffMessage(capa.getSmellRadius(), capa.getSmellDuration()));
 			}
@@ -261,7 +271,7 @@ public class KeyEventsHandler {
 
 	//open clothes inventory
 	@SubscribeEvent
-	public void onKey(KeyInputEvent event) {
+	public void openClothesInventory(KeyInputEvent event) {
 		if (KeybindsRegister.KEY_OPEN_CLOTHES_INVENTORY.isPressed()) {
 			Oshiete.NETWORK.sendToServer(new OpenClothesInventoryMessage());
 		}
@@ -270,18 +280,14 @@ public class KeyEventsHandler {
 	@SubscribeEvent
 	public static void forceSpeedKeyEvent(InputEvent.KeyInputEvent e) {
 		EntityPlayer player = EventsHandler.getPlayerMP(player());
-		ActionController controller = player.getCapability(CapaProvider.PLAYER_CAP, null).getForceSpeedController();
+		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
+		PersonStats stats = capa.personStats();
+		ActionController controller = capa.getForceSpeedController();
 		if (controller.endAct(player.ticksExisted, KeybindsRegister.KEY_ACTIVITY.isKeyDown() && WASD()))
 		{
 			float angle = 0F;
 
-			if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown())
-				angle = 270F;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown())
-				angle = 90F;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
-				angle = 180F;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
+			if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
 				angle = 225;
 			else if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown())
 				angle = 315;
@@ -289,8 +295,17 @@ public class KeyEventsHandler {
 				angle = 135;
 			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown())
 				angle = 45;
+			else if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown())
+				angle = 270F;
+			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown())
+				angle = 90F;
+			else if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
+				angle = 180F;
 
-			PersonStats.getStats(player()).forceSpeed(player(), angle);
+			stats.forceSpeed(player(), angle);
+
+			if (KeybindsRegister.KEY_HIT_KAGUNE.isKeyDown() && stats.isGhoul())
+				capa.getForceThrustController().setTicksPre(player.ticksExisted);
 		}
 	}
 	private static EntityPlayer player() {
@@ -300,4 +315,14 @@ public class KeyEventsHandler {
 	public static boolean WASD() {
 		return Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown();
 	}
+/*
+	@SubscribeEvent
+	public void waitingForceThrust(PlayerTickEvent e) {
+		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
+		if (capa.isGhoul() && capa.getForceThrustController().isAct(e.player.ticksExisted)) {
+			Oshiete.NETWORK.sendToServer(new ForceThrustMessage((int) (capa.personStats().getDamage() * (capa.personStats().ukaku() ? 2 : 1.4))));
+		}
+	}
+	// TODO доделать удар в рывке
+ */
 }

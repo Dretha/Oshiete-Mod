@@ -9,7 +9,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class Render301 extends GeoEntityRenderer<EntityKagune> implements INeedAClone {
     public Render301(final RenderManager renderManager)
     {
-        super(renderManager, (AnimatedGeoModel) new Model301(null));
+        super(renderManager, new Model301(null));
         this.shadowSize = 0.7F;
     }
 

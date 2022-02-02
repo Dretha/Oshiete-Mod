@@ -7,7 +7,6 @@ import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.ItemGhoulFood;
 import com.dretha.drethamod.items.ItemTabletCreative;
-import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.main.Oshiete;
@@ -21,6 +20,7 @@ import net.minecraft.entity.ai.*;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -138,8 +138,12 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 
-				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.materialRank(); i++) {
+				for (int i=0; i <= Oshiete.random.nextInt(2) + 2 +stats.materialRank(); i++) {
 					drop.add(new ItemStack(InitItems.HUMAN_MEAT));
+				}
+
+				for (int i=0; i <= Oshiete.random.nextInt(2) + 2; i++) {
+					drop.add(new ItemStack(Items.BONE));
 				}
 			}
 			else
@@ -147,13 +151,16 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 				drop.add(new ItemStack(InitItems.HUMAN_EYE));
 
-				for (int i=0; i <= Oshiete.random.nextInt(2) + stats.materialRank(); i++) {
+				for (int i=0; i <= Oshiete.random.nextInt(2) + 2 + stats.materialRank(); i++) {
 					drop.add(new ItemStack(InitItems.GHOUL_MEAT));
 				}
 
-				for (int i=0; i <= Oshiete.random.nextInt(3) + stats.materialRank(); i++) {
-					drop.add(new ItemStack(InitItems.KAGUNE_SHARD));
+				for (int i=0; i <= Oshiete.random.nextInt(2) + 2; i++) {
+					drop.add(new ItemStack(Items.BONE));
 				}
+
+				if (personStats().isKaguneActive())
+					this.entityDropItem(new ItemStack(InitItems.KAGUNE_SHARD, Oshiete.random.nextInt(3) + 2 + stats.materialRank()), 0);
 
 				if (Oshiete.random.nextInt(3)!=2) {
 					ItemStack kakuho = new ItemStack(GhoulType.getKakuho(stats.getGhoulType()));
@@ -231,6 +238,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
         this.tasks.addTask(AIPriority++, new EntityAISwimming(this));
 		this.tasks.addTask(AIPriority++, new EntityAIGhoulAttack(this));
 		this.tasks.addTask(AIPriority++, new EntityAIDoveAttack(this));
+		//this.tasks.addTask(AIPriority++, new EntityAIHurtByTarget(this, false, new Class[0]));
         this.tasks.addTask(AIPriority++, new EntityAIPanic(this, 3.0D));
         this.tasks.addTask(AIPriority++, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(AIPriority++, new EntityAIWatchClosest(this, EntityHuman.class, 6.0F));

@@ -10,25 +10,28 @@ import com.dretha.drethamod.utils.controllers.ActionController;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.monster.EntityHusk;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+
 import java.util.ArrayList;
 
 public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawnData {
 
     public static final ResourceLocation LOOT = new ResourceLocation(Reference.MODID, "loot_tables/corpse.json");
     protected ResourceLocation textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/skin0002.png");
+    public static final int ticksBeforeUndead = 10800;
     protected String skin = "skin0002";
     protected PersonStats stats = new PersonStats();
     protected int rotationAngle = 0;
@@ -41,7 +44,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         float width = 1F;
         setSize(width, width);
-        //this.setEntityInvulnerable(true);
+        this.setEntityInvulnerable(true);
         this.setHealth(20);
 
         this.setPosition(pos.getX(), pos.getY(), pos.getZ());
@@ -64,12 +67,31 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         super.onEntityUpdate();
         if (isEmbalmed) return;
 
-        //12 minutes
-        if (this.ticksExisted>21600 && !world.isRemote) {
+        if (this.ticksExisted > ticksBeforeUndead && !world.isRemote) {
             setDead();
-            EntityZombie zombie = new EntityZombie(world);
-            zombie.setPosition(posX, posY, posZ);
-            world.spawnEntity(zombie);
+            EntityMob mob;
+
+            if (world.isDaytime()) {
+                mob = new EntityHusk(world);
+            }
+            else
+            {
+                if (ListStackUtils.containJustOneTypeItem(drop, Items.BONE))
+                    mob = new EntitySkeleton(world);
+                else
+                    mob = new EntityZombie(world);
+            }
+
+            mob.setPosition(posX, posY, posZ);
+            world.spawnEntity(mob);
+        }
+
+        if (ticksExisted%2==0 && this.ticksExisted > ticksBeforeUndead/2)
+        {
+            double r = 67D/255D;
+            double g = 79D/255D;
+            double b = 44D/255D;
+            this.world.spawnParticle(EnumParticleTypes.SPELL_MOB, this.posX + (this.rand.nextDouble() - 0.5D) * (double) this.width, this.posY + this.rand.nextDouble() * (double) this.height, this.posZ + (this.rand.nextDouble() - 0.5D) * (double) this.width, r, g, b);
         }
     }
 
@@ -82,6 +104,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         compound.setString("skin", skin);
         compound.setInteger("angle", rotationAngle);
         compound.setBoolean("isEmbalmed", isEmbalmed);
+        compound.setInteger("ticksExisted", ticksExisted);
         ListStackUtils.writeToNBT(drop, compound);
     }
 
@@ -95,7 +118,13 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/"+ skin + ".png");
         rotationAngle = compound.getInteger("angle");
         isEmbalmed = compound.getBoolean("isEmbalmed");
+        ticksExisted = compound.getInteger("ticksExisted");
         drop = ListStackUtils.readFromNBT(compound);
+    }
+
+    @Override
+    protected boolean canDespawn() {
+        return false;
     }
 
     @Override
@@ -117,6 +146,8 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
                 ItemStack stack = drop.get(drop.size() - 1);
                 drop.remove(drop.size() - 1);
                 this.entityDropItem(stack, 0);
+                if (!world.isRemote)
+                    world.playSound(null, player.getPosition(), SoundEvents.ENTITY_SLIME_HURT, SoundCategory.PLAYERS, 1F, 1F);
             } else if (drop.isEmpty()) {
                 this.setDead();
             }
@@ -146,6 +177,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         NBTTagCompound compound = new NBTTagCompound();
         compound.setBoolean("isEmbalmed", isEmbalmed);
+        compound.setInteger("ticksExisted", ticksExisted);
         stats.writeToNBT(compound);
         ListStackUtils.writeToNBT(drop, compound);
         ByteBufUtils.writeTag(buf, compound);
@@ -159,6 +191,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         NBTTagCompound compound = ByteBufUtils.readTag(buf);
         isEmbalmed = compound.getBoolean("isEmbalmed");
+        ticksExisted = compound.getInteger("ticksExisted");
         stats.readFromNBT(compound);
         drop = ListStackUtils.readFromNBT(compound);
     }
@@ -173,9 +206,5 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
     protected SoundEvent getDeathSound()
     {
         return InitSounds.burning;
-    }
-
-    public boolean isEmbalmed() {
-        return isEmbalmed;
     }
 }

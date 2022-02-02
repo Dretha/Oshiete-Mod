@@ -43,6 +43,6 @@ public class ItemCloth extends Item implements IHasModel, IDressable {
 
     @Override
     public void registerModels() {
-        ModelLoader.setCustomModelResourceLocation((Item)this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
     }
 }

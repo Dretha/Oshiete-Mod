@@ -43,7 +43,7 @@ public class SniffMessage implements IMessage{
         @Override
         public IMessage onMessage(SniffMessage m, MessageContext ctx) {
         	
-        	EntityPlayerMP player = (EntityPlayerMP) ctx.getServerHandler().player;
+        	EntityPlayerMP player = ctx.getServerHandler().player;
         	WorldServer world = (WorldServer) ctx.getServerHandler().player.world;
         	
         	PotionEffect potioneffect = new PotionEffect(MobEffects.GLOWING, m.duration, 0);

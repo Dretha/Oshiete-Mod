@@ -27,6 +27,7 @@ public class InitSounds {
     public static SoundEvent sweep_light = initialize("sweep_light");
     public static SoundEvent sweep_heavy = initialize("sweep_heavy");
     public static SoundEvent burning = initialize("burning");
+    public static SoundEvent rebound = initialize("rebound");
 
     
     @SubscribeEvent

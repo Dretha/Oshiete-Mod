@@ -12,6 +12,7 @@ import com.dretha.drethamod.client.geckolib.kagunes.rinkaku.kagune301.Render301;
 import com.dretha.drethamod.client.geckolib.kagunes.ukaku.kagune101.Entity101;
 import com.dretha.drethamod.client.geckolib.kagunes.ukaku.kagune101.Model101;
 import com.dretha.drethamod.client.geckolib.kagunes.ukaku.kagune101.Render101;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -49,5 +50,9 @@ public enum EnumKagune {
         RenderingRegistry.registerEntityRenderingHandler((Class)Entity201.class, manager -> new Render201(manager));
         RenderingRegistry.registerEntityRenderingHandler((Class)Entity301.class, manager -> new Render301(manager));
         RenderingRegistry.registerEntityRenderingHandler((Class)Entity401.class, manager -> new Render401(manager));
+
+		for (EnumKagune kagune : EnumKagune.values()) {
+			RenderingRegistry.registerEntityRenderingHandler(kagune.getEntity(Minecraft.getMinecraft().player).getClass(), kagune::getRender);
+		}
 	}
 }

@@ -13,7 +13,7 @@ public class PacketBase implements IMessage{
 	
 	public PacketBase() {}
 	public PacketBase(ItemStack stack) {
-        this.stack = stack;
+        PacketBase.stack = stack;
     }
 	
 	@Override

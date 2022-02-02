@@ -36,7 +36,7 @@ import java.util.List;
 public class ItemFirearm extends Item implements IAnimatable
 {
     public AnimationFactory factory = new AnimationFactory(this);
-    private String controllerName = "popupController";
+    private final String controllerName = "popupController";
     private final String firearmDescription;
 
     private <P extends Item & IAnimatable> PlayState predicate(AnimationEvent<P> event)

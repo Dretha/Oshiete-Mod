@@ -8,7 +8,7 @@ public class Render201 extends RendererKaguneBase
 {
     public Render201(final RenderManager renderManager)
     {
-        super(renderManager, (AnimatedGeoModel) new Model201(null));
+        super(renderManager, new Model201(null));
         this.shadowSize = 0.7F;
     }
 }

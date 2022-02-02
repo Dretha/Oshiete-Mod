@@ -12,7 +12,7 @@ public class CapaFirearmProvider implements ICapabilitySerializable<NBTBase> {
     @CapabilityInject(ICapaFirearmHandler.class)
     public static final Capability<ICapaFirearmHandler> FIREARM_CAP = null;
 
-    private ICapaFirearmHandler instance = FIREARM_CAP.getDefaultInstance();
+    private final ICapaFirearmHandler instance = FIREARM_CAP.getDefaultInstance();
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
@@ -23,7 +23,7 @@ public class CapaFirearmProvider implements ICapabilitySerializable<NBTBase> {
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
     {
-        return capability == FIREARM_CAP ? FIREARM_CAP.<T> cast(this.instance) : null;
+        return capability == FIREARM_CAP ? FIREARM_CAP.cast(this.instance) : null;
     }
 
     @Override

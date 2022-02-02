@@ -153,9 +153,9 @@ public class EntityRCShard extends EntityArrow{
             IBlockState iblockstate = world.getBlockState(blockpos);
             inTile = iblockstate.getBlock();
             inTile.getMetaFromState(iblockstate);
-            motionX = (double)((float)(raytraceResultIn.hitVec.x - posX));
-            motionY = (double)((float)(raytraceResultIn.hitVec.y - posY));
-            motionZ = (double)((float)(raytraceResultIn.hitVec.z - posZ));
+            motionX = (float)(raytraceResultIn.hitVec.x - posX);
+            motionY = (float)(raytraceResultIn.hitVec.y - posY);
+            motionZ = (float)(raytraceResultIn.hitVec.z - posZ);
             float f2 = MathHelper.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
             posX -= motionX / (double)f2 * 0.05000000074505806D;
             posY -= motionY / (double)f2 * 0.05000000074505806D;

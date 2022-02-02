@@ -1,11 +1,13 @@
 package com.dretha.drethamod.client.geckolib.kagunes;
 
-import com.dretha.drethamod.entity.EntityHuman;
-import com.dretha.drethamod.utils.handlers.EventsHandler;
+import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.utils.Enumerator;
+import com.dretha.drethamod.utils.controllers.ActionController;
+import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import scala.actors.threadpool.Arrays;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -19,30 +21,21 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import java.util.ArrayList;
 import java.util.Random;
 
-public abstract class EntityKagune extends EntityLiving implements IAnimatable {
-	
-	Random random = new Random();
-	
+public class EntityKagune extends EntityLiving implements IAnimatable {
+
 	protected EntityLivingBase master = null;
-	protected PersonStats stats = null;
+	protected PersonStats stats = PersonStats.EMPTY;
 	
-	protected boolean isHit = false;
-	protected int hitTicksPre = 0;
-	
-	protected boolean isBlockAnim = false;
-	protected int blockAnimPre = 0;
-	protected int blockAnimCount = 0;
-	
-	protected boolean release = true;
-	protected int releaseTicks = this.ticksExisted;
-	protected boolean admit = false;
-	protected int admitTicks = this.ticksExisted;
-	
-	
-	AnimationBuilder BLOCK = new AnimationBuilder().addAnimation("block", true);
-	AnimationBuilder BLOCK_ANIM = new AnimationBuilder().addAnimation("block_anim", true);
-	AnimationBuilder MOVE = new AnimationBuilder().addAnimation("move", true);
-	AnimationBuilder NORMAL = new AnimationBuilder().addAnimation("normal", true);
+	protected ActionController impactController = new ActionController(10);
+	protected ActionController blockAnimController = new ActionController(7);
+	protected ActionController releaseController = new ActionController(23);
+	protected ActionController admitController = new ActionController(23);
+	protected Enumerator impactEnumerator = new Enumerator(3);
+
+	protected AnimationBuilder BLOCK = new AnimationBuilder().addAnimation("block", true);
+	protected AnimationBuilder BLOCK_ANIM = new AnimationBuilder().addAnimation("block_anim", true);
+	protected AnimationBuilder MOVE = new AnimationBuilder().addAnimation("move", true);
+	protected AnimationBuilder NORMAL = new AnimationBuilder().addAnimation("normal", true);
 	
 	
 	protected ArrayList<Float> listF = new ArrayList<>(Arrays.asList(new Float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F}));
@@ -64,19 +57,16 @@ public abstract class EntityKagune extends EntityLiving implements IAnimatable {
         this.ignoreFrustumCheck = true;
     }
 
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-    	
-    	if (isBlockAnim && canToggleBlockAnim())
-			isBlockAnim=false;
-
-		if (release) {
-			if (releaseTicks+23<=master.ticksExisted) release = false;
+    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
+	{
+		if (!releaseController.endAct(master.ticksExisted)) {
 			event.getController().setAnimation(new AnimationBuilder().addAnimation("release", true));
 			return PlayState.CONTINUE;
-		} else if (admit) {
-			if (admitTicks+23<=master.ticksExisted) {
-				admit = false;
-
+		}
+		else if (!admitController.endAct(master.ticksExisted))
+		{
+			if (admitController.endAct(master.ticksExisted+1))
+			{
 				stats.setKaguneActive(false);
 				if (!stats.isSpeedModeActive())
 					stats.setKakuganActive(false);
@@ -86,20 +76,25 @@ public abstract class EntityKagune extends EntityLiving implements IAnimatable {
 			}
 			event.getController().setAnimation(new AnimationBuilder().addAnimation("admit", true));
 			return PlayState.CONTINUE;
-		} else if (this.isHit) {
-			if (canCloseHit()) setHit(false);
-			if (stats.isBlock())
-				event.getController().setAnimation(new AnimationBuilder().addAnimation("block_thrust", true));
-			else
-				event.getController().setAnimation(new AnimationBuilder().addAnimation(stats.getImpactType().toString().toLowerCase() , true));
+		}
+		else if (!impactController.endAct(master.ticksExisted))
+		{
+			event.getController().setAnimation(new AnimationBuilder().addAnimation(stats.getImpactType().toString().toLowerCase() + (stats.getImpactType() == ImpactType.THRUST ? impactEnumerator.number() : ""), true));
+			if (impactController.endAct(master.ticksExisted+1)) impactEnumerator.recite(master.ticksExisted);
 			return PlayState.CONTINUE;
-		} else if (this.isBlockAnim) {
+		}
+		else if (!blockAnimController.endAct(master.ticksExisted))
+		{
 			event.getController().setAnimation(BLOCK_ANIM);
 			return PlayState.CONTINUE;
-		} else if (stats.isBlock()) {
+		}
+		else if (stats.isBlock())
+		{
 			event.getController().setAnimation(BLOCK);
 			return PlayState.CONTINUE;
-		} else if (master.isSprinting() && stats.isSpeedModeActive()) {
+		}
+		else if (master.isSprinting() && stats.isSpeedModeActive())
+		{
 			event.getController().setAnimation(MOVE);
 			return PlayState.CONTINUE;
 		}
@@ -109,26 +104,7 @@ public abstract class EntityKagune extends EntityLiving implements IAnimatable {
     }
     
     public boolean transform() {
-    	return release || admit;
-    }
-    
-    public void setAdmit(boolean b) {
-    	admit = b;
-    }
-    public void setAdmitTicks(int ticks) {
-    	admitTicks = ticks;
-    }
-
-    public void setReleaseTicks(int ticks) {
-    	releaseTicks = ticks;
-    }
-    
-    public boolean canCloseHit() {
-    	if (stats!=null) {
-    		return hitTicksPre+stats.getImpactType().speed()<=master.ticksExisted-1;
-    	} else {
-    		return hitTicksPre+15<=master.ticksExisted-1;
-    	}
+    	return !releaseController.endAct(master.ticksExisted) || !admitController.endAct(master.ticksExisted);
     }
     
     @Override
@@ -136,10 +112,6 @@ public abstract class EntityKagune extends EntityLiving implements IAnimatable {
     {
     	this.controller = new AnimationController(this, "controller", 0, this::predicate);
         data.addAnimationController(this.controller);
-    }
-    
-    public AnimationController getController() {
-    	return this.controller;
     }
 
     @Override
@@ -163,42 +135,31 @@ public abstract class EntityKagune extends EntityLiving implements IAnimatable {
     public ArrayList<Float> getListF() {
     	return this.listF;
     }
-    
-    
-    
-    public boolean isHit() {
-    	return this.isHit;
-    }
-    public void setHit(boolean b) {
-    	this.isHit=b;
-    }
-    public void setHitTicksPre(int ticks) {
-    	this.hitTicksPre = ticks;
-    }
-    
-    
-    
-    public boolean isBlockAnim() {
-    	return this.isBlockAnim;
-    }
-    
-    public void setBlockAnim(boolean b) {
-    	this.isBlockAnim = b;
-    }
-    
-    public boolean canToggleBlockAnim() {
-    	return this.blockAnimPre + 5 < master.ticksExisted;
-    }
-    
-    public void setBlockAnimPre(int ticks) {
-    	this.blockAnimPre = ticks;
-    }
-    
-    private int getBACount() {
-    	this.blockAnimCount++;
-    	if (this.blockAnimCount==4) {
-    		this.blockAnimCount=1;
-    	}
-    	return this.blockAnimCount;
-    }
+
+	public ActionController getImpactController() {
+		return impactController;
+	}
+
+	public ActionController getBlockAnimController() {
+		return blockAnimController;
+	}
+
+	public ActionController getReleaseController() {
+		return releaseController;
+	}
+
+	public ActionController getAdmitController() {
+		return admitController;
+	}
+
+	public void spawnPatricleSpine(EntityLivingBase entity) {
+		double x = entity.posX + ((Oshiete.random.nextGaussian()-0.5D)*0.25D);
+		double y = entity.posY + 1D + ((Oshiete.random.nextGaussian()-0.5D)*0.5D);
+		double z = entity.posZ + ((Oshiete.random.nextGaussian()-0.5D)*0.25D);
+		float f = 10F / 15.0F;
+		float r = f * 0.6F + 0.4F;
+		float g = Math.max(0.0F, f * f * 0.7F - 0.5F);
+		float b = Math.max(0.0F, f * f * 0.6F - 0.7F);
+		entity.world.spawnParticle(EnumParticleTypes.REDSTONE, x, y, z, r, g, b);
+	}
 }

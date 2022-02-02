@@ -25,7 +25,7 @@ import java.util.List;
 
 public class ItemGhoulFood extends ItemFood implements IHasModel{
 	
-	private String description;
+	private final String description;
 	protected int satiation;
 	protected EnumRarity rarity = EnumRarity.COMMON;
 
@@ -62,7 +62,7 @@ public class ItemGhoulFood extends ItemFood implements IHasModel{
 
 	@Override
 	public void registerModels() {
-		ModelLoader.setCustomModelResourceLocation((Item)this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+		ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
 	}
 	
 	@Override

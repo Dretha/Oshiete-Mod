@@ -56,22 +56,18 @@ public enum GhoulType {
 		}
 		return null;
 	}
-
-	public int getProtection(PersonStats stats) {
-		return (int) (stats.exactRank() * 10 * this.blockMultiplier);
-	}
 	
 	public static int indexOf(GhoulType type) {
 		return Arrays.asList(GhoulType.values()).indexOf(type);
 	}
 	
 	public static GhoulType typeOf(int index) {
-		return (GhoulType) Arrays.asList(GhoulType.values()).get(index);
+		return Arrays.asList(GhoulType.values()).get(index);
 	}
 	
 	private static final Random random = new Random();
 	public static GhoulType random() {
-		return (GhoulType) Arrays.asList(GhoulType.values()).get(random.nextInt(4));
+		return Arrays.asList(GhoulType.values()).get(random.nextInt(4));
 	}
 
 	public static GhoulType getWeakType(GhoulType strongType) {

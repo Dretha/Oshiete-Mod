@@ -80,10 +80,17 @@
   "burning": {
     "category": "ambient",
     "sounds": [
-      "dm:burning1",
       "dm:burning2",
       "dm:burning3",
       "dm:burning4"
+    ]
+  },
+  "rebound": {
+    "category": "ambient",
+    "sounds": [
+      "dm:rebound1",
+      "dm:rebound2",
+      "dm:rebound3"
     ]
   }
 }

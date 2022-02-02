@@ -26,19 +26,21 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 
-import java.util.Random;
+import javax.annotation.Nullable;
 
 public class PersonStats {
+
+    public static final PersonStats EMPTY = new PersonStats();
 
     private boolean isGhoul = false;
     private boolean isDove = false;
     private int RCpoints = Oshiete.random.nextInt(501)+200;
     private int skill = 0;
-    private int RClevel = RCpoints/10;
+    private int RClevel = MaxRClevel();
     private EntityKagune entityKagune = null;
 
-    private int MODEL_VARIANT = 1;
-    private int TEXTURE_VARIANT = 1;
+    private final int MODEL_VARIANT = 1;
+    private final int TEXTURE_VARIANT = 1;
     private String kakugan = "31";
     private ItemStack kakuganStack = SkinHandler.getKakuganStack(kakugan);
     private GhoulType ghoulType = GhoulType.NONE;
@@ -204,8 +206,7 @@ public class PersonStats {
         float yaw = base.rotationYaw + angle;
         while (yaw>=360) yaw-=360;
 
-        float strength = (float) DrethaMath.getNumberOfInterval(2000D, 8000D, 1.8D, 3.0D, (double)materialRank()*1000D);
-        System.out.println(strength);
+        float strength = (float) DrethaMath.getNumberOfInterval(2000D, 8000D,  ukaku() ? 4.4D : 2.2D, ukaku() ? 6.6D : 4.4D, (double)materialRank()*1000D);
 
         strength /= (base.isAirBorne?2F:1F);
 
@@ -219,7 +220,7 @@ public class PersonStats {
     }
 
     public void updateRClevel() {
-        this.RClevel = this.RCpoints/10 - (this.RCpoints/10 - this.RClevel);
+        this.RClevel = MaxRClevel() - (MaxRClevel() - this.RClevel);
     }
 
     public void removeRCpoints(int points) {
@@ -246,11 +247,15 @@ public class PersonStats {
     public void addRClevel(int points) {
         updateRClevel();
         this.RClevel += points;
-        if (this.RClevel>this.RCpoints/10) this.RClevel=this.RCpoints/10;
+        if (this.RClevel>MaxRClevel()) this.RClevel=MaxRClevel();
     }
 
     public boolean RClevelFull() {
-        return this.RClevel == this.RCpoints/10;
+        return this.RClevel == MaxRClevel();
+    }
+
+    public int MaxRClevel() {
+        return RCpoints/10;
     }
 
     public int getSkill() {
@@ -300,7 +305,6 @@ public class PersonStats {
     AttributeModifier speedghoul = new AttributeModifier("speedghoul", 0.5, 2);
     public void releaseKagune(EntityLivingBase base) {
         patriclesController.activate(base.ticksExisted);
-        //Main.NETWORK.sendToAllAround(new MyMessage(master.posX, master.posY, master.posZ), new NetworkRegistry.TargetPoint(master.world.provider.getDimension(), master.posX, master.posY, master.posZ, 60));
         if (!base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).hasModifier(speedghoul))
             base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(speedghoul);
 
@@ -308,7 +312,7 @@ public class PersonStats {
         setKakuganActive(true);
 
         this.updateEntityKagune(base);
-        entityKagune.setReleaseTicks(base.ticksExisted);
+        entityKagune.getReleaseController().setTicksPre(base.ticksExisted);
 
         base.world.playSound(null, base.getPosition(), InitSounds.let_out_kagune, SoundCategory.PLAYERS, 1F, 1F);
     }
@@ -317,8 +321,7 @@ public class PersonStats {
         if (base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).hasModifier(speedghoul))
             base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getModifier(speedghoul.getID()));
 
-        entityKagune.setAdmit(true);
-        entityKagune.setAdmitTicks(base.ticksExisted);
+        entityKagune.getAdmitController().setTicksPre(base.ticksExisted);
     }
 
     AttributeModifier speedmode = new AttributeModifier("speedmode", 1.6, 2);
@@ -337,7 +340,7 @@ public class PersonStats {
         base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(speedmode);
     }
 
-    public EntityKagune getKagune() {
+    public @Nullable EntityKagune getKagune() {
         return entityKagune;
     }
 
@@ -392,14 +395,11 @@ public class PersonStats {
     public static PersonStats getStats(EntityLivingBase base) {
         if (base instanceof EntityPlayer) {
             return EventsHandler.getCapaMP((EntityPlayer) base).personStats();
-        } else if (base instanceof EntityHuman) {
-            if (EventsHandler.hasHumanMP((EntityHuman) base))
+        } else if (base instanceof EntityHuman && EventsHandler.hasHumanMP((EntityHuman) base)) {
                 return EventsHandler.getHumanMP((EntityHuman) base).personStats();
-            else
-                return null;
         } else if (base instanceof EntityCorpse) {
             return ((EntityCorpse) base).personStats();
-        } else return null;
+        } else return EMPTY;
     }
 
     public void writeToNBT(NBTTagCompound compound)
@@ -413,6 +413,7 @@ public class PersonStats {
         compound.setInteger("skillPoints", this.getSkill());
         compound.setBoolean("isKaguneActive", this.isKaguneActive());
         compound.setBoolean("isKakuganActive", this.isKakuganActive());
+        compound.setBoolean("isSpeedModeActive", isSpeedModeActive);
         compound.setInteger("shardCountInEntity", this.getShardCountInEntity());
         compound.setString("impactType", this.getImpactType().toString());
         compound.setString("kakugan", kakugan);
@@ -430,6 +431,7 @@ public class PersonStats {
         this.setSkill(compound.getInteger("skillPoints"));
         this.setKaguneActive(compound.getBoolean("isKaguneActive"));
         this.setKakuganActive(compound.getBoolean("isKakuganActive"));
+        this.setSpeedModeActive(compound.getBoolean("isSpeedModeActive"));
         this.setShardCountInEntity(compound.getInteger("shardCountInEntity"));
         if (ImpactType.valueOf(compound.getString("impactType"))!=ImpactType.THRUST) this.changeImpactType();
         this.kakugan = compound.getString("kakugan");
@@ -445,4 +447,23 @@ public class PersonStats {
         kakugan = key;
         kakuganStack = SkinHandler.getKakuganStack(key);
     }
+
+    /**
+     * ”€звим ли гуль дл€ обычного оружи€
+     */
+    public boolean isVulnerable() {
+        return !isGhoul || isGhoul && RClevel < MaxRClevel()/10;
+    }
+
+    public float getJumpHeight() {
+        float d = isGhoul()?10F:20F;
+        float height = materialRank()/d;
+        height = isGhoul() ? Math.max(height, 0.1F) : height;
+        return height;
+    }
+
+    public int getProtection() {
+        return (int) (exactRank() * 10 * ghoulType.blockMultiplier);
+    }
+
 }

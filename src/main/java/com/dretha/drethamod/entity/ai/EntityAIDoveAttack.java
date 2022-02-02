@@ -3,11 +3,9 @@ package com.dretha.drethamod.entity.ai;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.Path;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -31,16 +29,17 @@ public class EntityAIDoveAttack extends EntityAIBase
     private double targetZ;
     protected final int attackInterval = 20;
     private int failedPathFindingPenalty = 0;
-    private boolean canPenalize = false;
+    private final boolean canPenalize = false;
 
     public EntityAIDoveAttack(EntityHuman human)
     {
         this.attacker = human;
         stats = attacker.personStats();
         this.world = human.world;
-        this.speedTowardsTarget = human.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue();
+        this.speedTowardsTarget = 2.5F;
         this.longMemory = true;
         this.setMutexBits(3);
+        System.out.println("create");
     }
 
     /**
@@ -49,13 +48,13 @@ public class EntityAIDoveAttack extends EntityAIBase
     public boolean shouldExecute()
     {
         stats = attacker.personStats();
-        if (stats==null || !stats.isDove()) return false;
+        if (stats==null || !stats.isDove()) return false; //если атакующий не следователь завершить
 
         EntityLivingBase base = this.attacker.getAttackTarget();
 
         if (base instanceof EntityHuman || base instanceof EntityPlayer)
         {
-            if (!PersonStats.getStats(base).isGhoul()) return false;
+            if (!PersonStats.getStats(base).isGhoul()) return false; //если цель не гуль завершить
         }
 
         if (base == null)
@@ -99,8 +98,6 @@ public class EntityAIDoveAttack extends EntityAIBase
      */
     public boolean shouldContinueExecuting()
     {
-
-
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
 
         if (entitylivingbase == null)
@@ -143,13 +140,10 @@ public class EntityAIDoveAttack extends EntityAIBase
 
         if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative()))
         {
-            this.attacker.setAttackTarget((EntityLivingBase)null);
+            this.attacker.setAttackTarget(null);
         }
 
         this.attacker.getNavigator().clearPath();
-
-        //attacker.setAdmit(true);
-        //attacker.setAdmitTicksPre(attacker.ticksExisted);
     }
 
     /**
@@ -214,17 +208,14 @@ public class EntityAIDoveAttack extends EntityAIBase
         {
             this.attackTick = attackInterval;
 
-            //this.attacker.swingArm(EnumHand.MAIN_HAND);
-            //this.attacker.attackEntityAsMob(base);
-
-            DamageSource damagesource = DamageSource.causeMobDamage(attacker);
             this.attacker.swingArm(EnumHand.MAIN_HAND);
             this.attacker.attackEntityAsMob(base);
+            attacker.getHeldItemMainhand().getItem().hitEntity(attacker.getHeldItemMainhand(), base, attacker);
         }
     }
 
     protected double getAttackReachSqr(EntityLivingBase attackTarget)
     {
-        return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
+        return this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width;
     }
 }

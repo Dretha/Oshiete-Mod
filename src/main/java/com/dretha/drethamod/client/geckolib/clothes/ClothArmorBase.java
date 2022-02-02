@@ -12,7 +12,7 @@ import software.bernie.geckolib3.item.GeoArmorItem;
 
 public class ClothArmorBase extends GeoArmorItem implements IAnimatable {
 
-    private AnimationFactory factory = new AnimationFactory(this);
+    private final AnimationFactory factory = new AnimationFactory(this);
 
     public ClothArmorBase(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot slot, String name) {
         super(materialIn, renderIndexIn, slot);

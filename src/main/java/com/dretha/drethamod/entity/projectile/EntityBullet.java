@@ -1,25 +1,33 @@
 package com.dretha.drethamod.entity.projectile;
 
+import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.firearm.Bullets;
 import com.dretha.drethamod.utils.OshieteDamageSource;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
 public class EntityBullet extends EntityThrowable {
 
-    protected int damage = 4;
     protected Bullets bulletType;
     protected EntityLivingBase shooter;
-    protected EntityLivingBase target;
-    protected int patrTicksPre = 0;
 
     public EntityBullet(World world) {
         super(world);
+    }
+
+    @Override
+    public void onUpdate() {
+        super.onUpdate();
+        for (int k = 0; k < 4; ++k)
+        {
+            this.world.spawnParticle(EnumParticleTypes.CRIT, this.posX + this.motionX * (double)k / 4.0D, this.posY + this.motionY * (double)k / 4.0D, this.posZ + this.motionZ * (double)k / 4.0D, -this.motionX, -this.motionY + 0.2D, -this.motionZ);
+        }
     }
 
     public EntityBullet(World world, EntityLivingBase shooter, Bullets bulletType) {
@@ -30,39 +38,21 @@ public class EntityBullet extends EntityThrowable {
     }
 
     @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if (target!=null && !target.isDead && patrTicksPre+5>=target.ticksExisted) {
-            //this.motionX = 0;
-            //this.motionY = 0;
-            //this.motionZ = 0;
-
-            float f = 10F / 15.0F;
-            float f1 = f * 0.6F + 0.4F;
-            float f2 = Math.max(0.0F, f * f * 0.7F - 0.5F);
-            float f3 = Math.max(0.0F, f * f * 0.6F - 0.7F);
-
-            this.world.spawnParticle(EnumParticleTypes.REDSTONE, this.posX, this.posY, this.posZ, f1, f2, f3);
-        } else if (target!=null && patrTicksPre+5<=target.ticksExisted) {
-            this.setDead();
-        }
-    }
-
-    @Override
     protected void onImpact(RayTraceResult result) {
         if (!this.world.isRemote) {
             if (result.entityHit instanceof EntityLivingBase) {
-                EntityLivingBase base = (EntityLivingBase) result.entityHit;
-
-                patrTicksPre = base.ticksExisted;
-                target = base;
-
-                DamageSource source = OshieteDamageSource.causeBulletDamage(this, shooter);
-
-                int savedResistantTime = base.hurtResistantTime;
-                base.hurtResistantTime = 0;
-                base.attackEntityFrom(source, damage);
-                base.hurtResistantTime = savedResistantTime;
+                EntityLivingBase target = (EntityLivingBase) result.entityHit;
+                PersonStats stats = PersonStats.getStats(target);
+                if ((stats!=null && stats.isGhoul() && bulletType.hurtGhoul() && stats.rank()<3) || stats==null || !stats.isGhoul()) {
+                    DamageSource source = OshieteDamageSource.causeBulletDamage(this, shooter);
+                    int savedResistantTime = target.hurtResistantTime;
+                    target.hurtResistantTime = 0;
+                    target.attackEntityFrom(source, bulletType.getDamage());
+                    target.hurtResistantTime = savedResistantTime;
+                } else {
+                    target.world.playSound(null, target.getPosition(), InitSounds.rebound, SoundCategory.AMBIENT, 1.0F, 1.0F);
+                    setDead();
+                }
             }
         }
     }

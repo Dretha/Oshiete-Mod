@@ -26,13 +26,13 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
     protected static final ResourceLocation ENCHANTED_ITEM_GLINT_RES = new ResourceLocation("textures/misc/enchanted_item_glint.png");
     protected T modelLeggings;
     protected T modelArmor;
-    private float alpha = 1.0F;
-    private float colorR = 1.0F;
-    private float colorG = 1.0F;
-    private float colorB = 1.0F;
+    private final float alpha = 1.0F;
+    private final float colorR = 1.0F;
+    private final float colorG = 1.0F;
+    private final float colorB = 1.0F;
     private final RenderLivingBase<?> renderer;
     private boolean skipRenderGlint;
-    private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.<String, ResourceLocation>newHashMap();
+    private static final Map<String, ResourceLocation> ARMOR_TEXTURE_RES_MAP = Maps.newHashMap();
 
     public LayerClothesBase(RenderLivingBase<?> rendererIn)
     {
@@ -108,7 +108,7 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
 
     public T getModelFromSlot(EntityEquipmentSlot slotIn)
     {
-        return (T)(this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor);
+        return this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor;
     }
 
     private boolean isLegSlot(EntityEquipmentSlot slotIn)
@@ -157,7 +157,7 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
     @Deprecated //Use the more sensitive version getArmorResource below
     private ResourceLocation getArmorResource(ItemArmor armor, boolean p_177181_2_)
     {
-        return this.getArmorResource(armor, p_177181_2_, (String)null);
+        return this.getArmorResource(armor, p_177181_2_, null);
     }
 
     @Deprecated //Use the more sensitive version getArmorResource below
@@ -212,7 +212,7 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
         String s1 = String.format("%s:textures/models/armor/%s_layer_%d%s.png", domain, texture, (isLegSlot(slot) ? 2 : 1), type == null ? "" : String.format("_%s", type));
 
         s1 = net.minecraftforge.client.ForgeHooksClient.getArmorTexture(entity, stack, s1, slot, type);
-        ResourceLocation resourcelocation = (ResourceLocation)ARMOR_TEXTURE_RES_MAP.get(s1);
+        ResourceLocation resourcelocation = ARMOR_TEXTURE_RES_MAP.get(s1);
 
         if (resourcelocation == null)
         {

@@ -1,5 +1,6 @@
 package com.dretha.drethamod.utils;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -41,5 +42,13 @@ public class ListStackUtils
             list.add(stack);
         }
         return list;
+    }
+
+    public static boolean containJustOneTypeItem(ArrayList<ItemStack> list, Item item) {
+        for (ItemStack stack : list) {
+            if (stack.getItem()!=item)
+                return false;
+        }
+        return true;
     }
 }

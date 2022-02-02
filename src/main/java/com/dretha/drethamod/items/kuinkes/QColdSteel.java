@@ -2,7 +2,7 @@ package com.dretha.drethamod.items.kuinkes;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
@@ -15,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import scala.tools.nsc.settings.RC;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.controller.AnimationController;
@@ -45,14 +44,14 @@ public class QColdSteel extends KuinkeMeleeBase{
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
         if (!stack.hasTagCompound()) {
-            modificateWeapon(stack, 10, weapons, GhoulType.BIKAKU);
+            modificateWeapon(stack, 1200, weapons, GhoulType.BIKAKU);
         }
     }
 
     public static ItemStack modificateWeapon(ItemStack stack, int RCpool, Weapons weapons, GhoulType ghoulType) {
         NBTTagCompound compound = new NBTTagCompound();
         compound.setUniqueId("uuid", UUID.randomUUID());
-
+        RCpool /= 120;
         compound.setInteger("damage", (int) (RCpool * weapons.damageMultiplier * ghoulType.kuinkeDamageMultiplier));
         compound.setInteger("block", (int) (RCpool * weapons.blockMultiplier * ghoulType.blockMultiplier));
         compound.setString("type", ghoulType.toString());
@@ -65,6 +64,11 @@ public class QColdSteel extends KuinkeMeleeBase{
     public static ItemStack randomModificateWeapon(int RCpool) {
         ItemStack coldSteel = new ItemStack(Weapons.randomItem());
         Weapons weapons = ((QColdSteel)coldSteel.getItem()).getWeapon();
+        GhoulType ghoulType = GhoulType.random();
+        return modificateWeapon(coldSteel, RCpool, weapons, ghoulType);
+    }
+    public static ItemStack randomModificateWeapon(int RCpool, Weapons weapons) {
+        ItemStack coldSteel = new ItemStack(Weapons.getItem(weapons));
         GhoulType ghoulType = GhoulType.random();
         return modificateWeapon(coldSteel, RCpool, weapons, ghoulType);
     }
@@ -83,7 +87,7 @@ public class QColdSteel extends KuinkeMeleeBase{
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker)
     {
-        DamageSource source;
+        DamageSource source = OshieteDamageSource.causeKuinkeAttack(attacker);
         int damage = stack.getTagCompound().getInteger("damage");
         GhoulType ghoulType = GhoulType.valueOf(stack.getTagCompound().getString("type"));
 
@@ -91,12 +95,6 @@ public class QColdSteel extends KuinkeMeleeBase{
             ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
             if (capa.getAttackKuinkeTicksPre() + getSpeedValue(stack) >= attacker.ticksExisted)
                 return true;
-        }
-
-        if (attacker instanceof EntityPlayer) {
-            source = DamageSource.causePlayerDamage((EntityPlayer) attacker);
-        } else {
-            source = DamageSource.causeMobDamage(attacker);
         }
 
         GhoulType targetGhoulType = GhoulType.NONE;

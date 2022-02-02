@@ -53,6 +53,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
@@ -91,7 +92,7 @@ public class EventsHandler {
     }
     @SubscribeEvent
     public void attachFirearmCapability(AttachCapabilitiesEvent<ItemStack> event) {
-        if (!(((ItemStack)event.getObject()).getItem() instanceof ItemFirearm)) return;
+        if (!(event.getObject().getItem() instanceof ItemFirearm)) return;
         try {
             event.addCapability(FIREARM_CAP, new CapaFirearmProvider());
         } catch (Exception e) {
@@ -113,7 +114,7 @@ public class EventsHandler {
     
     
     //playerlist
-    private static LinkedList<EntityPlayer> player_list = new LinkedList<EntityPlayer>();
+    private static final LinkedList<EntityPlayer> player_list = new LinkedList<EntityPlayer>();
     @SubscribeEvent
     public void PlayerLoggedInList(PlayerLoggedInEvent e) {
     	if (!player_list.contains(e.player)) {
@@ -126,15 +127,11 @@ public class EventsHandler {
     }
     @SubscribeEvent
     public void PlayerLoggedOutList(PlayerLoggedOutEvent e) {
-    	if (player_list.contains(e.player)) {
-    		player_list.remove(e.player);
-    	}
+        player_list.remove(e.player);
     }
     @SubscribeEvent
     public void PlayerCloneEventList(PlayerEvent.Clone e) {
-    	if (player_list.contains(e.getOriginal())) {
-    		player_list.remove(e.getOriginal());
-    	}
+        player_list.remove(e.getOriginal());
     	if (!player_list.contains(e.getEntityPlayer())) {
     		player_list.add(e.getEntityPlayer());
     	}
@@ -156,7 +153,7 @@ public class EventsHandler {
     
     
     //humanslist
-    private static LinkedList<EntityHuman> human_list = new LinkedList<EntityHuman>();
+    private static final LinkedList<EntityHuman> human_list = new LinkedList<EntityHuman>();
     @SubscribeEvent
     public void humanLoggedInList(EntityJoinWorldEvent e) {
     	if (e.getEntity() instanceof EntityHuman && !human_list.contains(e.getEntity())) {
@@ -235,7 +232,7 @@ public class EventsHandler {
     	if (stats.isKaguneActive() && stats.getKagune()!=null) {
         	GlStateManager.enableRescaleNormal();
         	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            
+            // TODO переписать это
         	
         	EntityKagune kagune = null;
         	float limbSwing=0;
@@ -301,8 +298,8 @@ public class EventsHandler {
     
     @SubscribeEvent
     public void onCameraUpdate(EntityViewRenderEvent.CameraSetup e) {
-    	
-        //GL11.glTranslatef(-0.75F, 0, 0);
+        if (Minecraft.getMinecraft().gameSettings.thirdPersonView==1)
+            GL11.glTranslatef(-0.5F, 0, 0);
     }
     
     
@@ -431,7 +428,7 @@ public class EventsHandler {
                 {
                     ItemStack kakuho = e.craftMatrix.getStackInSlot(i);
                     Kakuho kakuhoItem = (Kakuho)kakuho.getItem();
-                    int modif = kakuho.getTagCompound().getInteger("RCpoints")/120;
+                    int modif = kakuho.getTagCompound().getInteger("RCpoints");
 
                     GhoulType ghoulType = kakuhoItem.ghoulType;
 

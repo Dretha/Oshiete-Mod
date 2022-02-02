@@ -86,7 +86,7 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
         } while (stats.getKagune()==null);
         kagune.setListF(limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
         
-        
+        // TODO масштабировать кагуне
         ResourceLocation kaguneTexture = kaguneModel.getTextureLocation(kagune);
         GeoModel geomodelkagune = kaguneModel.getModel(kaguneModel.getModelLocation(kagune));    
         

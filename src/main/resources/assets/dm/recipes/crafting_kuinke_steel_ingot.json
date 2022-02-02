@@ -1,0 +1,16 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "##",
+        "##"
+    ],
+    "key": {
+        "#": {
+            "item": "dm:qsteel_shard"
+        }
+    },
+    "result": {
+        "item": "dm:kuinke_steel",
+        "count": 1
+    }
+}

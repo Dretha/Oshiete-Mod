@@ -25,8 +25,8 @@ import java.util.List;
 
 public class ItemTabletCreative extends Item implements IHasModel{
 	
-	private GhoulType ghoulType;
-	private String description;
+	private final GhoulType ghoulType;
+	private final String description;
 	
 	public ItemTabletCreative(String name, String description, GhoulType ghoulType) {
 		this.maxStackSize = 64;

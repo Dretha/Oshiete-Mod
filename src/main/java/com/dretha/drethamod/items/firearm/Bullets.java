@@ -24,7 +24,7 @@ public enum Bullets {
     public int getDamage() {
         return damage;
     }
-    public boolean isHurtGhoul() {
+    public boolean hurtGhoul() {
         return hurtGhoul;
     }
     public String getDescription() {

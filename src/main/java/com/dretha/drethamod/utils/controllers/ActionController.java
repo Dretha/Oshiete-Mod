@@ -15,10 +15,9 @@ public class ActionController {
 
     /**action ended; закончен ли промежуток между действиями: можно ли совершить новое действие. Если можно, новые тики устанавливаются сами*/
     public boolean endAct(int ticks, boolean condition) {
-        boolean b = condition && ticksPre+interval<ticks;
-        if (b) {
+        boolean b = condition && endAct(ticks);
+        if (b)
             setTicksPre(ticks);
-        }
         return b;
     }
     public boolean endAct(int ticks) {

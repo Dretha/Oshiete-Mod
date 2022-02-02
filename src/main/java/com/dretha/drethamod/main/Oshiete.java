@@ -61,6 +61,7 @@ public class Oshiete {
 		NETWORK.registerMessage(DoSomeEntityMessage.Handler.class, DoSomeEntityMessage.class, idpacket++, Side.SERVER);
 		NETWORK.registerMessage(ReloadMessage.Handler.class, ReloadMessage.class, idpacket++, Side.CLIENT);
 		NETWORK.registerMessage(DropMessage.Handler.class, DropMessage.class, idpacket++, Side.SERVER);
+		NETWORK.registerMessage(ForceThrustMessage.Handler.class, ForceThrustMessage.class, idpacket++, Side.SERVER);
 	}
 
 	@EventHandler

@@ -35,7 +35,7 @@ public class ItemMaterial extends Item implements IHasModel {
 
     @Override
     public void registerModels() {
-        ModelLoader.setCustomModelResourceLocation((Item)this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
     }
 
     @Override

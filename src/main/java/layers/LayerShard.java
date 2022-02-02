@@ -71,8 +71,8 @@ public class LayerShard implements LayerRenderer<EntityLivingBase>
                 f1 = f1 * -1.0F;
                 f2 = f2 * -1.0F;
                 float f6 = MathHelper.sqrt(f * f + f2 * f2);
-                entity.rotationYaw = (float)(Math.atan2((double)f, (double)f2) * (180D / Math.PI));
-                entity.rotationPitch = (float)(Math.atan2((double)f1, (double)f6) * (180D / Math.PI));
+                entity.rotationYaw = (float)(Math.atan2(f, f2) * (180D / Math.PI));
+                entity.rotationPitch = (float)(Math.atan2(f1, f6) * (180D / Math.PI));
                 entity.prevRotationYaw = entity.rotationYaw;
                 entity.prevRotationPitch = entity.rotationPitch;
                 double d0 = 0.0D;

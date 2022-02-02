@@ -20,7 +20,7 @@ public class GhoulEatMessage implements IMessage{
 	
 	public GhoulEatMessage() {}
 	public GhoulEatMessage(ItemStack stack) {
-        this.stack = stack;
+        GhoulEatMessage.stack = stack;
     }
 	
 	@Override
@@ -36,7 +36,7 @@ public class GhoulEatMessage implements IMessage{
     public static class Handler implements IMessageHandler<GhoulEatMessage, IMessage> {
         @Override
         public IMessage onMessage(GhoulEatMessage message, MessageContext ctx) {
-        	EntityPlayerMP player = (EntityPlayerMP) ctx.getServerHandler().player;
+        	EntityPlayerMP player = ctx.getServerHandler().player;
         	ItemFood food = (ItemFood) stack.getItem();
         	ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
         	ItemStack rottenflesh = new ItemStack(Items.ROTTEN_FLESH);

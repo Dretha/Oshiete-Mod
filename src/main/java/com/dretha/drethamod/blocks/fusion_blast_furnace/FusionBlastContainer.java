@@ -37,7 +37,7 @@ public class FusionBlastContainer extends Container {
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int slotID) {
         ItemStack itemstack = null;
-        Slot slot = (Slot)this.inventorySlots.get(slotID);
+        Slot slot = this.inventorySlots.get(slotID);
 
         if (slot != null && slot.getHasStack()) {
             ItemStack itemstack1 = slot.getStack();
@@ -52,7 +52,7 @@ public class FusionBlastContainer extends Container {
             }
 
             if (itemstack1.getCount() == 0) {
-                slot.putStack((ItemStack)null);
+                slot.putStack(null);
             } else {
                 slot.onSlotChanged();
             }

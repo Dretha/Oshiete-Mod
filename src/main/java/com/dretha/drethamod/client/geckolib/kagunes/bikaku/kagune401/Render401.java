@@ -8,7 +8,7 @@ public class Render401 extends RendererKaguneBase
 {
     public Render401(final RenderManager renderManager)
     {
-        super(renderManager, (AnimatedGeoModel) new Model401(null));
+        super(renderManager, new Model401(null));
         this.shadowSize = 0.7F;
     }
 }

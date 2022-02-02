@@ -1,10 +1,6 @@
 package com.dretha.drethamod.init;
 
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.items.firearm.Bullets;
-import com.dretha.drethamod.items.firearm.ItemBullet;
-import com.dretha.drethamod.items.firearm.ItemMagazine;
-import com.dretha.drethamod.items.firearm.assault_rifle_hk33.HK33Item;
 import com.dretha.drethamod.client.geckolib.clothes.blue_blouse.BlueBlouseArmor;
 import com.dretha.drethamod.client.geckolib.clothes.grandpa_hat.GrandpaHatArmor;
 import com.dretha.drethamod.client.geckolib.clothes.kureo_cape.KureoArmor;
@@ -12,6 +8,10 @@ import com.dretha.drethamod.client.geckolib.clothes.test_hat.ClothesArmor;
 import com.dretha.drethamod.items.*;
 import com.dretha.drethamod.items.clothes.ItemCloth;
 import com.dretha.drethamod.items.clothes.ItemMask;
+import com.dretha.drethamod.items.firearm.Bullets;
+import com.dretha.drethamod.items.firearm.ItemBullet;
+import com.dretha.drethamod.items.firearm.ItemMagazine;
+import com.dretha.drethamod.items.firearm.assault_rifle_hk33.HK33Item;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.KuinkeMeleeBase;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
@@ -24,7 +24,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,7 +112,7 @@ public class InitItems {
 	public static final Item KATANA_SASAKI = new KuinkeMeleeBase("katana_sasaki", 128, 6, 0, 3, EnumKeeper.LEGENDARY);
 
 	//materials
-	public static final Item KUINKE_STEEL_SHARD = new ItemMaterial("q_steel_shard", EnumKeeper.Q_STEEL_RARITY);
+	public static final Item KUINKE_STEEL_SHARD = new ItemMaterial("qsteel_shard", EnumKeeper.Q_STEEL_RARITY);
 	public static final Item KUINKE_STEEL = new ItemMaterial("kuinke_steel", EnumKeeper.Q_STEEL_RARITY);
 	public static final Item STEEL = new ItemMaterial("steel_ingot");
 	public static final Item FIRECLAY_BAR = new ItemMaterial("fireclay_bar");
@@ -138,6 +137,6 @@ public class InitItems {
 	public static final Item HK33 = new HK33Item("assault_rifle_hk33");
 
 	//spawn eggs
-	public static final Item SPAWNEGG_GHOUL = new SpawnEgg("spawnegg_ghoul");
-	public static final Item SPAWNEGG_DOVE = new SpawnEgg("spawnegg_dove");
+	public static final Item SPAWN_EGG_GHOUL = new SpawnEgg("spawn_egg_ghoul");
+	public static final Item SPAWN_EGG_DOVE = new SpawnEgg("spawn_egg_dove");
 }

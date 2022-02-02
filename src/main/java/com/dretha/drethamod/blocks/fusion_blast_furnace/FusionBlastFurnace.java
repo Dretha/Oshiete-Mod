@@ -68,7 +68,7 @@ public class FusionBlastFurnace extends Block implements ITileEntityProvider {
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {FIRE});
+        return new BlockStateContainer(this, FIRE);
     }
 
     public static void setState(boolean active, World worldIn, BlockPos pos)

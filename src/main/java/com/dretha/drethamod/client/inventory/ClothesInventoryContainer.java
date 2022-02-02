@@ -51,7 +51,7 @@ public class ClothesInventoryContainer  extends Container {
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
 
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.inventorySlots.get(index);
+        Slot slot = this.inventorySlots.get(index);
         //Если слот существует и он не пуст
         if (slot != null && slot.getHasStack()){
             //Достаем стак из слота

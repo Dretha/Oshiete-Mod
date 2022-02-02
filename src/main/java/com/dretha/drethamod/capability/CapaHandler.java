@@ -7,6 +7,7 @@ import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.Randomizer;
 import com.dretha.drethamod.utils.controllers.ActionController;
+import com.dretha.drethamod.utils.controllers.DelayActionController;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.enums.GrowthStages;
 import com.dretha.drethamod.utils.enums.ImpactType;
@@ -32,11 +33,12 @@ public class CapaHandler implements ICapaHandler {
 	ActionController kaguneActivateController = new ActionController(20);
 	ActionController speedModeController = new ActionController(20);
 	ActionController forceSpeedController = new ActionController(10);
+	DelayActionController forceThrustController = new DelayActionController(5, 25);
 	
 	private int impactModeTicksPre = 0;
 
 	
-	private int spawnKagunePatriclesTicksPre = 0;
+	private final int spawnKagunePatriclesTicksPre = 0;
 	private boolean spawnKagunePatriclesFlag = false;
 	
 	private int lastFoodAmount = 0;
@@ -44,9 +46,8 @@ public class CapaHandler implements ICapaHandler {
 	private int shootTicksPre = 0;
 	
 	private int smellTicksPre = -1000;
-	public final int smellMult = 25;
-	private int smellRadius = Randomizer.random(new Randomizer(1000, 2001, 0.01), new Randomizer(100, 201, 0.05), new Randomizer(50, 101, 0.14), new Randomizer(17, 26, 0.80));
-	private int smellDuration = smellRadius * smellMult;
+	private final int smellRadius = Randomizer.random(new Randomizer(1000, 2001, 0.01), new Randomizer(100, 201, 0.05), new Randomizer(50, 101, 0.14), new Randomizer(17, 26, 0.80));
+	private final int smellDuration = smellRadius * 25;
 
 	private int attackKuinkeTicksPre = 0;
 
@@ -95,6 +96,11 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public ActionController getForceSpeedController() {
 		return forceSpeedController;
+	}
+
+	@Override
+	public DelayActionController getForceThrustController() {
+		return forceThrustController;
 	}
 
 

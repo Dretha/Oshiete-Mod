@@ -33,6 +33,9 @@ public class InitCraftings {
         registerRecipes("crafting_scythe");
         registerRecipes("crafting_knife");
         registerRecipes("crafting_cleaver1");
+        registerRecipes("crafting_balsam");
+        registerRecipes("crafting_kuinke_shard_from_steel");
+        registerRecipes("crafting_kuinke_steel_ingot");
     }
 
     private static void registerRecipes(String name) {

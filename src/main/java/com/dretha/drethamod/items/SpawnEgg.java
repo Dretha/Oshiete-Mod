@@ -4,6 +4,7 @@ import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
+import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
@@ -35,7 +36,7 @@ public class SpawnEgg extends Item implements IHasModel {
 
     @Override
     public void registerModels() {
-        ModelLoader.setCustomModelResourceLocation((Item)this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(this, 0, new ModelResourceLocation(this.getRegistryName(), "inventory"));
     }
 
     @Override
@@ -54,7 +55,7 @@ public class SpawnEgg extends Item implements IHasModel {
         if (!worldIn.isRemote)
         {
             BlockPos pos = objectMouseOver.getBlockPos();
-            pos.up().north().west();
+            //pos.up().north().west();
             EntityHuman human = null;
             if (getUnlocalizedName().contains("ghoul"))
                 human = getGhoul(worldIn, pos);
@@ -82,6 +83,15 @@ public class SpawnEgg extends Item implements IHasModel {
         stats.addSkill(700, human);
         stats.addSkill(Oshiete.random.nextInt(3500), human);
         human.setHeldItem(EnumHand.MAIN_HAND, QColdSteel.randomModificateWeapon(stats.getSkill()));
+
+        QColdSteel coldSteel = (QColdSteel) human.getHeldItemMainhand().getItem();
+        if (coldSteel.getWeapon()== Weapons.KNIFE && Oshiete.random.nextBoolean())
+            human.setHeldItem(EnumHand.OFF_HAND, human.getHeldItemMainhand());
+        if (coldSteel.getWeapon()== Weapons.KATANA && Oshiete.random.nextBoolean() && Oshiete.random.nextBoolean())
+            human.setHeldItem(EnumHand.OFF_HAND, QColdSteel.randomModificateWeapon(stats.getSkill(), Weapons.KNIFE));
+        if (Oshiete.random.nextInt(100)<6)
+            human.setHeldItem(EnumHand.OFF_HAND, human.getHeldItemMainhand());
+
         stats.getInventory().setInventorySlotContents(((IDressable)InitItems.KUREO_CAPE).getSlot(), new ItemStack(InitItems.KUREO_CAPE));
         return human;
     }

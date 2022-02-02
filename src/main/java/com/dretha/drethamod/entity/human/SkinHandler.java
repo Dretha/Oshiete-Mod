@@ -16,7 +16,7 @@ public class SkinHandler {
         return texture;
     }
 
-    private static HashMap<String, String> KAKUGAN_PARAMS = new HashMap<>();
+    private static final HashMap<String, String> KAKUGAN_PARAMS = new HashMap<>();
     private int skinID = 0;
 
     public static void init() {

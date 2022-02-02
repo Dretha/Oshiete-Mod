@@ -27,4 +27,19 @@ public class OshieteDamageSource
     {
         return (new EntityDamageSourceIndirect("bullet", bullet, indirectEntityIn)).setProjectile();
     }
+
+    public static DamageSource causeKuinkeAttack(EntityLivingBase dove)
+    {
+        return new EntityDamageSource("kuinke", dove);
+        //death.attack.kagune
+    }
+
+
+    public static boolean isRCorBulletDamage(DamageSource source) {
+        return source.damageType.equals("kagune") || source.damageType.equals("shard") || source.damageType.equals("bullet") || source.damageType.equals("kuinke");
+    }
+
+    public static boolean isRCMelleDamage(DamageSource source) {
+        return source.damageType.equals("kagune") || source.damageType.equals("kuinke");
+    }
 }

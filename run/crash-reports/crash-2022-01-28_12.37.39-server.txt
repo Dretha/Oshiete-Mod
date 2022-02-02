@@ -1,0 +1,113 @@
+---- Minecraft Crash Report ----
+// Don't do that.
+
+Time: 1/28/22 12:37 PM
+Description: Ticking entity
+
+java.lang.NullPointerException: Ticking entity
+	at net.minecraft.entity.ai.EntityLookHelper.setLookPositionWithEntity(EntityLookHelper.java:31)
+	at com.dretha.drethamod.entity.ai.EntityAIGhoulAttack.updateTask(EntityAIGhoulAttack.java:166)
+	at net.minecraft.entity.ai.EntityAITasks.onUpdateTasks(EntityAITasks.java:114)
+	at net.minecraft.entity.EntityLiving.updateEntityActionState(EntityLiving.java:843)
+	at net.minecraft.entity.EntityLivingBase.onLivingUpdate(EntityLivingBase.java:2580)
+	at net.minecraft.entity.EntityLiving.onLivingUpdate(EntityLiving.java:647)
+	at net.minecraft.entity.monster.EntityMob.onLivingUpdate(EntityMob.java:49)
+	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:2396)
+	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:346)
+	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:57)
+	at com.dretha.drethamod.entity.EntityHuman.onUpdate(EntityHuman.java:81)
+	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2168)
+	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:871)
+	at net.minecraft.world.World.updateEntity(World.java:2127)
+	at net.minecraft.world.World.updateEntities(World.java:1928)
+	at net.minecraft.world.WorldServer.updateEntities(WorldServer.java:643)
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:842)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:743)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:192)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:592)
+	at java.lang.Thread.run(Thread.java:748)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Server thread
+Stacktrace:
+	at net.minecraft.entity.ai.EntityLookHelper.setLookPositionWithEntity(EntityLookHelper.java:31)
+	at com.dretha.drethamod.entity.ai.EntityAIGhoulAttack.updateTask(EntityAIGhoulAttack.java:166)
+	at net.minecraft.entity.ai.EntityAITasks.onUpdateTasks(EntityAITasks.java:114)
+	at net.minecraft.entity.EntityLiving.updateEntityActionState(EntityLiving.java:843)
+	at net.minecraft.entity.EntityLivingBase.onLivingUpdate(EntityLivingBase.java:2580)
+	at net.minecraft.entity.EntityLiving.onLivingUpdate(EntityLiving.java:647)
+	at net.minecraft.entity.monster.EntityMob.onLivingUpdate(EntityMob.java:49)
+	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:2396)
+	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:346)
+	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:57)
+	at com.dretha.drethamod.entity.EntityHuman.onUpdate(EntityHuman.java:81)
+	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2168)
+	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:871)
+	at net.minecraft.world.World.updateEntity(World.java:2127)
+
+-- Entity being ticked --
+Details:
+	Entity Type: dm:human (com.dretha.drethamod.entity.EntityHuman)
+	Entity ID: 92310
+	Entity Name: Гражданский
+	Entity's Exact location: -178.71, 56.09, -920.26
+	Entity's Block location: World: (-179,56,-921), Chunk: (at 13,3,7 in -12,-58; contains blocks -192,0,-928 to -177,255,-913), Region: (-1,-2; contains chunks -32,-64 to -1,-33, blocks -512,0,-1024 to -1,255,-513)
+	Entity's Momentum: -0.01, 0.06, 0.09
+	Entity's Passengers: []
+	Entity's Vehicle: ~~ERROR~~ NullPointerException: null
+Stacktrace:
+	at net.minecraft.world.World.updateEntities(World.java:1928)
+	at net.minecraft.world.WorldServer.updateEntities(WorldServer.java:643)
+
+-- Affected level --
+Details:
+	Level name: Новый мир
+	All players: 1 total; [EntityPlayerMP['Player354'/25962, l='Новый мир', x=-181.56, y=56.00, z=-921.85]]
+	Chunk stats: ServerChunkCache: 625 Drop: 0
+	Level seed: -7492935608987609951
+	Level generator: ID 01 - flat, ver 0. Features enabled: true
+	Level generator options: 3;minecraft:bedrock,3*minecraft:stone,52*minecraft:sandstone;2;
+	Level spawn location: World: (-172,4,-924), Chunk: (at 4,0,4 in -11,-58; contains blocks -176,0,-928 to -161,255,-913), Region: (-1,-2; contains chunks -32,-64 to -1,-33, blocks -512,0,-1024 to -1,255,-513)
+	Level time: 1422 game time, 1422 day time
+	Level dimension: 0
+	Level storage version: 0x04ABD - Anvil
+	Level weather: Rain time: 164498 (now: false), thunder time: 12948 (now: false)
+	Level game mode: Game mode: creative (ID 1). Hardcore: false. Cheats: true
+Stacktrace:
+	at net.minecraft.server.MinecraftServer.updateTimeLightAndEntities(MinecraftServer.java:842)
+	at net.minecraft.server.MinecraftServer.tick(MinecraftServer.java:743)
+	at net.minecraft.server.integrated.IntegratedServer.tick(IntegratedServer.java:192)
+	at net.minecraft.server.MinecraftServer.run(MinecraftServer.java:592)
+	at java.lang.Thread.run(Thread.java:748)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.12.2
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_311, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 519652160 bytes (495 MB) / 857735168 bytes (818 MB) up to 1418723328 bytes (1353 MB)
+	JVM Flags: 0 total; 
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: MCP 9.42 Powered by Forge 14.23.4.2705 6 mods loaded, 6 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+
+	| State          | ID        | Version      | Source                                 | Signature |
+	|:-------------- |:--------- |:------------ |:-------------------------------------- |:--------- |
+	| UCHIJAAAAAAAAA | minecraft | 1.12.2       | minecraft.jar                          | None      |
+	| UCHIJAAAAAAAAA | mcp       | 9.42         | minecraft.jar                          | None      |
+	| UCHIJAAAAAAAAA | FML       | 8.0.99.99    | forgeSrc-1.12.2-14.23.4.2705.jar       | None      |
+	| UCHIJAAAAAAAAA | forge     | 14.23.4.2705 | forgeSrc-1.12.2-14.23.4.2705.jar       | None      |
+	| UCHIJAAAAAAAAA | geckolib3 | 3.0.0        | forge-1.12.2-geckolib-3.0.0-beta.8.jar | None      |
+	| UCHIJAAAAAAAAA | dm        | 0.41         | Oshiete-Mod-0.44.jar                   | None      |
+
+	Loaded coremods (and transformers): 
+	GL info: ~~ERROR~~ RuntimeException: No OpenGL context found in the current thread.
+	Profiler Position: N/A (disabled)
+	Player Count: 1 / 8; [EntityPlayerMP['Player354'/25962, l='Новый мир', x=-181.56, y=56.00, z=-921.85]]
+	Type: Integrated Server (map_client.txt)
+	Is Modded: Definitely; Client brand changed to 'fml,forge'

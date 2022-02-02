@@ -11,7 +11,7 @@ public class CapaProvider implements ICapabilitySerializable<NBTBase> {
 	@CapabilityInject(ICapaHandler.class)
 	 public static final Capability<ICapaHandler> PLAYER_CAP = null;
 
-	 private ICapaHandler instance = PLAYER_CAP.getDefaultInstance();
+	 private final ICapaHandler instance = PLAYER_CAP.getDefaultInstance();
 
 	 @Override
 	 public boolean hasCapability(Capability<?> capability, EnumFacing facing)
@@ -22,7 +22,7 @@ public class CapaProvider implements ICapabilitySerializable<NBTBase> {
 	 @Override
 	 public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	 {
-	 return capability == PLAYER_CAP ? PLAYER_CAP.<T> cast(this.instance) : null;
+	 return capability == PLAYER_CAP ? PLAYER_CAP.cast(this.instance) : null;
 	 }
 
 	 @Override

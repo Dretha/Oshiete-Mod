@@ -15,14 +15,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.LootTableList;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -31,22 +25,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class InitEntities {
 	@SideOnly(Side.CLIENT)
     public static void initModels() {
-        RenderingRegistry.registerEntityRenderingHandler((Class)EntityHuman.class, (IRenderFactory) new RenderHuman.Factory());
-        //RenderingRegistry.registerEntityRenderingHandler((Class)EntityRCShard.class, (IRenderFactory) new RenderRCShard.Factory());
-        registerArrow("rcshard", EntityRCShard.class, ID++);
-        RenderingRegistry.registerEntityRenderingHandler(EntityRCShard.class, RenderRCShard::new);
         EnumKagune.registerEntities();
 
-        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "corpse"), EntityCorpse.class, "corpse", ID++, Oshiete.instance, 160, 2, false);
+        registerNormalEntity("human", EntityHuman.class, 0xffffff, 0x000000);
+        RenderingRegistry.registerEntityRenderingHandler(EntityHuman.class, RenderHuman::new);
+
+        registerBugArrow("rcshard", EntityRCShard.class);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRCShard.class, RenderRCShard::new);
+
+        registerTechEntity("corpse", EntityCorpse.class);
         RenderingRegistry.registerEntityRenderingHandler(EntityCorpse.class, RenderCorpse::new);
 
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + "bullet"), EntityBullet.class, "bullet", ID++, Oshiete.instance, 64, 20, true);
+        registerNormalThrow("bullet", EntityBullet.class);
 		RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, RenderBullet::new);
-	}
-	
-	private static void registerArrow(String name, Class<? extends Entity> entity, int id)
-	{
-		EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entity, name, id, Oshiete.instance, 64, 1, true);
 	}
 	
 	public static void init() {
@@ -56,28 +47,18 @@ public class InitEntities {
 
     private static int ID = 0;
 
-    public static EntityEntry HUMAN = EntityEntryBuilder
-            .create()
-            .entity(EntityHuman.class)
-            .name("Human")
-            .id("entity_human", ID++)
-            .egg(0xff4040, 0xd891ef)
-            .tracker(160, 2, false)
-            .build();
-    
-    public static EntityEntry RCSHARD = EntityEntryBuilder
-            .create()
-            .entity(EntityRCShard.class)
-            .name("RCShard")
-            .id("rc_shard", ID++)
-            .tracker(160, 2, false)
-            .build();
-    
-    @SubscribeEvent
-    public static void registryEntity(RegistryEvent.Register<EntityEntry> event) {
-        event.getRegistry().registerAll(
-                HUMAN
-                //RCSHARD
-        );
+    private static void registerTechEntity(String name, Class<? extends Entity> entityClass) {
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entityClass, name, ID++, Oshiete.instance, 160, 2, false);
+    }
+    private static void registerNormalEntity(String name, Class<? extends Entity> entityClass, int eggPrimary, int eggSecondary) {
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entityClass, name, ID++, Oshiete.instance, 160, 2, false, eggPrimary, eggSecondary);
+    }
+    private static void registerNormalThrow(String name, Class<? extends Entity> entity)
+    {
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entity, name, ID++, Oshiete.instance, 64, 20, true);
+    }
+    private static void registerBugArrow(String name, Class<? extends Entity> entity)
+    {
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MODID + ":" + name), entity, name, ID++, Oshiete.instance, 64, 1, true);
     }
 }

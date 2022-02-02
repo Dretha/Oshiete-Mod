@@ -32,7 +32,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
     private double targetZ;
     protected final int attackInterval = 20;
     private int failedPathFindingPenalty = 0;
-    private boolean canPenalize = false;
+    private final boolean canPenalize = false;
 
     public EntityAIGhoulAttack(EntityHuman human)
     {
@@ -50,13 +50,13 @@ public class EntityAIGhoulAttack extends EntityAIBase
     public boolean shouldExecute()
     {
         stats = attacker.personStats();
-    	if (stats==null || !stats.isGhoul()) return false;
+    	if (stats==null || !stats.isGhoul()) return false; //если атакующий не гуль завершить
     	
         EntityLivingBase base = this.attacker.getAttackTarget();
-        
+
         if (base instanceof EntityHuman || base instanceof EntityPlayer)
         {
-        	if (PersonStats.getStats(base).isGhoul()) return false;
+        	if (PersonStats.getStats(base).isGhoul()) return false; //если цель гуль завершить
         }
 
         if (base == null)
@@ -100,8 +100,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
      */
     public boolean shouldContinueExecuting()
     {
-    	
-    	
+
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
 
         if (entitylivingbase == null)
@@ -136,7 +135,6 @@ public class EntityAIGhoulAttack extends EntityAIBase
 
         if (!stats.isKaguneActive())
             stats.releaseKagune(attacker);
-        //stats.setAdmit(false);
     }
 
     /**
@@ -148,7 +146,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
 
         if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative()))
         {
-            this.attacker.setAttackTarget((EntityLivingBase)null);
+            this.attacker.setAttackTarget(null);
         }
 
         this.attacker.getNavigator().clearPath();
@@ -156,7 +154,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
         //attacker.setAdmit(true);
         //attacker.setAdmitTicksPre(attacker.ticksExisted);
     }
-
+// TODO обьединить ии
     /**
      * Keep ticking a continuous task that has already been started
      */
@@ -227,8 +225,7 @@ public class EntityAIGhoulAttack extends EntityAIBase
             DamageSource damagesource = OshieteDamageSource.causeKaguneDamage(attacker);
             if (stats.getKagune()!=null && !stats.getKagune().transform()) {
             	base.attackEntityFrom(damagesource, stats.getDamage());
-            	stats.getKagune().setHit(true);
-            	stats.getKagune().setHitTicksPre(attacker.ticksExisted);
+            	stats.getKagune().getImpactController().setTicksPre(attacker.ticksExisted);
             } else {
             	this.attacker.swingArm(EnumHand.MAIN_HAND);
                 this.attacker.attackEntityAsMob(base);
@@ -238,6 +235,6 @@ public class EntityAIGhoulAttack extends EntityAIBase
 
     protected double getAttackReachSqr(EntityLivingBase attackTarget)
     {
-        return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
+        return this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width;
     }
 }

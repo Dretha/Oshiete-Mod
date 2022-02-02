@@ -82,7 +82,6 @@ public class KaguneImpactMessage implements IMessage{
 
             if (m.isThrust)
             {
-                System.out.println("server!!!!!!! Thrust");
 
                 Entity entity = getMouseOver(world, player, 0, 3, true);
 
@@ -98,15 +97,7 @@ public class KaguneImpactMessage implements IMessage{
             }
             else
             {
-                System.out.println("server!!!!!!! Slash");
-
-                boolean thereIsEntity = splech(world, player, m.damagesource, (int) (m.damage * GhoulType.slashDebuf), player.posX, player.posY, player.posZ, 3);
-
-                if (thereIsEntity) {
-                    world.playSound(null, player.getPosition(), InitSounds.hit_of_kagune, SoundCategory.PLAYERS, 1F, 1F);
-                } else {
-                    world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 1F, 1F);
-                }
+                splech(world, player, m.damagesource, (int) (m.damage * GhoulType.slashDebuf), 3);
             }
         }
     }
@@ -116,8 +107,6 @@ public class KaguneImpactMessage implements IMessage{
         Minecraft mc = Minecraft.getMinecraft();
         Entity entity = mc.getRenderViewEntity();
         Entity pointedEntity = null;
-        
-        
 
         if (entity != null)
         {
@@ -125,7 +114,6 @@ public class KaguneImpactMessage implements IMessage{
             {
                 mc.pointedEntity = null;
                 double d0 = dist;
-                //Vec3d vec3d = entity.getPositionEyes(partialTicks);
                 Vec3d vec3d = new Vec3d(entity.posX + vecn, entity.posY + (double)entity.getEyeHeight(), entity.posZ);
                 boolean flag = false;
                 double d1 = d0;
@@ -147,19 +135,13 @@ public class KaguneImpactMessage implements IMessage{
                 Vec3d vec3d2 = vec3d.addVector(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0);
                 Vec3d vec3d3 = null;
                 float f = 1.0F;
-                List<Entity> list = mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().grow(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).expand(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
-                {
-                    public boolean apply(@Nullable Entity p_apply_1_)
-                    {
-                        return p_apply_1_ != null && (!canBeCollided || p_apply_1_.canBeCollidedWith());
-                    }
-                }));
+                List<Entity> list = mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().grow(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).expand(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, p_apply_1_ -> p_apply_1_ != null && (!canBeCollided || p_apply_1_.canBeCollidedWith())));
                 double d2 = d1;
 
                 for (int j = 0; j < list.size(); ++j)
                 {
-                    Entity entity1 = (Entity)list.get(j);
-                    AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow((double)entity1.getCollisionBorderSize());
+                    Entity entity1 = list.get(j);
+                    AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().grow(entity1.getCollisionBorderSize());
                     RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2);
 
                     if (axisalignedbb.contains(vec3d))
@@ -204,33 +186,28 @@ public class KaguneImpactMessage implements IMessage{
                 {
                     RayTraceResult ray = mc.player.rayTrace(dist, 1F);
                     if (ray == null || ray.hitVec.distanceTo(mc.player.getPositionVector())+0.5f >= pointedEntity.getPositionVector().distanceTo(mc.player.getPositionVector()))
-                        
-                    	
-                    	
                     	return world.getEntityFromUuid(pointedEntity.getUniqueID());
-                    //else if (ray.hitVec.distanceTo(mc.player.getPositionVector())+0.5f >= pointedEntity.getPositionVector().distanceTo(mc.player.getPositionVector()))
-                        //return world.getEntityFromUuid(pointedEntity.getUniqueID());
                 }
             }
         }
         return null;
     }
 
-    public static boolean splech(World world, EntityPlayerMP playerMP, DamageSource source, int damage, double x, double y, double z, float radius)
+    public static void splech(World world, EntityPlayerMP player, DamageSource source, int damage, float radius)
     {
-        List<EntityLivingBase> entityLivingBases = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
+        List<EntityLivingBase> entityLivingBases = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(player.posX - radius, player.posY - 1, player.posZ - radius, player.posX + radius, player.posY + 3, player.posZ + radius));
 
         boolean thereIsEntity = false;
 
         for (EntityLivingBase base : entityLivingBases) {
-            if(base == playerMP)continue;
+            if(base == player)continue;
 
-            impact(playerMP, base, source, damage);
+            impact(player, base, source, damage);
 
-            base.knockBack(playerMP, 0.9F, playerMP.posX - base.posX, playerMP.posZ - base.posZ);
+            base.knockBack(player, 0.9F, player.posX - base.posX, player.posZ - base.posZ);
 
             PotionEffect potioneffect = new PotionEffect(MobEffects.SLOWNESS, 200, 2);
-            PersonStats stats = playerMP.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
             PersonStats statsBase = PersonStats.getStats(base);
 
             if (stats != null)
@@ -246,7 +223,12 @@ public class KaguneImpactMessage implements IMessage{
 
             thereIsEntity = true;
         }
-        return thereIsEntity;
+
+        if (thereIsEntity) {
+            world.playSound(null, player.getPosition(), InitSounds.hit_of_kagune, SoundCategory.PLAYERS, 1F, 1F);
+        } else {
+            world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 1F, 1F);
+        }
     }
     
     private static void impact(EntityPlayerMP attacker, EntityLivingBase target, DamageSource source, int damage) {

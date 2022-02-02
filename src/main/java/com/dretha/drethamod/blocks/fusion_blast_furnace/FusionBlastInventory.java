@@ -19,7 +19,7 @@ public class FusionBlastInventory implements IInventory {
 
     /*Список в котором хранятся предметы. Если мы кладем предмет в слот в кастомном инвентаре, он добавляется в этот список. Размер списка должен
     быть таким же, как и кол-во кастомных слотов, т.е. 8*/
-    private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(SIZE, ItemStack.EMPTY);
+    private NonNullList<ItemStack> inventory = NonNullList.withSize(SIZE, ItemStack.EMPTY);
 
     //Конструктор
     public FusionBlastInventory() {}
@@ -42,7 +42,7 @@ public class FusionBlastInventory implements IInventory {
 
     @Override
     public ITextComponent getDisplayName() {
-        return (ITextComponent)(this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]));
+        return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName(), new Object[0]);
     }
 
     /**
@@ -58,7 +58,7 @@ public class FusionBlastInventory implements IInventory {
      */
     @Override
     public ItemStack getStackInSlot(int index) {
-        return index >= 0 && index < this.inventory.size() ? (ItemStack)this.inventory.get(index) : ItemStack.EMPTY;
+        return index >= 0 && index < this.inventory.size() ? this.inventory.get(index) : ItemStack.EMPTY;
     }
 
     /**
@@ -193,7 +193,7 @@ public class FusionBlastInventory implements IInventory {
      * @param compound
      */
     public void readFromNBT(NBTTagCompound compound) {
-        this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
+        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound, this.inventory);
     }
 
