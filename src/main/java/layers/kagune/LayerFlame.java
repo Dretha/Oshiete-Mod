@@ -1,4 +1,4 @@
-package layers.kagune;
+package com.dretha.drethamod.layers.kagune;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.CapaStorage;

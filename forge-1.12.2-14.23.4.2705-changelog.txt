@@ -2647,7 +2647,7 @@ Build 1.10.2-12.18.2.2111:
 
 Build 1.10.2-12.18.2.2110:
 	LexManos:
-		Special case not drooping snowballs for water and snow layers. Closes
+		Special case not drooping snowballs for water and snow com.dretha.drethamod.layers. Closes
 		#3326
 	LexManos: Update readme to be a little more clear.
 
@@ -5257,7 +5257,7 @@ Build 1.8.8-11.15.0.1655:
 	lumien231: Fixed: The Integrated Server not being stopped when exiting a singleplayer world to the main menu
 	cpw: Propogate AbortException. Closes #2206. Also fix tracing printstream when printStackTrace is called.
 	LexManos: Bump version for new Minecraft version.
-	LexManos: Fixed placing blocks on snow layers with more then one layer.
+	LexManos: Fixed placing blocks on snow com.dretha.drethamod.layers with more then one layer.
 	LexManos: Fixed Large mushrooms generating incorrectly.
 	LexManos: Removed IItemRenderer class, all functionality is possible with new rendering system.
 	LexManos: Compiler warnings pass, undeprecated SplashProgress related stuff.
@@ -5321,7 +5321,7 @@ Build 1.8.8-11.15.0.1655:
 	fry:
 		Preparations for the Animation system.
 		Changes to the Model API - IModelState now works with Optional. Handling of parts of the model is not optional, and coordinate space/result interpretation is up to the caller. IModel doesn't extend IModelPart by default anymore; MapModelState uses composition to achieve previous functionality, IModelPart implementations are disjoint now. Updated perspective handing to the new API, removed IPerspectiveState (MapModelState is now the same thing). Perspective transforms for the default fluid model.
-	fry: IModel can now depend on a variant definition (ModelResourceLocation); added MultiLayerModel - simple model that'll render correctly in multiple layers + example of using it.
+	fry: IModel can now depend on a variant definition (ModelResourceLocation); added MultiLayerModel - simple model that'll render correctly in multiple com.dretha.drethamod.layers + example of using it.
 	fry: Fixed java6 errors in previous commit.
 	fry: Forge pipeline will now take original model lightmap into account, if present.
 	fry: Delayed quad list resolution in MultiModel, fixes NPE in MultiLayerModel.
@@ -5436,7 +5436,7 @@ Build 1.8.8-11.15.0.1633-1.8.8:
 	fry: Delayed quad list resolution in MultiModel, fixes NPE in MultiLayerModel.
 
 Build 1.8.8-11.15.0.1632-1.8.8:
-	fry: IModel can now depend on a variant definition (ModelResourceLocation); added MultiLayerModel - simple model that'll render correctly in multiple layers + example of using it.
+	fry: IModel can now depend on a variant definition (ModelResourceLocation); added MultiLayerModel - simple model that'll render correctly in multiple com.dretha.drethamod.layers + example of using it.
 	fry: Fixed java6 errors in previous commit.
 	fry: Forge pipeline will now take original model lightmap into account, if present.
 
@@ -5575,7 +5575,7 @@ Build 1.8.8-11.15.0.1592-1.8.8:
 
 Build 1.8.8-11.15.0.1591-1.8.8:
 	LexManos: Bump version for new Minecraft version.
-	LexManos: Fixed placing blocks on snow layers with more then one layer.
+	LexManos: Fixed placing blocks on snow com.dretha.drethamod.layers with more then one layer.
 	LexManos: Fixed Large mushrooms generating incorrectly.
 	LexManos: Removed IItemRenderer class, all functionality is possible with new rendering system.
 	LexManos: Compiler warnings pass, undeprecated SplashProgress related stuff.
@@ -7112,7 +7112,7 @@ Build 1.8-11.14.0.1296:
 	LexManos: Fix interacting with entities.
 	LexManos: Fixed Entity extended properties init order. Closes #1532
 	LexManos: Fixed Entities not being able to climb ladders, Closes #1535
-	LexManos: Fixed snow layers not being able to stack more then twice. Closes #1534
+	LexManos: Fixed snow com.dretha.drethamod.layers not being able to stack more then twice. Closes #1534
 	LexManos: Fix BlockPane's connection detection.
 	LexManos: Fixed vanilla bug where top part of double plants would flicker a tifferent texture before dissapearing.
 	LexManos: Fix NPE with BlockSnapshots that caused items with TileEntities to be used up in creative mode.
@@ -7159,7 +7159,7 @@ Build 1.8-11.14.0.1296:
 	LexManos: Fix crafting of non-oak fences/gates.
 	LexManos: Fix MC-30864 (sending web links in chat)
 	LexManos: Fix recipies for stone variants.
-	Chicken-Bones: Allow blocks to render in multiple layers
+	Chicken-Bones: Allow blocks to render in multiple com.dretha.drethamod.layers
 	lumien231: Fixes #1603: Moving the start of the update thread to the pre init of the forge mod container
 	LexManos: Fix potential NPE when loading a single player world where you were saved in a unloaded dimension. Closes #1575
 	LexManos: Call World.init from DimensionManager.initDimension Closes #1551
@@ -7273,7 +7273,7 @@ Build 1.7.10-10.13.2.1286:
 	asiekierka: fix shouldRefresh being too broad in tile entity update
 
 Build 1.8-11.14.0.1285-1.8:
-	Chicken-Bones: Allow blocks to render in multiple layers
+	Chicken-Bones: Allow blocks to render in multiple com.dretha.drethamod.layers
 
 Build 1.7.10-10.13.2.1284:
 	lumien231: Fix versionCheck config option
@@ -7426,7 +7426,7 @@ Build 1.8-11.14.0.1247-1.8:
 Build 1.8-11.14.0.1246-1.8:
 	LexManos: Fixed Entity extended properties init order. Closes #1532
 	LexManos: Fixed Entities not being able to climb ladders, Closes #1535
-	LexManos: Fixed snow layers not being able to stack more then twice. Closes #1534
+	LexManos: Fixed snow com.dretha.drethamod.layers not being able to stack more then twice. Closes #1534
 
 Build 1.8-11.14.0.1245-1.8:
 	LexManos: Fix interacting with entities.

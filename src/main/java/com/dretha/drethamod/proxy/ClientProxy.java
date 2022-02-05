@@ -6,7 +6,7 @@ import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitEntities;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
-import layers.LayersRegister;
+import com.dretha.drethamod.layers.LayersRegister;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;

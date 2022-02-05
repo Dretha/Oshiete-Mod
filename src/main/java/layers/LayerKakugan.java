@@ -1,4 +1,4 @@
-package layers;
+package com.dretha.drethamod.layers;
 
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;

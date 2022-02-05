@@ -1,4 +1,4 @@
-package layers.entity;
+package com.dretha.drethamod.layers.entity;
 
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.client.geckolib.kagunes.EnumFlame;

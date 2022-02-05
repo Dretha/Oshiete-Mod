@@ -1,4 +1,4 @@
-package layers.entity;
+package com.dretha.drethamod.layers.entity;
 
 import java.util.Collections;
 

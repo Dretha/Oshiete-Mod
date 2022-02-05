@@ -1,7 +1,7 @@
-package layers;
+package com.dretha.drethamod.layers;
 
-import layers.kagune.LayerKagune;
-import layers.kagune.LayerFlame;
+import com.dretha.drethamod.layers.kagune.LayerKagune;
+import com.dretha.drethamod.layers.kagune.LayerFlame;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
