@@ -3,10 +3,7 @@ package com.dretha.drethamod.utils.controllers;
 public class NoParamActionController {
 
     protected int ticksPre = 0;
-
-    public int ticksPre() {
-        return ticksPre;
-    }
+    protected int interval = 0;
 
     public void setTicksPre(int ticks) {
         this.ticksPre = ticks;
@@ -14,9 +11,14 @@ public class NoParamActionController {
 
     /**action ended; закончен ли промежуток между действиями: можно ли совершить новое действие. Если можно, новые тики устанавливаются сами*/
     public boolean endAct(int ticks, int interval) {
-        boolean b = ticksPre+interval<ticks;
-        if (b)
-            setTicksPre(ticks);
-        return b;
+        if (this.interval>interval && !simpleCheckEndAct(ticks, this.interval)) {
+            interval = this.interval;
+        } else {
+            this.interval = interval;
+        }
+        return ticksPre+interval<ticks;
+    }
+    private boolean simpleCheckEndAct(int ticks, int interval) {
+        return ticksPre+interval<ticks;
     }
 }

@@ -31,8 +31,14 @@ public class OshieteDamageSource
     public static DamageSource causeKuinkeAttack(EntityLivingBase dove)
     {
         return new EntityDamageSource("kuinke", dove);
-        //death.attack.kagune
     }
+
+    public static DamageSource causeBreakBlockAttack()
+    {
+        return new DamageSource("block");
+    }
+
+
 
 
     public static boolean isRCorBulletDamage(DamageSource source) {
@@ -41,5 +47,13 @@ public class OshieteDamageSource
 
     public static boolean isRCMelleDamage(DamageSource source) {
         return source.damageType.equals("kagune") || source.damageType.equals("kuinke");
+    }
+
+    public static boolean isBlockDamage(DamageSource source) {
+        return source.damageType.equals("block");
+    }
+
+    public static boolean isBulletOrShardDamage(DamageSource source) {
+        return source.damageType.equals("bullet") || source.damageType.equals("shard");
     }
 }

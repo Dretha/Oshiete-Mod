@@ -3,6 +3,7 @@ package com.dretha.drethamod.items.kuinkes;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.utils.OshieteDamageSource;
+import com.dretha.drethamod.utils.controllers.NoParamActionController;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
@@ -93,8 +94,11 @@ public class QColdSteel extends KuinkeMeleeBase{
 
         if (attacker instanceof EntityPlayer) {
             ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-            if (capa.getAttackKuinkeTicksPre() + getSpeedValue(stack) >= attacker.ticksExisted)
-                return true;
+            NoParamActionController controller = capa.getKuinkeSpeedController();
+            if (!controller.endAct(attacker.ticksExisted, getSpeedValue(stack)))
+                return false;
+            else
+                controller.setTicksPre(attacker.ticksExisted);
         }
 
         GhoulType targetGhoulType = GhoulType.NONE;
@@ -110,11 +114,6 @@ public class QColdSteel extends KuinkeMeleeBase{
         target.hurtResistantTime = 0;
         target.attackEntityFrom(source, damage * coefficient);
         target.hurtResistantTime = savedResistantTime;
-
-        if (attacker instanceof EntityPlayer) {
-            ICapaHandler capa = attacker.getCapability(CapaProvider.PLAYER_CAP, null);
-            capa.setAttackKuinkeTicksPre(attacker.ticksExisted);
-        }
 
         return true;
     }

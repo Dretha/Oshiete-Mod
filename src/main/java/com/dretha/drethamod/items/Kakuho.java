@@ -67,6 +67,7 @@ public class Kakuho extends ItemGhoulFood {
                     stats.addRCpoints((int) ((float) satiation / 7.8125F), player);
                     if (stats.getGhoulType() == ghoulType)
                         stats.addRCpoints((int) ((float) satiation / 7.8125F), player);
+                    stats.addRClevel(satiation);
                 }
             }
         }

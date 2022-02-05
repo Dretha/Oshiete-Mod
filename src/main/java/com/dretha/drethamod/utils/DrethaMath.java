@@ -50,4 +50,28 @@ public class DrethaMath {
         result = Math.min(max, result);
         return result;
     }
+
+    public static class IntervalFinder
+    {
+        public final double number;
+        public final double interval1Of;
+        public final double interval1To;
+
+        /**
+         * Класс, упрощающий массовое использование getNumberOfInterval
+         * Позволяет задать изначально первый интервал и число
+         * @param number - исходное число 1 интервала
+         * @param interval1Of - от
+         * @param interval1To - до
+         */
+        public IntervalFinder(double number, double interval1Of, double interval1To) {
+            this.number = number;
+            this.interval1Of = interval1Of;
+            this.interval1To = interval1To;
+        }
+
+        public double find(double interval2Of, double interval2To) {
+            return DrethaMath.getNumberOfInterval(interval1Of, interval1To, interval2Of, interval2To, number);
+        }
+    }
 }

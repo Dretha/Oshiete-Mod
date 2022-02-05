@@ -7,6 +7,7 @@ public class DelayActionController extends ActionController{
     public DelayActionController(int delay, int interval) {
         super(interval);
         this.delay = delay;
+        ticksPre = -delay-interval;
     }
 
     @Override
@@ -15,10 +16,9 @@ public class DelayActionController extends ActionController{
     }
 
     public boolean isAct(int ticks) {
-        return ticksPre+delay+interval==ticks && !endAct(ticks);
-    }
-
-    public boolean isDelay(int ticks) {
-        return ticksPre<=ticks && !isAct(ticks) && !endAct(ticks);
+        boolean b = ticksPre+delay==ticks && ticksPre>0;
+        if (b)
+            ticksPre--;
+        return b;
     }
 }

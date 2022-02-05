@@ -21,6 +21,7 @@ import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
@@ -40,9 +41,9 @@ public class InitItems {
 	public static final Item TABLET_BIKAKU = new ItemTabletCreative("tablet_bikaku", I18n.format("info.none"), GhoulType.BIKAKU);
 
 	//food
-	public static final Item HUMAN_MEAT = new ItemGhoulFood("human_meat", I18n.format("info.human_meat"), 8, 10, 16, true, EnumKeeper.LOW_SATIATION);
+	public static final Item HUMAN_MEAT = new ItemGhoulFood("human_meat", I18n.format("info.human_meat"), 8, 10, 11, true, EnumKeeper.LOW_SATIATION);
 	public static final Item HUMAN_EYE = new ItemGhoulFood("human_eye", I18n.format("info.human_eye"), 2, 12, 3, true, EnumKeeper.LOW_SATIATION);
-	public static final Item HUMAN_BLOOD_BOTTLE = new ItemGhoulFood("human_blood_bottle", I18n.format("info.blood_bottle"), 3, 8, 6, true, EnumKeeper.LOW_SATIATION);
+	public static final Item HUMAN_BLOOD_BOTTLE = new ItemGhoulFood("human_blood_bottle", I18n.format("info.blood_bottle"), 3, 8, 6, true, EnumKeeper.LOW_SATIATION, EnumAction.DRINK);
 
 	public static final Item RAW_KAKUHO_UKAKU = new Kakuho("kakuho_ukaku", I18n.format("info.kakuho"), GhoulType.UKAKU, 4, 4);
 	public static final Item RAW_KAKUHO_KOUKAKU = new Kakuho("kakuho_koukaku", I18n.format("info.kakuho"), GhoulType.KOUKAKU, 4, 4);
@@ -52,8 +53,8 @@ public class InitItems {
 	//public static final Item PREPARED_KAKUHO = new Kakuho("prepared_kakuho", I18n.format("info.kakuho"), 4, 4);
 	//public static final Item INDUCED_KAKUHO = new Kakuho("induced_kakuho", I18n.format("info.kakuho"), 4, 4);
 
-	public static final Item GHOUL_MEAT = new ItemGhoulFood("ghoul_meat", I18n.format("info.kakuho"), 8, 10, 32, true, EnumKeeper.LOW_SATIATION);
-	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 2, 2, 32, true, EnumKeeper.HIGH_SATIATION);
+	public static final Item GHOUL_MEAT = new ItemGhoulFood("ghoul_meat", I18n.format("info.kakuho"), 8, 10, 16, true, EnumKeeper.LOW_SATIATION);
+	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 2, 2, 24, true, EnumKeeper.HIGH_SATIATION);
 
 	//technical items
 	public static final Item UKAKU_FLAME_BIG_01 = new RenderingItem("ukaku_flame_big_01");

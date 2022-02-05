@@ -4,6 +4,8 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.utils.DrethaMath;
 import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
@@ -77,6 +79,7 @@ public class KaguneImpactMessage implements IMessage{
         public void run(KaguneImpactMessage m, MessageContext ctx)
         {
             EntityPlayerMP player = ctx.getServerHandler().player;
+            PersonStats stats = PersonStats.getStats(player);
             WorldServer world = (WorldServer) ctx.getServerHandler().player.world;
             m.damagesource = OshieteDamageSource.causeKaguneDamage(player);
 
@@ -92,12 +95,12 @@ public class KaguneImpactMessage implements IMessage{
                 }
                 else
                 {
-                    world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 0.4F, 1F);
+                    world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 0.4F, Oshiete.random.nextFloat()/5F+1F);
                 }
             }
             else
             {
-                splech(world, player, m.damagesource, (int) (m.damage * GhoulType.slashDebuf), 3);
+                splech(world, player, m.damagesource, (int) (m.damage * (stats.rinkaku()?0.75:GhoulType.slashDebuf)), (float) ((stats.rinkaku()?1.5:1) * DrethaMath.getNumberOfInterval(1, 11, 2, 4, stats.materialRank())));
             }
         }
     }
@@ -193,7 +196,7 @@ public class KaguneImpactMessage implements IMessage{
         return null;
     }
 
-    public static void splech(World world, EntityPlayerMP player, DamageSource source, int damage, float radius)
+    public static boolean splech(World world, EntityPlayerMP player, DamageSource source, int damage, float radius)
     {
         List<EntityLivingBase> entityLivingBases = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(player.posX - radius, player.posY - 1, player.posZ - radius, player.posX + radius, player.posY + 3, player.posZ + radius));
 
@@ -229,6 +232,8 @@ public class KaguneImpactMessage implements IMessage{
         } else {
             world.playSound(null, player.getPosition(), InitSounds.hit_air_kagune, SoundCategory.PLAYERS, 1F, 1F);
         }
+
+        return thereIsEntity;
     }
     
     private static void impact(EntityPlayerMP attacker, EntityLivingBase target, DamageSource source, int damage) {

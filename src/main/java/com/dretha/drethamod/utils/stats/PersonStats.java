@@ -1,7 +1,7 @@
 package com.dretha.drethamod.utils.stats;
 
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
-import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
+import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.entity.human.EntityCorpse;
@@ -56,7 +56,9 @@ public class PersonStats {
     ParticlesController patriclesController = new ParticlesController(30);
 
     public String getTextureLocation() {
-        return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
+        //if (ghoulType==GhoulType.RINKAKU)
+            return String.format("textures/entity/kagune/kagune%d%02d%02d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
+        //return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
     }
 
     public int getModelVariant() {
@@ -74,7 +76,9 @@ public class PersonStats {
 
 
     public String getEnumId() {
-        return String.format("KAGUNE%d%02d", ghoulType.id(), this.getModelVariant());
+        if (ghoulType==GhoulType.RINKAKU)
+            return String.format("kagune%d%02d%d", ghoulType.id(), this.getModelVariant(), getGrowthStage().id());
+        return String.format("kagune%d%02d", ghoulType.id(), this.getModelVariant());
     }
 
     public boolean isBlock() {
@@ -86,7 +90,7 @@ public class PersonStats {
     }
 
     public int getDamage() {
-        int damage = DrethaMath.getNumberOfProportion(1000, 7, RCpoints);
+        int damage = DrethaMath.getNumberOfProportion(1000, 6, RCpoints);
         return damage;
     }
 
@@ -181,7 +185,7 @@ public class PersonStats {
             this.ukakuState = UkakuState.generateState();
         addRCpoints(801, entity);
         updateRClevel();
-        entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4D);
+        entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4);
         entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
         entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
         entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
@@ -223,18 +227,15 @@ public class PersonStats {
         this.RClevel = MaxRClevel() - (MaxRClevel() - this.RClevel);
     }
 
-    public void removeRCpoints(int points) {
-        this.RCpoints -= points;
-
-        if (this.RCpoints < 0) this.RCpoints = 0;
-
-    }
-
     public void addRCpoints(int points, EntityLivingBase base) {
         this.RCpoints += points;
-        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40 + Math.round(exactRank()*10/1.5F));
+        updateCharacteristics(base);
     }
 
+    public void updateCharacteristics(EntityLivingBase base) {
+        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(isGhoul?40:20 + Math.round((exactRank() * 10 / 1.5F) - (isGhoul?0F:4F)));
+        base.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue((isGhoul?4:1) + rank() + (ukaku()?2:0));
+    }
 
 
 
@@ -268,7 +269,7 @@ public class PersonStats {
 
     public void addSkill(int points, EntityLivingBase base) {
         this.skill +=points;
-        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(isGhoul?40:20 + Math.round((exactRank() * 10 / 1.5F) - (isGhoul?0F:4F)));
+        updateCharacteristics(base);
     }
 
     public void removeSkill(int points) {
@@ -279,6 +280,11 @@ public class PersonStats {
     public boolean ukaku() {
         return this.isGhoul() && ghoulType == GhoulType.UKAKU;
     }
+
+    public boolean rinkaku() {
+        return this.isGhoul() && ghoulType == GhoulType.RINKAKU;
+    }
+
 
     public int rank()
     {
@@ -318,6 +324,7 @@ public class PersonStats {
     }
 
     public void admitKagune(EntityLivingBase base) {
+        if (entityKagune==null) return;
         if (base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).hasModifier(speedghoul))
             base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).removeModifier(base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getModifier(speedghoul.getID()));
 
@@ -349,7 +356,7 @@ public class PersonStats {
     }
 
     public void updateEntityKagune(EntityLivingBase base) {
-        entityKagune= EnumKagune.valueOf(this.getEnumId()).getEntity(base);
+        entityKagune= KaguneHolder.valueOf(this.getEnumId()).getEntity(base);
     }
 
     public void nullKagune() {
@@ -386,6 +393,12 @@ public class PersonStats {
 
     public void addShardCountInEntity() {
         this.shardCountInEntity++;
+    }
+
+    public void removeShardCountInEntity() {
+        shardCountInEntity--;
+        if (shardCountInEntity<0)
+            shardCountInEntity=0;
     }
 
     public void setShardCountInEntity(int count) {
@@ -459,6 +472,7 @@ public class PersonStats {
         float d = isGhoul()?10F:20F;
         float height = materialRank()/d;
         height = isGhoul() ? Math.max(height, 0.1F) : height;
+        height *= ukaku() ? 2 : 1;
         return height;
     }
 

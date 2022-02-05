@@ -29,7 +29,7 @@ public enum GhoulType {
 	public final float kuinkeDamageMultiplier;
 	public final float kuinkeSpeedMultiplier;
 	public static final float damageCoefficient = 1.25F;
-	public static final float slashDebuf = 0.5F;
+	public static final float slashDebuf = 0.4F;
 
 	GhoulType(Item kakuho, int speed, float blockMultiplier, float kuinkeDamageMultiplier, float kuinkeSpeedMultiplier) {
 		this.kakuho = kakuho;

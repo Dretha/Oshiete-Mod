@@ -3,6 +3,7 @@ package com.dretha.drethamod.client.geckolib.kagunes;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.Enumerator;
 import com.dretha.drethamod.utils.controllers.ActionController;
+import com.dretha.drethamod.utils.controllers.NoParamActionController;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.entity.EntityLiving;
@@ -17,16 +18,14 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
-
 import java.util.ArrayList;
-import java.util.Random;
 
 public class EntityKagune extends EntityLiving implements IAnimatable {
 
 	protected EntityLivingBase master = null;
 	protected PersonStats stats = PersonStats.EMPTY;
 	
-	protected ActionController impactController = new ActionController(10);
+	protected NoParamActionController impactController = new NoParamActionController();
 	protected ActionController blockAnimController = new ActionController(7);
 	protected ActionController releaseController = new ActionController(23);
 	protected ActionController admitController = new ActionController(23);
@@ -39,7 +38,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
 	
 	
 	protected ArrayList<Float> listF = new ArrayList<>(Arrays.asList(new Float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F}));
-	
+
 	public EntityKagune(EntityLivingBase master) {
 		super(master.world);		
 		this.master = master;
@@ -59,6 +58,8 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
 
     private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
 	{
+		ImpactType impactType = stats.getImpactType();
+
 		if (!releaseController.endAct(master.ticksExisted)) {
 			event.getController().setAnimation(new AnimationBuilder().addAnimation("release", true));
 			return PlayState.CONTINUE;
@@ -77,10 +78,10 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
 			event.getController().setAnimation(new AnimationBuilder().addAnimation("admit", true));
 			return PlayState.CONTINUE;
 		}
-		else if (!impactController.endAct(master.ticksExisted))
+		else if (!impactController.endAct(master.ticksExisted, impactType.speed))
 		{
-			event.getController().setAnimation(new AnimationBuilder().addAnimation(stats.getImpactType().toString().toLowerCase() + (stats.getImpactType() == ImpactType.THRUST ? impactEnumerator.number() : ""), true));
-			if (impactController.endAct(master.ticksExisted+1)) impactEnumerator.recite(master.ticksExisted);
+			event.getController().setAnimation(new AnimationBuilder().addAnimation(impactType.toString().toLowerCase() + (impactType == ImpactType.THRUST ? impactEnumerator.number() : ""), true));
+			if (impactController.endAct(master.ticksExisted+1, impactType.speed)) impactEnumerator.recite(master.ticksExisted);
 			return PlayState.CONTINUE;
 		}
 		else if (!blockAnimController.endAct(master.ticksExisted))
@@ -136,7 +137,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
     	return this.listF;
     }
 
-	public ActionController getImpactController() {
+	public NoParamActionController getImpactController() {
 		return impactController;
 	}
 

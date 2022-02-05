@@ -4,9 +4,9 @@
 Time: 1/20/22 4:27 PM
 Description: Unexpected error
 
-java.lang.IllegalArgumentException: No enum constant com.dretha.drethamod.client.geckolib.kagunes.EnumKagune.KAGUNE501
+java.lang.IllegalArgumentException: No enum constant com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.KAGUNE501
 	at java.lang.Enum.valueOf(Enum.java:238)
-	at com.dretha.drethamod.client.geckolib.kagunes.EnumKagune.valueOf(EnumKagune.java:21)
+	at com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.valueOf(EnumKagune.java:21)
 	at com.dretha.drethamod.utils.stats.PersonStats.updateEntityKagune(PersonStats.java:315)
 	at com.dretha.drethamod.utils.stats.PersonStats.releaseKagune(PersonStats.java:276)
 	at com.dretha.drethamod.utils.handlers.KeyEventsHandler.activateKagune(KeyEventsHandler.java:50)
@@ -40,7 +40,7 @@ A detailed walkthrough of the error, its code path and all known details is as f
 Thread: Client thread
 Stacktrace:
 	at java.lang.Enum.valueOf(Enum.java:238)
-	at com.dretha.drethamod.client.geckolib.kagunes.EnumKagune.valueOf(EnumKagune.java:21)
+	at com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.valueOf(EnumKagune.java:21)
 	at com.dretha.drethamod.utils.stats.PersonStats.updateEntityKagune(PersonStats.java:315)
 	at com.dretha.drethamod.utils.stats.PersonStats.releaseKagune(PersonStats.java:276)
 	at com.dretha.drethamod.utils.handlers.KeyEventsHandler.activateKagune(KeyEventsHandler.java:50)

@@ -14,6 +14,8 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 	    final NBTTagCompound compound = new NBTTagCompound();
 
 		instance.personStats().writeToNBT(compound);
+		compound.setInteger("smellRadius", instance.getSmellController().getRadius());
+		compound.setInteger("smellDuration", instance.getSmellController().getDuration());
 	    
 	    return compound;
 	}
@@ -24,5 +26,6 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 		final NBTTagCompound compound = (NBTTagCompound) nbt;
 
 		instance.personStats().readFromNBT(compound);
+		instance.getSmellController().setRadiusAndDuration(compound.getInteger("smellRadius"), compound.getInteger("smellDuration"));
 	}
 }

@@ -33,4 +33,8 @@ public class Enumerator {
     public void randomize() {
         currentNumber = Oshiete.random.nextInt(count) + 1;
     }
+
+    public void reset() {
+        currentNumber = 1;
+    }
 }

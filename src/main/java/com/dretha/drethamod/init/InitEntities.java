@@ -1,6 +1,6 @@
 package com.dretha.drethamod.init;
 
-import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
+import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.RenderCorpse;
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class InitEntities {
 	@SideOnly(Side.CLIENT)
     public static void initModels() {
-        EnumKagune.registerEntities();
+        KaguneHolder.registerEntities();
 
         registerNormalEntity("human", EntityHuman.class, 0xffffff, 0x000000);
         RenderingRegistry.registerEntityRenderingHandler(EntityHuman.class, RenderHuman::new);

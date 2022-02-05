@@ -1,6 +1,7 @@
 package com.dretha.drethamod.server;
 
 import com.dretha.drethamod.utils.OshieteDamageSource;
+import com.dretha.drethamod.utils.stats.PersonStats;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
@@ -43,10 +44,13 @@ public class ForceThrustMessage implements IMessage {
         public void run(ForceThrustMessage m, MessageContext ctx)
         {
             EntityPlayerMP player = ctx.getServerHandler().player;
+            PersonStats stats = PersonStats.getStats(player);
             WorldServer world = (WorldServer) ctx.getServerHandler().player.world;
             DamageSource damagesource = OshieteDamageSource.causeKaguneDamage(player);
 
-            KaguneImpactMessage.splech(world, player, damagesource, m.damage, 1);
+            if (KaguneImpactMessage.splech(world, player, damagesource, m.damage, 1.25F) && !player.isCreative())
+                stats.removeRClevel(12);
+
         }
     }
 }

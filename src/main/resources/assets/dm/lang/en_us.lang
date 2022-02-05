@@ -82,6 +82,7 @@ death.attack.kagune=%1$s was slaughter by a ghoul
 death.attack.kuinke=%1$s was stabbed to death with a quinque
 death.attack.shard=%1$s was shot with ukaku-shard
 death.attack.bullet=%1$s was shot by a bullet
+death.attack.block=%1$s dies after failing to parry
 
 entity.human.name=Civilian
 entity.corpse.name=Corpse

@@ -2,12 +2,11 @@ package com.dretha.drethamod.entity.render;
 
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.entity.human.ModelHuman;
-import layers.LayerClothes;
-import layers.LayerKakugan;
-import layers.LayerShard;
-import layers.kagune.LayerFlame;
-import layers.kagune.LayerKagune;
-import net.minecraft.client.renderer.GlStateManager;
+import com.dretha.drethamod.layers.LayerClothes;
+import com.dretha.drethamod.layers.LayerKakugan;
+import com.dretha.drethamod.layers.LayerShard;
+import com.dretha.drethamod.layers.LayerFlame;
+import com.dretha.drethamod.layers.LayerKagune;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;

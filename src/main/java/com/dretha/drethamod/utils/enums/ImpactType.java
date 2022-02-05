@@ -1,22 +1,41 @@
 package com.dretha.drethamod.utils.enums;
 
+import java.util.Arrays;
+import java.util.List;
+
 public enum ImpactType {
-	THRUST {
-		public float speed() {
-			return 15;
-		}
+	THRUST(10) {
 		public ImpactType change() {
 			return SLASH;
 		}
 	},
-	SLASH {
-		public float speed() {
-			return (float) 25;
-		}
+	SLASH(25) {
 		public ImpactType change() {
 			return THRUST;
 		}
 	};
-	public abstract float speed();
-	public abstract ImpactType change();
+
+	public final int speed;
+
+	ImpactType(int speed) {
+		this.speed = speed;
+	}
+
+	public ImpactType change() {
+		ImpactType result;
+		try {
+			result = list().get(this.index() + 1);
+		} catch (IndexOutOfBoundsException e) {
+			result = list().get(0);
+		}
+		return result;
+	}
+
+	public int index() {
+		return Arrays.asList(ImpactType.values()).indexOf(this);
+	}
+
+	public static List<ImpactType> list() {
+		return Arrays.asList(ImpactType.values());
+	}
 }

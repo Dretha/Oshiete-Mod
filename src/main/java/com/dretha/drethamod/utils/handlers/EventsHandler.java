@@ -7,7 +7,6 @@ import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
-import com.dretha.drethamod.client.geckolib.kagunes.EnumKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
@@ -15,6 +14,7 @@ import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
+import com.dretha.drethamod.layers.LayerKagune;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.enums.GhoulType;
@@ -31,6 +31,7 @@ import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -54,15 +55,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.geo.render.built.GeoModel;
-import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.data.EntityModelData;
-import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Random;
 
 @EventBusSubscriber(
 		value = { Side.CLIENT, Side.SERVER },
@@ -103,12 +97,22 @@ public class EventsHandler {
     public static void cloneCapa(PlayerEvent.Clone e) {
         final ICapaHandler original = getHandler(e.getOriginal());
         final ICapaHandler clone = getHandler(e.getEntity());
+        PersonStats cloneStats = clone.personStats();
 
-        clone.personStats().setGhoul(original.isGhoul());
-        clone.personStats().setGhoulType(original.personStats().getGhoulType());
-        clone.personStats().setUkakuState(original.personStats().getUkakuState());
-        clone.personStats().setRCpoints(original.personStats().getRCpoints());
-        clone.personStats().setSkill(original.personStats().getSkill());
+        NBTTagCompound compound = new NBTTagCompound();
+        original.personStats().writeToNBT(compound);
+        cloneStats.readFromNBT(compound);
+
+        if (e.isWasDeath()) {
+            e.getEntityPlayer().setHealth(e.getEntityPlayer().getMaxHealth());
+            cloneStats.setRClevel(cloneStats.MaxRClevel());
+            cloneStats.setKaguneActive(false);
+            cloneStats.setKakuganActive(false);
+            cloneStats.setSpeedModeActive(false);
+            cloneStats.updateCharacteristics((EntityLivingBase) e.getEntity());
+        }
+
+        clone.getSmellController().setRadiusAndDuration(original.getSmellController().getRadius(), original.getSmellController().getDuration());
     }
     
     
@@ -232,7 +236,7 @@ public class EventsHandler {
     	if (stats.isKaguneActive() && stats.getKagune()!=null) {
         	GlStateManager.enableRescaleNormal();
         	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            // TODO переписать это
+            // TODO переписать listF попроще
         	
         	EntityKagune kagune = null;
         	float limbSwing=0;
@@ -255,45 +259,10 @@ public class EventsHandler {
 			headPitch = kagune.getListF().get(5);
 			scale = kagune.getListF().get(6);
 			
-        	renderKagune(player, stats.getGhoulType().index()+1, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, true);
-        
+            LayerKagune.renderKagune(player, stats, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, Minecraft.getMinecraft().getRenderManager(), true);
+
         	GlStateManager.disableRescaleNormal();
         }
-    }
-    private static void renderKagune(EntityPlayer player, int ghoulType, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, boolean b)
-    {
-        PersonStats stats = EventsHandler.getCapaMP(player).personStats();
-    	AnimatedGeoModel kaguneModel = EnumKagune.valueOf(stats.getEnumId()).getModel(stats.getTextureLocation());
-    	GeoEntityRenderer<EntityKagune> kaguneRenderer = EnumKagune.valueOf(stats.getEnumId()).getRender(Minecraft.getMinecraft().getRenderManager());
-    	EntityKagune kagune = null;
-        
-        
-        do {
-        	kagune = stats.getKagune();
-        } while (stats.getKagune()==null);
-        
-        
-        ResourceLocation kaguneTexture = kaguneModel.getTextureLocation(kagune);
-        GeoModel geomodelkagune = kaguneModel.getModel(kaguneModel.getModelLocation(kagune));    
-        
-        kaguneRenderer.bindTexture(kaguneTexture);
-        GlStateManager.pushMatrix();
-        
-        
-        float heightPoint = (player.isSneaking() ? 0.2F : 0.0F);
-        GlStateManager.translate(0.0F, heightPoint, 0.0F);
-        GlStateManager.scale(1, 1, 1);
-        
-        
-        EntityModelData entityModelData = new EntityModelData();
-		entityModelData.isSitting = false;
-		entityModelData.isChild = false;
-		entityModelData.headPitch = -headPitch;
-		entityModelData.netHeadYaw = -netHeadYaw;
-        AnimationEvent predicate = new AnimationEvent(kagune, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-        kaguneModel.setLivingAnimations(kagune, kaguneRenderer.getUniqueID(kagune), predicate);
-        kaguneRenderer.render(geomodelkagune, kagune, partialTicks, 1F, 1F, 1F, 1F);
-        GlStateManager.popMatrix();
     }
     
     @SubscribeEvent

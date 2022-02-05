@@ -1,8 +1,8 @@
 package com.dretha.drethamod.entity.human;
 
-import layers.LayerClothes;
-import layers.LayerKakugan;
-import layers.LayerShard;
+import com.dretha.drethamod.layers.LayerClothes;
+import com.dretha.drethamod.layers.LayerKakugan;
+import com.dretha.drethamod.layers.LayerShard;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.Render;

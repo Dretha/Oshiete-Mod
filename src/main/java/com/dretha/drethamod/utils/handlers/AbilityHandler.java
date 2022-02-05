@@ -169,17 +169,6 @@ public class AbilityHandler {
 		}
 	}
 
-
-	//TODO частицы кагуне не работают
-	@SubscribeEvent
-	public void spawnKagunePatricles(PlayerTickEvent e) {
-		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
-		if (capa!=null && capa.getSpawnKagunePatriclesFlag()) {
-			this.spawnPatricleSpine(e.player);
-			if (capa.getSpawnKagunePatriclesTicksPre()+30<=e.player.ticksExisted)
-				capa.setSpawnKagunePatriclesFlag(false);
-		}
-	}
 	public void spawnPatricleSpine(EntityLivingBase entity) {
 		Random random = new Random();
 		double d0 = entity.posX + ((random.nextGaussian()-0.5D)*0.25D);

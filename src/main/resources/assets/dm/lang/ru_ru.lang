@@ -82,6 +82,7 @@ death.attack.kagune=%1$s был нарублен в фарш гулем
 death.attack.kuinke=%1$s был зарезан с помощью квинке
 death.attack.shard=%1$s был исколот в решето укаку-осколками
 death.attack.bullet=%1$s был застрелен пулями
+death.attack.block=%1$s погиб, не сумев парировать атаку
 
 entity.human.name=Гражданский
 entity.corpse.name=Труп
