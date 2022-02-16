@@ -1,22 +1,18 @@
 package com.dretha.drethamod.server;
 
 import com.dretha.drethamod.capability.CapaProvider;
-import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.DrethaMath;
 import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
@@ -34,7 +30,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class KaguneImpactMessage implements IMessage{
@@ -198,7 +193,7 @@ public class KaguneImpactMessage implements IMessage{
 
     public static boolean splech(World world, EntityPlayerMP player, DamageSource source, int damage, float radius)
     {
-        List<EntityLivingBase> entityLivingBases = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(player.posX - radius, player.posY - 1, player.posZ - radius, player.posX + radius, player.posY + 3, player.posZ + radius));
+        List<EntityLivingBase> entityLivingBases = world.getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(player.posX - radius, player.posY - 1, player.posZ - radius, player.posX + radius, player.posY + 3, player.posZ + radius));
 
         boolean thereIsEntity = false;
 

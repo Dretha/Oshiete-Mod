@@ -7,7 +7,7 @@ public class CapaFirearmHandler implements ICapaFirearmHandler {
 
     private int ammo = 0;
     private Bullets bullets = Bullets.NONE;
-
+// TODO добавить капу к магазину
     @Override
     public int getAmmo() {
         return ammo;
@@ -15,9 +15,7 @@ public class CapaFirearmHandler implements ICapaFirearmHandler {
 
     @Override
     public void setAmmo(int ammo) {
-        this.ammo = ammo;
-        if (ammo > ItemMagazine.STANDART_MAGAZINE_CAPACITY)
-            ammo = ItemMagazine.STANDART_MAGAZINE_CAPACITY;
+        this.ammo = Math.min(ammo, ItemMagazine.STANDART_MAGAZINE_CAPACITY);
     }
 
     @Override

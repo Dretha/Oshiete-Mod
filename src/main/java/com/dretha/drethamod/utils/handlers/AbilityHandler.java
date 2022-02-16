@@ -2,9 +2,7 @@ package com.dretha.drethamod.utils.handlers;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
-import com.dretha.drethamod.entity.projectile.EntityRCShard;
-import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.ItemGhoulFood;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
@@ -15,9 +13,7 @@ import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.interfaces.IAntiGhoulArmor;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
@@ -28,7 +24,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -38,7 +33,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -126,14 +120,15 @@ public class AbilityHandler {
         if (OshieteDamageSource.isRCorBulletDamage(e.getSource())) return;
 
 		EntityLivingBase target = e.getEntityLiving();
-		PersonStats stats = PersonStats.getStats(target);
+		PersonStats targetStats = PersonStats.getStats(target);
 
-		if (stats!=PersonStats.EMPTY && !stats.isVulnerable() && e.getSource().getTrueSource() instanceof EntityLivingBase)
+		if (targetStats!=PersonStats.EMPTY && !targetStats.isVulnerable() && e.getSource().getTrueSource() instanceof EntityLivingBase)
 		{
 			EntityLivingBase attacker = (EntityLivingBase) e.getSource().getTrueSource();
 			ItemStack weapon = attacker.getHeldItemMainhand();
+			boolean isGhoulFistHit = PersonStats.getStats(attacker).isGhoul() && weapon.isEmpty();
 
-			if (!(weapon.getItem() instanceof IKuinke) && (!weapon.isEmpty() || attacker instanceof EntityPlayer || attacker instanceof EntityHuman))
+			if (!(weapon.getItem() instanceof IKuinke) && (!weapon.isEmpty() || !isGhoulFistHit))
 			{
 				if (!e.getSource().isProjectile())
 					weapon.damageItem(weapon.getMaxDamage()+1, attacker);
@@ -143,7 +138,7 @@ public class AbilityHandler {
 					e.setCanceled(true);
 			}
 		}
-		else if (stats!=PersonStats.EMPTY && !stats.isVulnerable())
+		else if (targetStats!=PersonStats.EMPTY && !targetStats.isVulnerable())
 		{
 			if (e.getSource().getImmediateSource() instanceof EntityArrow) {
 				e.setCanceled(true);

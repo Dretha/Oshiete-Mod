@@ -43,6 +43,7 @@ public class EntityBullet extends EntityThrowable {
             if (result.entityHit instanceof EntityLivingBase) {
                 EntityLivingBase target = (EntityLivingBase) result.entityHit;
                 PersonStats stats = PersonStats.getStats(target);
+                // TODO проблема с пулями отскакивают от не гулей
                 if ((stats!=null && stats.isGhoul() && bulletType.hurtGhoul() && stats.rank()<3) || stats==null || !stats.isGhoul()) {
                     DamageSource source = OshieteDamageSource.causeBulletDamage(this, shooter);
                     int savedResistantTime = target.hurtResistantTime;

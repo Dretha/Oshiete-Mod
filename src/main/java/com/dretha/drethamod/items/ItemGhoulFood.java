@@ -1,8 +1,7 @@
 package com.dretha.drethamod.items;
 
 import com.dretha.drethamod.capability.CapaProvider;
-import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.interfaces.IHasModel;

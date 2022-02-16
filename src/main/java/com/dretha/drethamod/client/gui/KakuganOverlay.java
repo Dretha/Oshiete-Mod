@@ -22,7 +22,7 @@ public class KakuganOverlay extends GuiIngame{
 
 	@SubscribeEvent(priority = EventPriority.NORMAL)
 	public void onRenderKakuganOverlay(RenderGameOverlayEvent.Post event) {
-		
+		// TODO сделать оверлей
 		ScaledResolution scaledRes = new ScaledResolution(Minecraft.getMinecraft());
 		GlStateManager.disableDepth();
         GlStateManager.depthMask(false);

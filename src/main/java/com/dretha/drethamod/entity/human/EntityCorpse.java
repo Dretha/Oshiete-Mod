@@ -49,7 +49,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         this.setPosition(pos.getX(), pos.getY(), pos.getZ());
         skin = texture;
-        this.stats.setKakugan(SkinHandler.getKey(skin));
+        this.stats.setKakuganResource(SkinHandler.getKakuganResource(skin));
         this.textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/"+ skin + ".png");
         this.stats.setGhoul(isGhoul);
         this.stats.setKakuganActive(isGhoul);

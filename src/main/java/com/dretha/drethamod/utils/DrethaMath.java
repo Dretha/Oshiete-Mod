@@ -24,6 +24,19 @@ public class DrethaMath {
         return pool2*procent+interval2Of;
     }
 
+    public static double getNumberOfInterval(double interval1Min, double interval1Bound, double interval1Bound2, double interval1Max, double interval2Min, double interval2Bound, double interval2Bound2, double interval2Max, double number)
+    {
+        number = Math.max(interval1Min, number);
+        number = Math.min(interval1Max, number);
+
+        if (number<=interval1Bound)
+            return getNumberOfInterval(interval1Min, interval1Bound, interval2Min, interval2Bound, number);
+        else if (number<=interval1Bound2)
+            return getNumberOfInterval(interval1Bound, interval1Bound2, interval2Bound, interval2Bound2, number);
+        else
+            return getNumberOfInterval(interval1Bound2, interval1Max, interval2Bound2, interval2Max, number);
+    }
+
     /**
      * Считает число по пропорции
      * @param interval1Of - начало первого интервала (конец - бесконечность)

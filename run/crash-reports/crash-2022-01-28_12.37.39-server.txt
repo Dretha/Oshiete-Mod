@@ -15,7 +15,7 @@ java.lang.NullPointerException: Ticking entity
 	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:2396)
 	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:346)
 	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:57)
-	at com.dretha.drethamod.entity.EntityHuman.onUpdate(EntityHuman.java:81)
+	at com.dretha.drethamod.entity.human.EntityHuman.onUpdate(EntityHuman.java:81)
 	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2168)
 	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:871)
 	at net.minecraft.world.World.updateEntity(World.java:2127)
@@ -44,14 +44,14 @@ Stacktrace:
 	at net.minecraft.entity.EntityLivingBase.onUpdate(EntityLivingBase.java:2396)
 	at net.minecraft.entity.EntityLiving.onUpdate(EntityLiving.java:346)
 	at net.minecraft.entity.monster.EntityMob.onUpdate(EntityMob.java:57)
-	at com.dretha.drethamod.entity.EntityHuman.onUpdate(EntityHuman.java:81)
+	at com.dretha.drethamod.entity.human.EntityHuman.onUpdate(EntityHuman.java:81)
 	at net.minecraft.world.World.updateEntityWithOptionalForce(World.java:2168)
 	at net.minecraft.world.WorldServer.updateEntityWithOptionalForce(WorldServer.java:871)
 	at net.minecraft.world.World.updateEntity(World.java:2127)
 
 -- Entity being ticked --
 Details:
-	Entity Type: dm:human (com.dretha.drethamod.entity.EntityHuman)
+	Entity Type: dm:human (com.dretha.drethamod.entity.human.EntityHuman)
 	Entity ID: 92310
 	Entity Name: Гражданский
 	Entity's Exact location: -178.71, 56.09, -920.26

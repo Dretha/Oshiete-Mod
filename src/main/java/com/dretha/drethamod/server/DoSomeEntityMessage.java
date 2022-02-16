@@ -1,6 +1,6 @@
 package com.dretha.drethamod.server;
 
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;

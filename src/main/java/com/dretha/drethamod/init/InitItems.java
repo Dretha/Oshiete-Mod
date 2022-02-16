@@ -58,9 +58,6 @@ public class InitItems {
 
 	//technical items
 	public static final Item UKAKU_FLAME_BIG_01 = new RenderingItem("ukaku_flame_big_01");
-	public static final Item KAKUGAN31 = new RenderingItem("kakugan31");
-	public static final Item KAKUGAN12 = new RenderingItem("kakugan12");
-	public static final Item KAKUGAN11 = new RenderingItem("kakugan11");
 
 	//clothes
 	public static final Item CLOTHESITEM1 = new ClothesArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "hat");
@@ -140,4 +137,7 @@ public class InitItems {
 	//spawn eggs
 	public static final Item SPAWN_EGG_GHOUL = new SpawnEgg("spawn_egg_ghoul");
 	public static final Item SPAWN_EGG_DOVE = new SpawnEgg("spawn_egg_dove");
+
+	//other
+	public static final Item CCG_SERTIFICATE = new ItemMaterial("ccgsertificate");
 }

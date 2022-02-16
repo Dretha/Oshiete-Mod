@@ -51,7 +51,7 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
 
     public static void renderKagune(EntityLivingBase base, PersonStats stats, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale1, RenderManager renderManager, boolean isFirstView)
     {
-        KaguneHolder kaguneParams = KaguneHolder.valueOf(stats.getEnumId());
+        KaguneHolder kaguneParams = KaguneHolder.valueOf(stats.getKaguneHolderName());
     	//AnimatedGeoModel kaguneModelProvider = kaguneParams.getModel(stats.getTextureLocation());
     	GeoEntityRenderer<EntityKagune> kaguneRenderer = kaguneParams.getRender(renderManager, stats.getTextureLocation());
         AnimatedGeoModel kaguneModelProvider = (AnimatedGeoModel) kaguneRenderer.getGeoModelProvider();
@@ -69,9 +69,9 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-        
-        float heightPoint = (base.isSneaking() ? 0.2F : 0.0F);
-        GlStateManager.translate(0.0F, heightPoint, 0.0F);
+
+        if (base.isSneaking())
+            GlStateManager.translate(0.0F, 0.2F, 0.2F);
         GlStateManager.rotate(180, 0, 0, 1);
 
         toScaleKagune(stats.getGhoulType(), stats.getRCpoints());
@@ -86,7 +86,12 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
 		entityModelData.netHeadYaw = -netHeadYaw;
         AnimationEvent<EntityKagune> predicate = new AnimationEvent<>(kagune, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
         kaguneModelProvider.setLivingAnimations(kagune, kaguneRenderer.getUniqueID(kagune), predicate);
-        kaguneRenderer.render(geomodelkagune, kagune, partialTicks, 1F, 1F, 1F, 1F);
+
+        float red = 255F;
+        float green = 255F;
+        float blue = 255F;
+
+        kaguneRenderer.render(geomodelkagune, kagune, partialTicks, red/255F, green/255F, blue/255F, 1F);
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
@@ -95,15 +100,19 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
     {
         DrethaMath.IntervalFinder finder = new DrethaMath.IntervalFinder(RCpoints, 2000, 7000);
         float scale = (float) finder.find(1, 2);
-        switch (type) {
-            case RINKAKU: {
+        //switch (type) {
+            //case RINKAKU: {
                 GlStateManager.scale(scale, scale, scale);
                 float translateY = (float) finder.find(0, 0.2);
                 float translateZ = (float) finder.find(0, 0.025);
                 GlStateManager.translate(0.0F, translateY, translateZ);
-                break;
-            }
-        }
+                //break;
+            //}
+        //}
+    }
+
+    private static void toColorKagune() {
+
     }
 
     public boolean shouldCombineTextures()

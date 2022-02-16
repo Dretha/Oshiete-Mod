@@ -1,7 +1,5 @@
 package com.dretha.drethamod.utils.enums;
 
-import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import scala.actors.threadpool.Arrays;
 

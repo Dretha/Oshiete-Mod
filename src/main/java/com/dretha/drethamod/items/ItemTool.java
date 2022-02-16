@@ -24,7 +24,7 @@ public class ItemTool extends Item implements IHasModel {
     {
             setRegistryName(name);
             setUnlocalizedName(name);
-            setCreativeTab(ModCreativeTabs.TOOLS);
+            setCreativeTab(ModCreativeTabs.GENERAL);
             this.toolMaterial = material;
             this.maxStackSize = 1;
             this.setMaxDamage(tool.getHardness(material.getMaxUses()));

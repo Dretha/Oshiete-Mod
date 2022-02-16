@@ -26,7 +26,7 @@ import java.util.Random;
 @Mod(modid=Reference.MODID, name=Reference.NAME, version = Reference.VERSION, 
 acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSION)
 public class Oshiete {
-	
+	//TODO конфиг сделай https://forum.mcmodding.ru/resources/annotacii-konfiguracii.163/
 	public static final String ID = "dm";
 	public static int idpacket = 0;
 	public static SimpleNetworkWrapper NETWORK;

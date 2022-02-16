@@ -2,7 +2,7 @@ package com.dretha.drethamod.utils.handlers;
 
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.keybinds.KeybindsRegister;
@@ -67,6 +67,7 @@ public class KeyEventsHandler {
     		ICapaHandler capa = player.getCapability(CapaProvider.PLAYER_CAP, null);
 			ActionController controller = capa.getSpeedModeController();
 			PersonStats stats = capa.personStats();
+			// TODO понерфить скорость в скоростном режиме
     		if (controller.endAct(player.ticksExisted, stats.isGhoul() && !stats.isSpeedModeActive()))
 			{
     			stats.setSpeedModeActive(true);
@@ -180,6 +181,7 @@ public class KeyEventsHandler {
 
 				if (protection < (int)e.getAmount()) {
 					stats.removeRClevel((int)e.getAmount() - protection);
+					// TODO увеличить цену за фэйл блока и добавить за успех блока
 				}
 
 				if (stats.getKagune()!=null) {
@@ -201,9 +203,7 @@ public class KeyEventsHandler {
 			if (protection * 2 < (int)e.getAmount())
 			{
 				int hurt = (int)e.getAmount() - protection * 2;
-				blocker.setHealth(blocker.getHealth() - hurt);
 				blocker.attackEntityFrom(OshieteDamageSource.causeBreakBlockAttack(), hurt);
-				System.out.println("block attack");
 			}
 		}
 	}
@@ -231,6 +231,7 @@ public class KeyEventsHandler {
 	public void openClothesInventory(KeyInputEvent event) {
 		if (KeybindsRegister.KEY_OPEN_CLOTHES_INVENTORY.isPressed()) {
 			Oshiete.NETWORK.sendToServer(new OpenClothesInventoryMessage());
+			// TODO решить вопрос с шифтом в инвентаре
 		}
 	}
 
@@ -244,15 +245,7 @@ public class KeyEventsHandler {
 		{
 			float angle = 0F;
 
-			if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
-				angle = 225;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown())
-				angle = 315;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown())
-				angle = 135;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown())
-				angle = 45;
-			else if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown())
+			if (Minecraft.getMinecraft().gameSettings.keyBindForward.isKeyDown())
 				angle = 270F;
 			else if (Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown())
 				angle = 90F;
@@ -280,6 +273,7 @@ public class KeyEventsHandler {
 		ICapaHandler capa = e.player.getCapability(CapaProvider.PLAYER_CAP, null);
 		if (capa.isGhoul() && capa.getForceThrustController().isAct(e.player.ticksExisted)) {
 			Oshiete.NETWORK.sendToServer(new ForceThrustMessage((int) (capa.personStats().getDamage() * (capa.personStats().ukaku() ? 2 : 1.4))));
+			// TODO сделать атаку в рывке только для укаку
 		}
 	}
 }

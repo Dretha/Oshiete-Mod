@@ -1,13 +1,13 @@
 package com.dretha.drethamod.init;
 
 import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.RenderCorpse;
 import com.dretha.drethamod.entity.projectile.EntityBullet;
 import com.dretha.drethamod.entity.projectile.EntityRCShard;
 import com.dretha.drethamod.entity.render.RenderBullet;
-import com.dretha.drethamod.entity.render.RenderHuman;
+import com.dretha.drethamod.entity.human.RenderHuman;
 import com.dretha.drethamod.entity.render.RenderRCShard;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
@@ -43,6 +43,7 @@ public class InitEntities {
 	public static void init() {
 		EntityRegistry.addSpawn(EntityHuman.class, 3, 1, 3, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.JUNGLE, Biomes.DESERT, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.TAIGA);
         //LootTableList.register(EntityCorpse.LOOT);
+        // TODO спавнить людей реже и добавить спавн гулей и следаков
     }
 
     private static int ID = 0;

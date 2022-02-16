@@ -58,50 +58,6 @@ public class ItemMagazine extends Item implements IHasModel {
         return 72000;
     }
 
-    /*
-
-
-            int magazineCount = magazine.getTagCompound().getInteger("count");
-            Bullets magazineBullets = Bullets.valueOf(magazine.getTagCompound().getString("bullet"));
-
-            for (ItemStack bullet : player.inventory.offHandInventory)
-            {
-                if (bullet.getItem() instanceof ItemBullet) //зарядка патронов в магазин
-                {
-                    ItemBullet itemBullet = (ItemBullet) bullet.getItem();
-
-                    if ((itemBullet.getBulletType() == magazineBullets || magazineBullets == Bullets.NONE) && magazineCount < STANDART_MAGAZINE_CAPACITY)
-                    {
-                        if (!world.isRemote)
-                            world.playSound(null, player.getPosition(), InitSounds.hk33replace, SoundCategory.PLAYERS, 1.0F, 1.0F);
-
-                        player.inventory.offHandInventory.clear();
-                        player.inventoryContainer.detectAndSendChanges();
-
-                        NBTTagCompound compound = new NBTTagCompound();
-                        compound.setString("bullet", itemBullet.getBulletType().toString());
-                        compound.setInteger("count", bullet.getCount() + magazineCount);
-                        magazine.setTagCompound(compound);
-                        break;
-                    }
-                }
-                else if (bullet.isEmpty() && magazineCount > 0) //вытащить патроны в руку
-                {
-                    ItemStack bullets = new ItemStack(magazineBullets.getItemBullet(), magazineCount);
-                    player.inventory.addItemStackToInventory(bullets);
-                    player.inventoryContainer.detectAndSendChanges();
-
-                    NBTTagCompound compound = new NBTTagCompound();
-                    compound.setString("bullet", Bullets.NONE.toString());
-                    compound.setInteger("count", 0);
-                    magazine.setTagCompound(compound);
-                }
-            }
-        }
-
-    }
-     */
-
     @Override
     public void onUsingTick(ItemStack magazine, EntityLivingBase base, int count1)
     {

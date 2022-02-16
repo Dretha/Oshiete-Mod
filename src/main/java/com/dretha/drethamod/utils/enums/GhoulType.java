@@ -1,26 +1,21 @@
 package com.dretha.drethamod.utils.enums;
 
 
-import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.init.InitItems;
-import com.dretha.drethamod.utils.stats.PersonStats;
+import com.dretha.drethamod.main.Oshiete;
 import net.minecraft.item.Item;
 
 import java.util.Arrays;
-import java.util.Random;
 
 public enum GhoulType {
+	NONE (null, 1, 1, 1, 1),
 	UKAKU(InitItems.RAW_KAKUHO_UKAKU, 5, 0.5F, 0.77F, 0.5F),
 	KOUKAKU(InitItems.RAW_KAKUHO_KOUKAKU, 10, 1.5F, 1F, 1.5F),
 	RINKAKU(InitItems.RAW_KAKUHO_RINKAKU, 15, 0.7F, 1.5F, 1F),
-	BIKAKU(InitItems.RAW_KAKUHO_BIKAKU, 7, 1F, 1F, 1F),
-	NONE (null, 0, 0, 0, 0);
+	BIKAKU(InitItems.RAW_KAKUHO_BIKAKU, 7, 1F, 1F, 1F);
 
-	public int index() {
-		return GhoulType.indexOf(this);
-	}
 	public int id() {
-		return GhoulType.indexOf(this) + 1;
+		return Arrays.asList(GhoulType.values()).indexOf(this);
 	}
 
 	public final Item kakuho;
@@ -57,17 +52,12 @@ public enum GhoulType {
 		return null;
 	}
 	
-	public static int indexOf(GhoulType type) {
-		return Arrays.asList(GhoulType.values()).indexOf(type);
-	}
-	
 	public static GhoulType typeOf(int index) {
 		return Arrays.asList(GhoulType.values()).get(index);
 	}
-	
-	private static final Random random = new Random();
+
 	public static GhoulType random() {
-		return Arrays.asList(GhoulType.values()).get(random.nextInt(4));
+		return Arrays.asList(GhoulType.values()).get(Oshiete.random.nextInt(4)+1);
 	}
 
 	public static GhoulType getWeakType(GhoulType strongType) {

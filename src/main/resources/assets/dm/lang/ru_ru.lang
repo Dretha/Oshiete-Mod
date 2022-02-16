@@ -88,3 +88,5 @@ entity.human.name=Гражданский
 entity.corpse.name=Труп
 entity.bullet.name=Пуля
 entity.rcshard.name=RC-осколок
+
+message.addedcriminalbase=Вы обьявлены в розыск Бюро CCG, ваш статус - беглый преступник.

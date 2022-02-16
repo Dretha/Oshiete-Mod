@@ -3,11 +3,14 @@ package com.dretha.drethamod.utils.stats;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.configurations.Configuration;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitSounds;
+import com.dretha.drethamod.items.SpawnEgg;
 import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.DrethaMath;
 import com.dretha.drethamod.utils.controllers.ParticlesController;
 import com.dretha.drethamod.utils.enums.GhoulType;
@@ -15,13 +18,16 @@ import com.dretha.drethamod.utils.enums.GrowthStages;
 import com.dretha.drethamod.utils.enums.ImpactType;
 import com.dretha.drethamod.utils.enums.UkakuState;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
@@ -41,8 +47,7 @@ public class PersonStats {
 
     private final int MODEL_VARIANT = 1;
     private final int TEXTURE_VARIANT = 1;
-    private String kakugan = "31";
-    private ItemStack kakuganStack = SkinHandler.getKakuganStack(kakugan);
+    private ResourceLocation kakugan = SkinHandler.kakugan31;
     private GhoulType ghoulType = GhoulType.NONE;
     private UkakuState ukakuState = UkakuState.NONE;
     private ImpactType impactType = ImpactType.THRUST;
@@ -56,9 +61,9 @@ public class PersonStats {
     ParticlesController patriclesController = new ParticlesController(30);
 
     public String getTextureLocation() {
-        //if (ghoulType==GhoulType.RINKAKU)
-            return String.format("textures/entity/kagune/kagune%d%02d%02d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
-        //return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", getNNGT(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
+        if (ghoulType==GhoulType.RINKAKU)
+            return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", ghoulType.id(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
+        return String.format("textures/entity/kagune/kagune%d%02d%02d.png", ghoulType.id(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
     }
 
     public int getModelVariant() {
@@ -69,13 +74,9 @@ public class PersonStats {
         return this.TEXTURE_VARIANT;
     }
 
-    private int getNNGT() {
-        return ghoulType == null ? 2 : GhoulType.indexOf(ghoulType)+1;
-    }
 
 
-
-    public String getEnumId() {
+    public String getKaguneHolderName() {
         if (ghoulType==GhoulType.RINKAKU)
             return String.format("kagune%d%02d%d", ghoulType.id(), this.getModelVariant(), getGrowthStage().id());
         return String.format("kagune%d%02d", ghoulType.id(), this.getModelVariant());
@@ -90,8 +91,12 @@ public class PersonStats {
     }
 
     public int getDamage() {
-        int damage = DrethaMath.getNumberOfProportion(1000, 6, RCpoints);
-        return damage;
+        return getCombatPoint(RCpoints);
+    }
+
+    public static int getCombatPoint(int points)
+    {
+        return (int) DrethaMath.getNumberOfInterval(1000, 3000, 5000, 12000, 6, 12, 20, 40, points);
     }
 
     private boolean isBlock = false;
@@ -184,7 +189,7 @@ public class PersonStats {
         if (ghoulType==GhoulType.UKAKU)
             this.ukakuState = UkakuState.generateState();
         addRCpoints(801, entity);
-        updateRClevel();
+        RClevel = MaxRClevel();
         entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4);
         entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
         entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
@@ -205,6 +210,12 @@ public class PersonStats {
         entity.sendMessage(new TextComponentString("You are already human."));
     }
 
+    public void becomeDove(EntityLivingBase entity) {
+        setDove(true);
+        addSkill(1000, entity);
+        updateCharacteristics(entity);
+    }
+
     public void forceSpeed(EntityLivingBase base, float angle)
     {
         float yaw = base.rotationYaw + angle;
@@ -212,7 +223,8 @@ public class PersonStats {
 
         float strength = (float) DrethaMath.getNumberOfInterval(2000D, 8000D,  ukaku() ? 4.4D : 2.2D, ukaku() ? 6.6D : 4.4D, (double)materialRank()*1000D);
 
-        strength /= (base.isAirBorne?2F:1F);
+        if (base.isAirBorne)
+            strength /= 4F;
 
         double xRatio = Math.cos(yaw * 0.017453292F);
         double zRatio = Math.sin(yaw * 0.017453292F);
@@ -230,6 +242,7 @@ public class PersonStats {
     public void addRCpoints(int points, EntityLivingBase base) {
         this.RCpoints += points;
         updateCharacteristics(base);
+        updateEntityKagune(base);
     }
 
     public void updateCharacteristics(EntityLivingBase base) {
@@ -294,7 +307,7 @@ public class PersonStats {
     }
 
     public float exactRank() {
-        float rankmeter = isGhoul() ? (skill+RCpoints)/2F : skill+1000F;
+        float rankmeter = isGhoul() ? (skill+RCpoints)/2F : skill;
         float rank = Math.round(rankmeter/1000) - 1;
         if (rank<0.3F)
             rank=0.3F;
@@ -308,7 +321,7 @@ public class PersonStats {
             return Math.max(Math.round(skill/1000F)-1, 0);
     }
 
-    AttributeModifier speedghoul = new AttributeModifier("speedghoul", 0.5, 2);
+    AttributeModifier speedghoul = new AttributeModifier("speedghoul", Configuration.GHOUL_SPEED_BOOST, 2);
     public void releaseKagune(EntityLivingBase base) {
         patriclesController.activate(base.ticksExisted);
         if (!base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).hasModifier(speedghoul))
@@ -331,7 +344,7 @@ public class PersonStats {
         entityKagune.getAdmitController().setTicksPre(base.ticksExisted);
     }
 
-    AttributeModifier speedmode = new AttributeModifier("speedmode", 1.6, 2);
+    AttributeModifier speedmode = new AttributeModifier("speedmode", Configuration.GHOUL_SPEED_MODE_BOOST, 2);
     public void updateSpeedAttribute(EntityLivingBase base) {
         IAttributeInstance ins = base.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
         ins.removeAllModifiers();
@@ -356,7 +369,7 @@ public class PersonStats {
     }
 
     public void updateEntityKagune(EntityLivingBase base) {
-        entityKagune= KaguneHolder.valueOf(this.getEnumId()).getEntity(base);
+        entityKagune= KaguneHolder.valueOf(this.getKaguneHolderName()).getEntity(base);
     }
 
     public void nullKagune() {
@@ -429,7 +442,7 @@ public class PersonStats {
         compound.setBoolean("isSpeedModeActive", isSpeedModeActive);
         compound.setInteger("shardCountInEntity", this.getShardCountInEntity());
         compound.setString("impactType", this.getImpactType().toString());
-        compound.setString("kakugan", kakugan);
+        compound.setString("kakugan", kakugan.getResourcePath());
         compound.setBoolean("isDove", isDove);
     }
 
@@ -447,18 +460,16 @@ public class PersonStats {
         this.setSpeedModeActive(compound.getBoolean("isSpeedModeActive"));
         this.setShardCountInEntity(compound.getInteger("shardCountInEntity"));
         if (ImpactType.valueOf(compound.getString("impactType"))!=ImpactType.THRUST) this.changeImpactType();
-        this.kakugan = compound.getString("kakugan");
-        this.kakuganStack = SkinHandler.getKakuganStack(kakugan);
+        this.kakugan = new ResourceLocation(Reference.MODID, compound.getString("kakugan"));
         this.isDove = compound.getBoolean("isDove");
     }
 
-    public ItemStack getKakugan() {
-        return kakuganStack;
+    public void setKakuganResource(ResourceLocation location) {
+        kakugan = location;
     }
 
-    public void setKakugan(String key) {
-        kakugan = key;
-        kakuganStack = SkinHandler.getKakuganStack(key);
+    public ResourceLocation getKakuganResource() {
+        return kakugan;
     }
 
     /**
@@ -477,7 +488,29 @@ public class PersonStats {
     }
 
     public int getProtection() {
-        return (int) (exactRank() * 10 * ghoulType.blockMultiplier);
+        return (int) (getCombatPoint((RCpoints+skill)/2) * ghoulType.blockMultiplier);
     }
 
+    //for human
+    public boolean isCombatReady(EntityLiving living) {
+        return isNotCivillian() && living.getHealth() >= living.getMaxHealth()/5;
+    }
+    public boolean hostileTo(EntityLiving master, EntityLivingBase base) {
+        PersonStats statsBase = getStats(base);
+        boolean targetIsMonster = base.isCreatureType(EnumCreatureType.MONSTER, false) && !(base instanceof EntityHuman);
+        return isCombatReady(master) && ((this.isGhoul && !statsBase.isGhoul) || (this.isDove && statsBase.isGhoul) || (this.isDove && targetIsMonster)) ;
+    }
+
+    public boolean isMyTeammate(EntityLiving living) {
+        PersonStats stats = getStats(living);
+        return ((stats.isGhoul==isGhoul&&isGhoul) || stats.isDove) && (stats!=PersonStats.EMPTY || (living instanceof EntityIronGolem && !isGhoul));
+    }
+
+    public boolean isNotCivillian() {
+        return isGhoul || isDove;
+    }
+
+    public boolean isMaskOff() {
+        return getInventory().getStackInSlot(0).isEmpty();
+    }
 }

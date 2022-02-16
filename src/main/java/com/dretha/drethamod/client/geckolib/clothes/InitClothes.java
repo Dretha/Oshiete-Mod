@@ -18,6 +18,7 @@ import software.bernie.geckolib3.renderers.geo.GeoArmorRenderer;
 
 public class InitClothes {
     public static void init() {
+        // TODO решить вопрос с одеждой и унифицировать рендеры
         GeoArmorRenderer.registerArmorRenderer(ClothesArmor.class, new KanekiBlueBlouseRender());
         GeoArmorRenderer.registerArmorRenderer(BlueBlouseArmor.class, new BlueBlouseRender());
         GeoArmorRenderer.registerArmorRenderer(GrandpaHatArmor.class, new GrandpaHatRender());

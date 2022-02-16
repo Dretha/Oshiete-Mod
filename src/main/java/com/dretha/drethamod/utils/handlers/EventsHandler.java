@@ -3,12 +3,13 @@ package com.dretha.drethamod.utils.handlers;
 import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
+import com.dretha.drethamod.capability.world.WorldCapaProvider;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
@@ -19,6 +20,7 @@ import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
+import com.dretha.drethamod.worldevents.HeadquartersCCG;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
@@ -36,6 +38,7 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
@@ -75,6 +78,7 @@ public class EventsHandler {
 
     public static final ResourceLocation PLAYER_CAP = new ResourceLocation(Reference.MODID, "capa");
     public static final ResourceLocation FIREARM_CAP = new ResourceLocation(Reference.MODID, "firearmcapa");
+    public static final ResourceLocation WORLD_CAP = new ResourceLocation(Reference.MODID, "worldcapa");
     
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
@@ -89,6 +93,13 @@ public class EventsHandler {
         if (!(event.getObject().getItem() instanceof ItemFirearm)) return;
         try {
             event.addCapability(FIREARM_CAP, new CapaFirearmProvider());
+        } catch (Exception e) {
+        }
+    }
+    @SubscribeEvent
+    public void attachWorldCapability(AttachCapabilitiesEvent<World> event) {
+        try {
+            event.addCapability(WORLD_CAP, new WorldCapaProvider());
         } catch (Exception e) {
         }
     }
@@ -110,6 +121,7 @@ public class EventsHandler {
             cloneStats.setKakuganActive(false);
             cloneStats.setSpeedModeActive(false);
             cloneStats.updateCharacteristics((EntityLivingBase) e.getEntity());
+            cloneStats.setShardCountInEntity(0);
         }
 
         clone.getSmellController().setRadiusAndDuration(original.getSmellController().getRadius(), original.getSmellController().getDuration());
@@ -177,7 +189,9 @@ public class EventsHandler {
     }
     
     public static EntityHuman getHumanMP(EntityHuman human) {
-    	return human_list.get(human_list.indexOf(human));
+        if (human_list.contains(human))
+    	    return human_list.get(human_list.indexOf(human));
+        else return null;
     }
     public static boolean hasHumanMP(EntityHuman human) {
         return human_list.contains(human);
@@ -402,7 +416,7 @@ public class EventsHandler {
                     GhoulType ghoulType = kakuhoItem.ghoulType;
 
                     Weapons weapons = ((QColdSteel)e.crafting.getItem()).getWeapon();
-                    QColdSteel.modificateWeapon(e.crafting, modif, weapons, ghoulType);
+                    QColdSteel.buildColdSteel(e.crafting, modif, weapons, ghoulType);
                     return;
                 }
             }
@@ -418,6 +432,32 @@ public class EventsHandler {
         if (e.getEntityLiving() instanceof EntityCorpse) {
             if (!e.getSource().isFireDamage())
                 e.setCanceled(true);
+        }
+    }
+/*
+    @SubscribeEvent
+    public void monsterSetAttackTarget(LivingSetAttackTargetEvent e)
+    {
+        if (e.getTarget()==null || e.getEntityLiving()==null) return;
+
+        EntityLiving attacker = (EntityLiving) e.getEntityLiving();
+        EntityLivingBase target = e.getTarget();
+        if (attacker instanceof EntityHuman)
+        {
+            PersonStats attackerStats = ((EntityHuman) attacker).personStats();
+            if (attackerStats.hostileTo(attacker, target))
+                attacker.setAttackTarget(target);
+        }
+        else if (target instanceof EntityHuman && attacker.isCreatureType(EnumCreatureType.MONSTER, false))
+        {
+            attacker.setAttackTarget(target);
+        }
+    }*/
+
+    @SubscribeEvent
+    public void onCriminalDeath(LivingDeathEvent e) {
+        if (!(e.getEntityLiving() instanceof EntityPlayer) && HeadquartersCCG.isWanted(e.getEntityLiving())) {
+            HeadquartersCCG.removeWanted(e.getEntityLiving());
         }
     }
 }

@@ -169,4 +169,9 @@ public class ModelHuman extends ModelBiped {
             modelrenderer.postRender(scale);
         }
     }
+
+    public void setArmPose(ModelBiped.ArmPose mainArmPose, ModelBiped.ArmPose offArmPose) {
+        rightArmPose = mainArmPose;
+        leftArmPose = offArmPose;
+    }
 }

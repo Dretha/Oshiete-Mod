@@ -13,7 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class LayerFlame implements LayerRenderer<EntityLivingBase> {
-	
+	// TODO решить вопрос укаку
    @Override
    public void doRenderLayer(EntityLivingBase base, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 

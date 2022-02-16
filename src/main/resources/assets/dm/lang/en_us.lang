@@ -88,3 +88,5 @@ entity.human.name=Civilian
 entity.corpse.name=Corpse
 entity.bullet.name=Bullet
 entity.rcshard.name=RC-Shard
+
+message.addedcriminalbase=You are wanted by the CCG, your status is a fugitive.

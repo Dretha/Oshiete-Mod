@@ -1,6 +1,6 @@
 package com.dretha.drethamod.items;
 
-import com.dretha.drethamod.entity.EntityHuman;
+import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
@@ -63,7 +63,7 @@ public class SpawnEgg extends Item implements IHasModel {
                 human = getDove(worldIn, pos);
             worldIn.spawnEntity(human);
         }
-
+// TODO сделать правильный спавн из €иц
         return new ActionResult<>(EnumActionResult.SUCCESS, itemstack);
     }
 
@@ -79,20 +79,26 @@ public class SpawnEgg extends Item implements IHasModel {
     private EntityHuman getDove(World world, BlockPos pos) {
         EntityHuman human = new EntityHuman(world, pos);
         PersonStats stats = human.personStats();
-        stats.setDove(true);
-        stats.addSkill(700, human);
-        stats.addSkill(Oshiete.random.nextInt(3500), human);
-        human.setHeldItem(EnumHand.MAIN_HAND, QColdSteel.randomModificateWeapon(stats.getSkill()));
+        stats.becomeDove(human);
+        stats.addSkill(Oshiete.random.nextInt(3200), human);
+        stats.updateCharacteristics(human);
+        armTheDove(human);
+        return human;
+    }
 
-        QColdSteel coldSteel = (QColdSteel) human.getHeldItemMainhand().getItem();
+    public static void armTheDove(EntityHuman dove)
+    {
+        PersonStats stats = dove.personStats();
+        dove.setHeldItem(EnumHand.MAIN_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill()));
+
+        QColdSteel coldSteel = (QColdSteel) dove.getHeldItemMainhand().getItem();
         if (coldSteel.getWeapon()== Weapons.KNIFE && Oshiete.random.nextBoolean())
-            human.setHeldItem(EnumHand.OFF_HAND, human.getHeldItemMainhand());
+            dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
         if (coldSteel.getWeapon()== Weapons.KATANA && Oshiete.random.nextBoolean() && Oshiete.random.nextBoolean())
-            human.setHeldItem(EnumHand.OFF_HAND, QColdSteel.randomModificateWeapon(stats.getSkill(), Weapons.KNIFE));
+            dove.setHeldItem(EnumHand.OFF_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill(), Weapons.KNIFE));
         if (Oshiete.random.nextInt(100)<6)
-            human.setHeldItem(EnumHand.OFF_HAND, human.getHeldItemMainhand());
+            dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
 
         stats.getInventory().setInventorySlotContents(((IDressable)InitItems.KUREO_CAPE).getSlot(), new ItemStack(InitItems.KUREO_CAPE));
-        return human;
     }
 }

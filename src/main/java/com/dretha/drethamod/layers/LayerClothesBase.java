@@ -68,7 +68,7 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
 
             Minecraft.getMinecraft().getRenderItem().renderItem(mask, base, ItemCameraTransforms.TransformType.HEAD, false);
-
+            //Minecraft.getMinecraft().getItemRenderer().renderItemSide(base, mask, ItemCameraTransforms.TransformType.HEAD, false);
 
             GlStateManager.popMatrix();
         }

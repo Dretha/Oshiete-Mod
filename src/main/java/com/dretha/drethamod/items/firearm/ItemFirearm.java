@@ -9,6 +9,7 @@ import com.dretha.drethamod.items.EnumKeeper;
 import com.dretha.drethamod.items.ModCreativeTabs;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.server.ReloadMessage;
+import com.dretha.drethamod.utils.SoundPlayer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -150,24 +151,33 @@ public class ItemFirearm extends Item implements IAnimatable
     }
 
     @Override
-    public void onUsingTick(ItemStack firearm, EntityLivingBase player, int count1) {
+    public void onUsingTick(ItemStack firearm, EntityLivingBase base, int count1) {
         ICapaFirearmHandler capa1 = firearm.getCapability(CapaFirearmProvider.FIREARM_CAP, null);
         System.out.println(capa1.getAmmo() + " " + capa1.getBullets());
-        if (player.ticksExisted%3==0)
+        if (base.ticksExisted%3==0)
         {
             ICapaFirearmHandler capa = firearm.getCapability(CapaFirearmProvider.FIREARM_CAP, null);
             Bullets bullets = capa.getBullets();
             int count = capa.getAmmo();
-            if (count > 0 && bullets != Bullets.NONE) {
 
-                capa.spendAmmo();
+            boolean isCreative = false;
+            if (base instanceof EntityPlayer)
+                isCreative = ((EntityPlayer) base).isCreative();
 
-                if (!player.world.isRemote) {
-                    EntityBullet bullet = new EntityBullet(player.world, player, bullets);
-                    player.world.spawnEntity(bullet);
-                    player.world.playSound(null, player.getPosition(), InitSounds.hk33shoot, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                }
+            if (count > 0 && bullets != Bullets.NONE)
+            {
+                if (!isCreative)
+                    capa.spendAmmo();
+                shoot(base, bullets);
             }
+        }
+    }
+
+    protected void shoot(EntityLivingBase base, Bullets bullets) {
+        if (!base.world.isRemote) {
+            EntityBullet bullet = new EntityBullet(base.world, base, bullets);
+            base.world.spawnEntity(bullet);
+            SoundPlayer.play(base, InitSounds.hk33shoot);
         }
     }
 

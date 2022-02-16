@@ -11,9 +11,9 @@ import java.util.Arrays;
 
 public enum Weapons
 {
-    KNIFE(0.649F, 0.5F, -1F, 5, 56, 3, InitSounds.sweep_light, InitSounds.hit_of_kagune),
-    KATANA(1.149F, 0.7F, -1.9F, 8, 64, 6, InitSounds.sweep_medium, InitSounds.hit_of_kagune),
-    SCYTHE(1.249F, 0.9F, -2.3F, 9, 88, 8, InitSounds.sweep_light, InitSounds.hit_of_kagune),
+    KNIFE(0.5F, 0.5F, -1F, 5, 56, 3, InitSounds.sweep_light, InitSounds.hit_of_kagune),
+    KATANA(1F, 0.75F, -1.9F, 8, 64, 6, InitSounds.sweep_medium, InitSounds.hit_of_kagune),
+    SCYTHE(1.2F, 0.8F, -2.3F, 10, 88, 8, InitSounds.sweep_light, InitSounds.hit_of_kagune),
     CLEAVER(1F, 1F, -2.8F, 14, 128, 10, InitSounds.sweep_medium, InitSounds.hit_of_kagune),
     CUDGEL(1.3F, 1.2F, -3.35F, 26, 256, 16, InitSounds.sweep_heavy, InitSounds.hit_ground_kagune_2);
 
