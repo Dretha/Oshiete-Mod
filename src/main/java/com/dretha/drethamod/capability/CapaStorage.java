@@ -16,6 +16,7 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 		instance.personStats().writeToNBT(compound);
 		compound.setInteger("smellRadius", instance.getSmellController().getRadius());
 		compound.setInteger("smellDuration", instance.getSmellController().getDuration());
+		compound.setBoolean("isFirstJoin", instance.isFirstJoin());
 	    
 	    return compound;
 	}
@@ -27,5 +28,7 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 
 		instance.personStats().readFromNBT(compound);
 		instance.getSmellController().setRadiusAndDuration(compound.getInteger("smellRadius"), compound.getInteger("smellDuration"));
+		if (!compound.getBoolean("isFirstJoin"))
+			instance.setJoin();
 	}
 }

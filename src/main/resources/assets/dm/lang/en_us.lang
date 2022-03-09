@@ -67,6 +67,7 @@ desk.kuinke1= Damage Absorption
 desk.kuinke2= Hits per second
 desk.kuinke3= Type
 desk.kuinke4= Hardness
+desk.none=None
 desk.ukaku=Ukaku
 desk.koukaku=Koukaku
 desk.rinkaku=Rinkaku
@@ -90,3 +91,25 @@ entity.bullet.name=Bullet
 entity.rcshard.name=RC-Shard
 
 message.addedcriminalbase=You are wanted by the CCG, your status is a fugitive.
+
+startgui.origin.ghoul=Origin: Ghoul
+startgui.origin.human=Origin: Human
+startgui.title=Initial Editor
+startgui.buttontype=Type: 
+startgui.buttonmodel=Kagune Model: 
+startgui.colorred=Red
+startgui.colorgreen=Green
+startgui.colorblue=Blue
+startgui.start=Start
+colorpattern=Color Pattern
+colorpattern.kaneki=Kaneki's Style
+colorpattern.naki=Naki's Style
+colorpattern.nishiki=Nishiki's Style
+
+helptoast.origin=If you choose human origin, you can become a one-eyed ghoul or an investigator during the game
+helptoast.ukaku=Ukaku type ghouls are capable of firing spike-like projectiles at long range, they have increased speed, jumping and dash parameters, however they are not able to attack and block with a kagune.
+helptoast.koukaku=Koukaku type ghouls have increased defense parameters, but reduced speed parameters.
+helptoast.rinkaku=Rinkaku type ghouls have an increased attack range and more area of effect damage, but slightly reduced defense parameters.
+helptoast.bikaku=Bikaku type ghouls are the most balanced in abilities and do not have pronounced advantages and disadvantages.
+helptoast.randomcolor=Random color
+helptoast.prompt=Prompt

@@ -8,7 +8,9 @@ public interface ICapaFirearmHandler {
     void setAmmo(int ammo);
     void setAmmo(int ammo, Bullets bullets);
     void spendAmmo();
+    void addAmmo(Bullets bullets);
 
     Bullets getBullets();
     void setBullets(Bullets bullets);
+    boolean isEmpty();
 }

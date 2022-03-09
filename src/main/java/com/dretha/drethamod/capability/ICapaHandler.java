@@ -23,5 +23,7 @@ public interface ICapaHandler {
 	boolean isGhoul();
 	void setLastFoodAmount(int amount);
 	int getLastFoodAmount();
+	boolean isFirstJoin();
+	void setJoin();
 }
 

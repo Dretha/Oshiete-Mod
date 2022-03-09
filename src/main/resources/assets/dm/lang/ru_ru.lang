@@ -67,6 +67,7 @@ desk.kuinke1= Поглощение урона
 desk.kuinke2= уд/сек
 desk.kuinke3=-тип
 desk.kuinke4= Прочность
+desk.none=Нет
 desk.ukaku=Укаку
 desk.koukaku=Коукаку
 desk.rinkaku=Ринкаку
@@ -90,3 +91,25 @@ entity.bullet.name=Пуля
 entity.rcshard.name=RC-осколок
 
 message.addedcriminalbase=Вы обьявлены в розыск Бюро CCG, ваш статус - беглый преступник.
+
+startgui.origin.ghoul=Происхождение: Гуль
+startgui.origin.human=Происхождение: Человек
+startgui.title=Начальный редактор
+startgui.buttontype=Тип: 
+startgui.buttonmodel=Модель кагуне: 
+startgui.colorred=Красный
+startgui.colorgreen=Зеленый
+startgui.colorblue=Синий
+startgui.start=Старт
+colorpattern=Цветовая схема
+colorpattern.kaneki=Стиль Канеки
+colorpattern.naki=Стиль Наки
+colorpattern.nishiki=Стиль Нишики
+
+helptoast.origin=При выборе происхождения человека вы все равно сможете стать одноглазым гулем или следователем в процессе игры
+helptoast.ukaku=Гули типа укаку способны выпускать снаряды похожие на шипы на дальние дистанции, они имеют повышенные параметры скорости, прыгучести и рывка, однако они не способны атаковать и блокировать с помощью кагуне.
+helptoast.koukaku=Гули типа коукаку имеют повышенные параметры защиты, но сниженные параметры скорости.
+helptoast.rinkaku=Гули типа ринкаку имеют повышенный радиус атаки и больший урон при атаке по площади, но несколько сниженные параметры защиты.
+helptoast.bikaku=Гули типа бикаку наиболее сбалансированы в способностях и не имеют выраженных достоинств или недостатков.
+helptoast.randomcolor=Случайный цвет
+helptoast.prompt=Подсказка

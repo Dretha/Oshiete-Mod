@@ -11,22 +11,22 @@ import java.util.UUID;
 
 public class HeadquartersCCG
 {
-    private static final ArrayList<UUID> wantedCriminalsBase = new ArrayList<>();
+    private final ArrayList<UUID> wantedCriminalsBase = new ArrayList<>();
 
-    public static void addWanted(EntityLivingBase base) {
+    public void addWanted(EntityLivingBase base) {
         if (base==null) return;
-        if (!base.isDead && !wantedCriminalsBase.contains(base.getUniqueID()) && PersonStats.getStats(base).isMaskOff()) {
+        if (!base.isDead && !wantedCriminalsBase.contains(base.getUniqueID()) && PersonStats.getStats(base).isMaskOff() && base instanceof EntityPlayer) {
             wantedCriminalsBase.add(base.getUniqueID());
             if (base instanceof EntityPlayer)
                 base.sendMessage(new TextComponentString(I18n.format("message.addedcriminalbase")));
         }
     }
 
-    public static void removeWanted(EntityLivingBase base) {
+    public void removeWanted(EntityLivingBase base) {
         wantedCriminalsBase.remove(base.getUniqueID());
     }
 
-    public static boolean isWanted(EntityLivingBase base) {
+    public boolean isWanted(EntityLivingBase base) {
         if (wantedCriminalsBase.isEmpty()) return false;
         return wantedCriminalsBase.contains(base.getUniqueID());
     }

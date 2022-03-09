@@ -3,6 +3,7 @@ package com.dretha.drethamod.proxy;
 
 import com.dretha.drethamod.capability.InitCapabilities;
 import com.dretha.drethamod.client.gui.GuiHandler;
+import com.dretha.drethamod.command.CommandRC;
 import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitEntities;
 import com.dretha.drethamod.main.Oshiete;
@@ -14,6 +15,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 public class CommonProxy {
@@ -26,7 +28,7 @@ public class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new AbilityHandler());
 		MinecraftForge.EVENT_BUS.register(new KeyEventsHandler());
 		InitCapabilities.init();
-		InitEntities.init();
+		InitEntities.initSpawn();
 
 		InitBlocks.init();
     }
@@ -41,4 +43,8 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {
 
     }
+
+	public void serverStarting(FMLServerStartingEvent event) {
+		event.registerServerCommand(new CommandRC());
+	}
 }

@@ -3,10 +3,13 @@ package com.dretha.drethamod.main;
 import com.dretha.drethamod.client.geckolib.clothes.InitClothes;
 import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitCraftings;
+import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.proxy.CommonProxy;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.server.*;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -15,6 +18,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -84,5 +88,11 @@ public class Oshiete {
 	{
 		InitClothes.init();
 	}*/
+
+	@EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+
+		proxy.serverStarting(event);
+	}
 
 }

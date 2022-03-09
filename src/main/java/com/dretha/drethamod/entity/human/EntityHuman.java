@@ -1,5 +1,6 @@
 package com.dretha.drethamod.entity.human;
 
+import com.dretha.drethamod.capability.world.WorldCapaProvider;
 import com.dretha.drethamod.entity.ai.*;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.ItemGhoulFood;
@@ -10,6 +11,7 @@ import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.enums.GhoulType;
+import com.dretha.drethamod.utils.pojo.SimpleColor;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import com.dretha.drethamod.worldevents.HeadquartersCCG;
 import io.netty.buffer.ByteBuf;
@@ -74,6 +76,19 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		if (skin ==null)
 			skin = SkinHandler.getRandomTexture();
 		stats.setKakuganResource(SkinHandler.getKakuganResource(skin));
+
+		float equipmentDropChance = 0.025F;
+		this.setDropChance(EntityEquipmentSlot.MAINHAND, equipmentDropChance);
+		this.setDropChance(EntityEquipmentSlot.OFFHAND, equipmentDropChance);
+		this.setDropChance(EntityEquipmentSlot.HEAD, equipmentDropChance);
+		this.setDropChance(EntityEquipmentSlot.CHEST, equipmentDropChance);
+		this.setDropChance(EntityEquipmentSlot.LEGS, equipmentDropChance);
+		this.setDropChance(EntityEquipmentSlot.FEET, equipmentDropChance);
+
+		SimpleColor simpleColor = SimpleColor.randomColor();
+		stats.setRed(simpleColor.red);
+		stats.setGreen(simpleColor.green);
+		stats.setBlue(simpleColor.blue);
 	}
 
 	public PersonStats personStats() {
@@ -223,7 +238,6 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		int AIPriority = 0;
         this.tasks.addTask(AIPriority++, new EntityAISwimming(this));
 		this.tasks.addTask(AIPriority++, new HumanAIAttackMellee(this));
-		//this.tasks.addTask(AIPriority++, new EntityAIAttackMelee(this, 1.5, true));
 		this.tasks.addTask(AIPriority++, new HumanAIAvoidScary(this, 2));
         this.tasks.addTask(AIPriority++, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(AIPriority++, new EntityAIWatchClosest(this, EntityHuman.class, 6.0F));
@@ -345,9 +359,10 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 
 	public boolean isMyEnemy(EntityLivingBase enemy) {
 		PersonStats enemyStats = PersonStats.getStats(enemy);
+		HeadquartersCCG headquartersCCG = enemy.world.getCapability(WorldCapaProvider.WORLD_CAP, null).getHeadquartersCCG();
 		if (enemy instanceof EntityPlayer || enemy instanceof EntityHuman)
 		{
-			return (personStats().isGhoul() && !enemyStats.isGhoul()) || (personStats().isDove() && enemyStats.isKakuganActive()) || (personStats().isDove() && HeadquartersCCG.isWanted(enemy));
+			return (personStats().isGhoul() && !enemyStats.isGhoul()) || (personStats().isDove() && enemyStats.isKakuganActive()) || (personStats().isDove() && headquartersCCG.isWanted(enemy));
 		}
 		else {
 			return enemy.isCreatureType(EnumCreatureType.MONSTER, false);

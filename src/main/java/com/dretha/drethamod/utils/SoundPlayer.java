@@ -1,5 +1,7 @@
 package com.dretha.drethamod.utils;
 
+import com.dretha.drethamod.init.InitSounds;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -19,5 +21,9 @@ public class SoundPlayer
     public static void play(EntityLivingBase entity, SoundEvent soundEvent, float volume) {
         if (!entity.world.isRemote)
             entity.world.playSound(null, entity.getPosition(), soundEvent, SoundCategory.PLAYERS, volume, 1.0F);
+    }
+
+    public static boolean soundEquals(ISound iSound, SoundEvent soundEvent) {
+        return iSound.getSoundLocation().getResourcePath().equals(soundEvent.getSoundName().getResourcePath());
     }
 }

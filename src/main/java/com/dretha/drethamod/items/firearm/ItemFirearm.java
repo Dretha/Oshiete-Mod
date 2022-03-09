@@ -18,7 +18,6 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -80,8 +79,9 @@ public class ItemFirearm extends Item implements IAnimatable
         for (ItemStack magazine : player.inventory.offHandInventory) {
             if (magazine.getItem()==InitItems.MAGAZINE)
             {
-                int magazineCount = magazine.getTagCompound().getInteger("count");
-                Bullets magazineBullets = Bullets.valueOf(magazine.getTagCompound().getString("bullet"));
+                ICapaFirearmHandler magazineCapa = magazine.getCapability(CapaFirearmProvider.FIREARM_CAP, null);
+                int magazineCount = magazineCapa.getAmmo();
+                Bullets magazineBullets = magazineCapa.getBullets();
                 ICapaFirearmHandler capa = firearm.getCapability(CapaFirearmProvider.FIREARM_CAP, null);
                 int firearmCount = capa.getAmmo();
                 Bullets firearmBullets = capa.getBullets();
@@ -101,12 +101,10 @@ public class ItemFirearm extends Item implements IAnimatable
     }
 
     private ItemStack magazineFactory(String bullets, int count) {
-        ItemStack stack = new ItemStack(InitItems.MAGAZINE);
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("bullet", bullets);
-        compound.setInteger("count", count);
-        stack.setTagCompound(compound);
-        return stack;
+        ItemStack magazine = new ItemStack(InitItems.MAGAZINE);
+        ICapaFirearmHandler magazineCapa = magazine.getCapability(CapaFirearmProvider.FIREARM_CAP, null);
+        magazineCapa.setAmmo(count, Bullets.valueOf(bullets));
+        return magazine;
     }
 
 

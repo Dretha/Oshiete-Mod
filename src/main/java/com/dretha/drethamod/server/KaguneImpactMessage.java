@@ -85,7 +85,7 @@ public class KaguneImpactMessage implements IMessage{
 
                 if (entity instanceof EntityLivingBase)
                 {
-                    impact(player, (EntityLivingBase) entity, m.damagesource, m.damage);
+                    impact(player, (EntityLivingBase) entity, m.damage);
                     world.playSound(null, player.getPosition(), InitSounds.hit_of_kagune, SoundCategory.PLAYERS, 0.7F, 1F);
                 }
                 else
@@ -200,7 +200,7 @@ public class KaguneImpactMessage implements IMessage{
         for (EntityLivingBase base : entityLivingBases) {
             if(base == player)continue;
 
-            impact(player, base, source, damage);
+            impact(player, base, damage);
 
             base.knockBack(player, 0.9F, player.posX - base.posX, player.posZ - base.posZ);
 
@@ -231,10 +231,11 @@ public class KaguneImpactMessage implements IMessage{
         return thereIsEntity;
     }
     
-    private static void impact(EntityPlayerMP attacker, EntityLivingBase target, DamageSource source, int damage) {
+    public static void impact(EntityLivingBase attacker, EntityLivingBase target, int damage) {
     	if (target!=null)
         {
-            PersonStats stats = attacker.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            PersonStats stats = PersonStats.getStats(attacker);
+            DamageSource source = OshieteDamageSource.causeKaguneDamage(attacker);
 
             boolean isWeak = false;
             PersonStats stats1 = PersonStats.getStats(target);

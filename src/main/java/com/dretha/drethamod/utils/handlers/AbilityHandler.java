@@ -117,6 +117,7 @@ public class AbilityHandler {
 	 */
   	@SubscribeEvent
 	public static void setGhoulProtectOnMeleeAndRangeAttacks(LivingAttackEvent e) {
+		  // TODO нельзя атаковать гуля всем мобам
         if (OshieteDamageSource.isRCorBulletDamage(e.getSource())) return;
 
 		EntityLivingBase target = e.getEntityLiving();

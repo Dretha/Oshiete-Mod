@@ -92,5 +92,11 @@
       "dm:rebound2",
       "dm:rebound3"
     ]
+  },
+  "opening": {
+    "category": "player",
+    "sounds": [
+      "dm:opening"
+    ]
   }
 }

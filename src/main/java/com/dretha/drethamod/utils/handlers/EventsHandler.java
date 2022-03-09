@@ -4,13 +4,16 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
 import com.dretha.drethamod.capability.world.WorldCapaProvider;
+import com.dretha.drethamod.client.gui.StartGui;
 import com.dretha.drethamod.entity.human.EntityCorpse;
+import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.items.firearm.ItemMagazine;
 import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
@@ -18,15 +21,15 @@ import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.layers.LayerKagune;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
+import com.dretha.drethamod.utils.SoundPlayer;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import com.dretha.drethamod.worldevents.HeadquartersCCG;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBiped;
-import net.minecraft.client.model.ModelPlayer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.*;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -34,14 +37,15 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderSpecificHandEvent;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -97,6 +101,14 @@ public class EventsHandler {
         }
     }
     @SubscribeEvent
+    public void attachMagazineCapability(AttachCapabilitiesEvent<ItemStack> event) {
+        if (!(event.getObject().getItem() instanceof ItemMagazine)) return;
+        try {
+            event.addCapability(FIREARM_CAP, new CapaFirearmProvider());
+        } catch (Exception e) {
+        }
+    }
+    @SubscribeEvent
     public void attachWorldCapability(AttachCapabilitiesEvent<World> event) {
         try {
             event.addCapability(WORLD_CAP, new WorldCapaProvider());
@@ -131,6 +143,11 @@ public class EventsHandler {
     
     //playerlist
     private static final LinkedList<EntityPlayer> player_list = new LinkedList<EntityPlayer>();
+    public static void addPlayerToList(EntityPlayer player) {
+        if (!player_list.contains(player)) {
+            player_list.add(player);
+        }
+    }
     @SubscribeEvent
     public void PlayerLoggedInList(PlayerLoggedInEvent e) {
     	if (!player_list.contains(e.player)) {
@@ -139,7 +156,25 @@ public class EventsHandler {
     		if (stats.isKaguneActive())
     			stats.updateEntityKagune(e.player);
     		stats.updateSpeedAttribute(e.player);
+            /*
+            ICapaHandler capa = getCapaMP(e.player);
+            if (capa!=null && capa.isFirstJoin() && !e.player.world.isRemote) {
+                capa.setJoin();
+                Oshiete.NETWORK.sendTo(new SendPlayerListMessage(), (EntityPlayerMP) e.player);
+                Oshiete.NETWORK.sendTo(new OpenGuiMessage(), (EntityPlayerMP) e.player);
+            }
+            */
+            e.player.sendMessage(new TextComponentString("Oshiete Mod is loaded."));
     	}
+    }
+    @SubscribeEvent
+    public void openStartGui(ClientChatReceivedEvent e) {
+        EntityPlayer player = Minecraft.getMinecraft().player;
+        ICapaHandler capa = getCapaMP(player);
+        if (capa!=null && capa.isFirstJoin() && player.world.isRemote) {
+            capa.setJoin();
+            Minecraft.getMinecraft().displayGuiScreen(new StartGui());
+        }
     }
     @SubscribeEvent
     public void PlayerLoggedOutList(PlayerLoggedOutEvent e) {
@@ -162,7 +197,11 @@ public class EventsHandler {
     	return player_list.get(player_list.indexOf(player));
     }
     public static ICapaHandler getCapaMP(EntityPlayer player) {
-    	return player_list.get(player_list.indexOf(player)).getCapability(CapaProvider.PLAYER_CAP, null);
+        try {
+            return player_list.get(player_list.indexOf(player)).getCapability(CapaProvider.PLAYER_CAP, null);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
+        }
     }
     
     
@@ -239,43 +278,24 @@ public class EventsHandler {
     }
 
     @SubscribeEvent
-    public static void fqwgwgw(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent e) {
-    }
-    
-    //worked
-    @SubscribeEvent
     public static void kaguneFirstView(RenderSpecificHandEvent e) {
-        PersonStats stats = EventsHandler.getCapaMP(Minecraft.getMinecraft().player).personStats();
+        ICapaHandler capa = EventsHandler.getCapaMP(Minecraft.getMinecraft().player);
+        if (capa==null) return;
+        PersonStats stats = capa.personStats();
     	EntityPlayer player = Minecraft.getMinecraft().player;
-    	if (stats.isKaguneActive() && stats.getKagune()!=null) {
-        	GlStateManager.enableRescaleNormal();
-        	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            // TODO переписать listF попроще
-        	
-        	EntityKagune kagune = null;
-        	float limbSwing=0;
-        	float limbSwingAmount=0;
-			float partialTicks=0;
-			float ageInTicks=0;
-			float netHeadYaw=0;
-			float headPitch=0;
-			float scale=0;
-			
-			do {
-	        	kagune = stats.getKagune();
-	        } while (stats.getKagune()==null);
-			
-			limbSwing = kagune.getListF().get(0);
-			limbSwingAmount = kagune.getListF().get(1);
-			partialTicks = kagune.getListF().get(2);
-			ageInTicks = kagune.getListF().get(3);
-			netHeadYaw = kagune.getListF().get(4);
-			headPitch = kagune.getListF().get(5);
-			scale = kagune.getListF().get(6);
+    	if (stats.isKaguneActive() && stats.getKagune()!=null)
+        {
+        	EntityKagune kagune = stats.getKagune();
+
+            float limbSwing = kagune.getRenderData().get(0);
+            float limbSwingAmount = kagune.getRenderData().get(1);
+            float partialTicks = kagune.getRenderData().get(2);
+            float ageInTicks = kagune.getRenderData().get(3);
+            float netHeadYaw = kagune.getRenderData().get(4);
+            float headPitch = kagune.getRenderData().get(5);
+            float scale = kagune.getRenderData().get(6);
 			
             LayerKagune.renderKagune(player, stats, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale, Minecraft.getMinecraft().getRenderManager(), true);
-
-        	GlStateManager.disableRescaleNormal();
         }
     }
     
@@ -284,41 +304,6 @@ public class EventsHandler {
         if (Minecraft.getMinecraft().gameSettings.thirdPersonView==1)
             GL11.glTranslatef(-0.5F, 0, 0);
     }
-    
-    
-    
-    
-    /*
-    public static final ResourceLocation PUMPKIN_BLUR_TEX_PATH = new ResourceLocation("textures/misc/pumpkinblur.png");
-    public static final ScaledResolution scaledresolution = new ScaledResolution(Minecraft.getMinecraft());
-    //guikakugan
-    @SubscribeEvent
-    public static void renderGuiKakugan(RenderGameOverlayEvent.Post e) { 
-    	
-    	GlStateManager.pushMatrix();
-    	GlStateManager.disableDepth();
-        GlStateManager.depthMask(false);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableAlpha();
-        Minecraft.getMinecraft().getTextureManager().bindTexture(PUMPKIN_BLUR_TEX_PATH);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(0.0D, (double)scaledresolution.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
-        bufferbuilder.pos((double)scaledresolution.getScaledWidth(), (double)scaledresolution.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
-        bufferbuilder.pos((double)scaledresolution.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
-        bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
-        tessellator.draw();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableDepth();
-        GlStateManager.enableAlpha();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.popMatrix();
-        
-        System.out.println("renderGuiKakugan");
-    }*/
-    
     
     //clothes inventory
     @SubscribeEvent
@@ -345,30 +330,6 @@ public class EventsHandler {
         for (int i = 0; i < aitemstack.size(); ++i) {
             if (!aitemstack.get(i).isEmpty()) {
                 player.dropItem(aitemstack.get(i), true, false);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void renderFirearmPose(RenderPlayerEvent.Specials.Pre e)
-    {
-        EntityPlayer player = getPlayerMP(e.getEntityPlayer());
-        if (player.getHeldItemMainhand().getItem() instanceof ItemFirearm)
-        {
-            ModelPlayer modelplayer = e.getRenderer().getMainModel();
-
-            ModelBiped.ArmPose modelbiped$armpose = ModelBiped.ArmPose.BOW_AND_ARROW;
-            ModelBiped.ArmPose modelbiped$armpose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
-
-            if (e.getEntityPlayer().getPrimaryHand() == EnumHandSide.RIGHT)
-            {
-                modelplayer.rightArmPose = modelbiped$armpose;
-                modelplayer.leftArmPose = modelbiped$armpose1;
-            }
-            else
-            {
-                modelplayer.rightArmPose = modelbiped$armpose1;
-                modelplayer.leftArmPose = modelbiped$armpose;
             }
         }
     }
@@ -422,42 +383,36 @@ public class EventsHandler {
             }
         }
     }
-    public static int getKakuhoRank(Kakuho kakuho) {
-
-        return 0;
-    }
 
     @SubscribeEvent
-    public static void corpseAttack(LivingHurtEvent e) {
+    public static void notCorpseAttack(LivingHurtEvent e) {
         if (e.getEntityLiving() instanceof EntityCorpse) {
             if (!e.getSource().isFireDamage())
                 e.setCanceled(true);
         }
     }
-/*
-    @SubscribeEvent
-    public void monsterSetAttackTarget(LivingSetAttackTargetEvent e)
-    {
-        if (e.getTarget()==null || e.getEntityLiving()==null) return;
 
-        EntityLiving attacker = (EntityLiving) e.getEntityLiving();
-        EntityLivingBase target = e.getTarget();
-        if (attacker instanceof EntityHuman)
-        {
-            PersonStats attackerStats = ((EntityHuman) attacker).personStats();
-            if (attackerStats.hostileTo(attacker, target))
-                attacker.setAttackTarget(target);
+    @SubscribeEvent
+    public void monsterSetAttackHumans(EntityJoinWorldEvent e)
+    {
+        if (!e.getWorld().isRemote && e.getEntity().isCreatureType(EnumCreatureType.MONSTER, false) && !(e.getEntity() instanceof EntityHuman) && !(e.getEntity() instanceof EntityPlayer) && e.getEntity() instanceof EntityCreature && !(e.getEntity() instanceof EntityEnderman)) {
+            if (e.getEntity() instanceof EntitySpider && e.getWorld().isDaytime()) return;
+            ((EntityLiving) e.getEntity()).targetTasks.addTask(3, new EntityAINearestAttackableTarget((EntityCreature) e.getEntity(), EntityHuman.class, true));
         }
-        else if (target instanceof EntityHuman && attacker.isCreatureType(EnumCreatureType.MONSTER, false))
-        {
-            attacker.setAttackTarget(target);
-        }
-    }*/
+    }
 
     @SubscribeEvent
     public void onCriminalDeath(LivingDeathEvent e) {
-        if (!(e.getEntityLiving() instanceof EntityPlayer) && HeadquartersCCG.isWanted(e.getEntityLiving())) {
-            HeadquartersCCG.removeWanted(e.getEntityLiving());
+        HeadquartersCCG headquartersCCG = e.getEntityLiving().world.getCapability(WorldCapaProvider.WORLD_CAP, null).getHeadquartersCCG();
+        if (!(e.getEntityLiving() instanceof EntityPlayer) && headquartersCCG.isWanted(e.getEntityLiving())) {
+            headquartersCCG.removeWanted(e.getEntityLiving());
+        }
+    }
+
+    @SubscribeEvent
+    public void soundPlay(PlaySoundEvent e) {
+        if (Minecraft.getMinecraft().currentScreen instanceof StartGui && e.getSound()!=StartGui.opening && !SoundPlayer.soundEquals(e.getSound(), InitSounds.let_out_kagune)) {
+            e.setResultSound(null);
         }
     }
 }

@@ -29,7 +29,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
 	protected ActionController blockAnimController = new ActionController(7);
 	protected ActionController releaseController = new ActionController(23);
 	protected ActionController admitController = new ActionController(23);
-	protected Enumerator impactEnumerator = new Enumerator(3);
+	protected Enumerator impactEnumerator = new Enumerator(1, 4);
 
 	protected AnimationBuilder BLOCK = new AnimationBuilder().addAnimation("block", true);
 	protected AnimationBuilder BLOCK_ANIM = new AnimationBuilder().addAnimation("block_anim", true);
@@ -56,7 +56,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
         this.ignoreFrustumCheck = true;
     }
 
-    private <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
+    protected <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event)
 	{
 		ImpactType impactType = stats.getImpactType();
 
@@ -81,7 +81,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
 		else if (!impactController.endAct(master.ticksExisted, impactType.speed))
 		{
 			event.getController().setAnimation(new AnimationBuilder().addAnimation(impactType.toString().toLowerCase() + (impactType == ImpactType.THRUST ? impactEnumerator.number() : ""), true));
-			if (impactController.endAct(master.ticksExisted+1, impactType.speed)) impactEnumerator.recite(master.ticksExisted);
+			if (impactController.endAct(master.ticksExisted+1, impactType.speed)) impactEnumerator.forwardOnce(master.ticksExisted);
 			return PlayState.CONTINUE;
 		}
 		else if (!blockAnimController.endAct(master.ticksExisted))
@@ -122,7 +122,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
     }
     
     
-    public void setListF(float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void setRenderData(float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
     	listF.clear();
     	this.listF.add(limbSwing);
     	this.listF.add(limbSwingAmount);
@@ -133,7 +133,7 @@ public class EntityKagune extends EntityLiving implements IAnimatable {
     	this.listF.add(scale);
     }
     
-    public ArrayList<Float> getListF() {
+    public ArrayList<Float> getRenderData() {
     	return this.listF;
     }
 

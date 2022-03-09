@@ -68,8 +68,8 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
             GlStateManager.scale(0.5F, 0.5F, 0.5F);
 
             Minecraft.getMinecraft().getRenderItem().renderItem(mask, base, ItemCameraTransforms.TransformType.HEAD, false);
-            //Minecraft.getMinecraft().getItemRenderer().renderItemSide(base, mask, ItemCameraTransforms.TransformType.HEAD, false);
 
+            GlStateManager.disableLighting();
             GlStateManager.popMatrix();
         }
 
@@ -101,11 +101,11 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
 
             if (itemarmor.getEquipmentSlot() == slotIn)
             {
-                T t = this.getModelFromSlot(slotIn);
-                t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
-                t.setModelAttributes(this.renderer.getMainModel());
-                t.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
-                this.setModelSlotVisible(t, slotIn);
+                T model = this.getModelFromSlot(slotIn);
+                model = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, model);
+                model.setModelAttributes(this.renderer.getMainModel());
+                model.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
+                this.setModelSlotVisible(model, slotIn);
                 boolean flag = this.isLegSlot(slotIn);
                 this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
 
@@ -117,16 +117,18 @@ public abstract class LayerClothesBase<T extends ModelBase> implements LayerRend
                         float f1 = (float)(i >> 8 & 255) / 255.0F;
                         float f2 = (float)(i & 255) / 255.0F;
                         GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
-                        t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                        GlStateManager.disableLighting();
+                        model.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                        GlStateManager.disableLighting();
                         this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, "overlay"));
                     }
                     { // Non-colored
                         GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
-                        t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+                        model.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
                     } // Default
                     if (!this.skipRenderGlint && itemstack.hasEffect())
                     {
-                        renderEnchantedGlint(this.renderer, entityLivingBaseIn, t, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
+                        renderEnchantedGlint(this.renderer, entityLivingBaseIn, model, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale);
                     }
                 }
             }

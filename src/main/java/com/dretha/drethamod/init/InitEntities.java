@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @Mod.EventBusSubscriber(modid = "dm")
 public class InitEntities {
 	@SideOnly(Side.CLIENT)
-    public static void initModels() {
+    public static void registerEntities() {
         KaguneHolder.registerEntities();
 
         registerNormalEntity("human", EntityHuman.class, 0xffffff, 0x000000);
@@ -40,7 +40,7 @@ public class InitEntities {
 		RenderingRegistry.registerEntityRenderingHandler(EntityBullet.class, RenderBullet::new);
 	}
 	
-	public static void init() {
+	public static void initSpawn() {
 		EntityRegistry.addSpawn(EntityHuman.class, 3, 1, 3, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.JUNGLE, Biomes.DESERT, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.TAIGA);
         //LootTableList.register(EntityCorpse.LOOT);
         // TODO спавнить людей реже и добавить спавн гулей и следаков

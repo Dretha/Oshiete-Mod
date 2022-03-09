@@ -11,28 +11,28 @@ public enum KaguneHolder
 {
 	/*--------------------------------------------------------------------------------------*/
 	//UKAKU
-	kagune101(Entity101.class) {
+	kagune101(Entity101.class, false) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity101(master);}
 	},
 
 	//KOUKAKU
-	kagune201(Entity201.class) {
+	kagune201(Entity201.class, true) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity201(master);}
 	},
 
 	//RINKAKU
-	kagune3011(Entity3011.class) {
+	kagune3011(Entity3011.class, false) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity3011(master);}
 	},
-	kagune3012(Entity3012.class) {
+	kagune3012(Entity3012.class, false) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity3012(master);}
 	},
-	kagune3013(Entity3013.class) {
+	kagune3013(Entity3013.class, false) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity3013(master);}
 	},
 
 	//BIKAKU
-	kagune401(Entity401.class) {
+	kagune401(Entity401.class, false) {
 		public EntityKagune getEntity(EntityLivingBase master) {return new Entity401(master);}
 	};
 	/*--------------------------------------------------------------------------------------*/
@@ -54,9 +54,11 @@ public enum KaguneHolder
 	}
 
 	public final Class<? extends EntityKagune> entityClass;
+	public final boolean needSecondLayer;
 
-	KaguneHolder(Class<? extends EntityKagune> entityClass) {
+	KaguneHolder(Class<? extends EntityKagune> entityClass, boolean needSecondLayer) {
 		this.entityClass = entityClass;
+		this.needSecondLayer = needSecondLayer;
 	}
 
 	public static void registerEntities() {

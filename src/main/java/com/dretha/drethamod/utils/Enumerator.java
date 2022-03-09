@@ -4,26 +4,35 @@ import com.dretha.drethamod.main.Oshiete;
 
 public class Enumerator {
 
-    private int currentNumber = 1;
-    private final int count;
+    private int currentNumber;
+    private final int to;
+    private final int of;
     private int ticksPre = 0;
 
-    public Enumerator(int count) {
-        this.count = count;
+    public Enumerator(int of, int to) {
+        this.to = to;
+        this.of = of;
+        this.currentNumber = of;
     }
 
-    public void recite() {
+    public void forward() {
         currentNumber++;
-        if (currentNumber > count)
-            currentNumber = 1;
+        if (currentNumber >= to)
+            currentNumber = of;
     }
-    public void recite(int ticks) {
-        if (ticksPre+3<ticks) {
+    public void forwardOnce(int ticks) {
+        if (ticksPre+2<ticks) {
             ticksPre = ticks;
             currentNumber++;
-            if (currentNumber > count)
+            if (currentNumber >= to)
                 currentNumber = 1;
         }
+    }
+
+    public void back() {
+        currentNumber--;
+        if (currentNumber < of)
+            currentNumber = to-1;
     }
 
     public int number() {
@@ -31,10 +40,10 @@ public class Enumerator {
     }
 
     public void randomize() {
-        currentNumber = Oshiete.random.nextInt(count) + 1;
+        currentNumber = Oshiete.random.nextInt(to) + of;
     }
 
     public void reset() {
-        currentNumber = 1;
+        currentNumber = of;
     }
 }

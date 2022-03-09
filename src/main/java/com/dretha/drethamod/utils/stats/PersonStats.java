@@ -1,5 +1,6 @@
 package com.dretha.drethamod.utils.stats;
 
+import com.dretha.drethamod.client.geckolib.kagunes.EntityFlame;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
 import com.dretha.drethamod.client.inventory.ClothesInventory;
@@ -8,7 +9,6 @@ import com.dretha.drethamod.entity.human.EntityHuman;
 import com.dretha.drethamod.entity.human.EntityCorpse;
 import com.dretha.drethamod.entity.human.SkinHandler;
 import com.dretha.drethamod.init.InitSounds;
-import com.dretha.drethamod.items.SpawnEgg;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
 import com.dretha.drethamod.utils.DrethaMath;
@@ -31,7 +31,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-
 import javax.annotation.Nullable;
 
 public class PersonStats {
@@ -46,7 +45,9 @@ public class PersonStats {
     private EntityKagune entityKagune = null;
 
     private final int MODEL_VARIANT = 1;
-    private final int TEXTURE_VARIANT = 1;
+    private int red = 255;
+    private int green = 255;
+    private int blue = 255;
     private ResourceLocation kakugan = SkinHandler.kakugan31;
     private GhoulType ghoulType = GhoulType.NONE;
     private UkakuState ukakuState = UkakuState.NONE;
@@ -60,21 +61,23 @@ public class PersonStats {
 
     ParticlesController patriclesController = new ParticlesController(30);
 
-    public String getTextureLocation() {
+    public String getFirstTextureLocation() {
+        if (ukaku())
+        {
+            int frame = ((EntityFlame)entityKagune).getTextureFrame();
+            return String.format("textures/entity/kagune/kagune%d%02d%d.png", ghoulType.id(), this.MODEL_VARIANT, frame);
+        }
+        return String.format("textures/entity/kagune/kagune%d%02d.png", ghoulType.id(), this.MODEL_VARIANT);
+    }
+    public String getSecondTextureLocation() {
         if (ghoulType==GhoulType.RINKAKU)
-            return String.format("textures/entity/kagune/kagune%d%02d%02d%d.png", ghoulType.id(), this.MODEL_VARIANT, this.TEXTURE_VARIANT, getGrowthStage().id());
-        return String.format("textures/entity/kagune/kagune%d%02d%02d.png", ghoulType.id(), this.MODEL_VARIANT, this.TEXTURE_VARIANT);
+            return String.format("textures/entity/kagune/second_layer/kagune%d%02d%d.png", ghoulType.id(), this.MODEL_VARIANT, getGrowthStage().id());
+        return String.format("textures/entity/kagune/second_layer/kagune%d%02d.png", ghoulType.id(), this.MODEL_VARIANT);
     }
 
     public int getModelVariant() {
         return this.MODEL_VARIANT;
     }
-
-    public int getTextureVariant() {
-        return this.TEXTURE_VARIANT;
-    }
-
-
 
     public String getKaguneHolderName() {
         if (ghoulType==GhoulType.RINKAKU)
@@ -187,7 +190,9 @@ public class PersonStats {
         setGhoul(true);
         setGhoulType(ghoulType);
         if (ghoulType==GhoulType.UKAKU)
-            this.ukakuState = UkakuState.generateState();
+            //this.ukakuState = UkakuState.generateState();
+            ukakuState = UkakuState.FLAMELIMB;
+        RCpoints = Oshiete.random.nextInt(501)+200;
         addRCpoints(801, entity);
         RClevel = MaxRClevel();
         entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4);
@@ -198,7 +203,7 @@ public class PersonStats {
 
     public void becomeHuman(EntityLivingBase entity) {
         setGhoul(false);
-        this.setRCpoints(Oshiete.random.nextInt(501)+200);
+        RCpoints = Oshiete.random.nextInt(501)+200;
         this.updateRClevel();
         this.setGhoulType(GhoulType.NONE);
         entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1D);
@@ -237,10 +242,21 @@ public class PersonStats {
 
     public void updateRClevel() {
         this.RClevel = MaxRClevel() - (MaxRClevel() - this.RClevel);
+        if (RCpoints<1000)
+            RClevel=0;
     }
 
-    public void addRCpoints(int points, EntityLivingBase base) {
+    public void addRCpoints(int points, EntityLivingBase base)
+    {
+        GrowthStages stageOld = getGrowthStage();
         this.RCpoints += points;
+        GrowthStages stageNew = getGrowthStage();
+        if (stageNew != stageOld) {
+            red = red - (red / 4 * (stageNew.ordinal()-stageOld.ordinal()));
+            green = green - (green / 4 * (stageNew.ordinal()-stageOld.ordinal()));
+            blue = blue - (blue / 4 * (stageNew.ordinal()-stageOld.ordinal()));
+        }
+
         updateCharacteristics(base);
         updateEntityKagune(base);
     }
@@ -253,6 +269,7 @@ public class PersonStats {
 
 
     public void removeRClevel(int points) {
+        if (points<0) return;
         updateRClevel();
         this.RClevel -= points;
         if (this.RClevel<0) this.RClevel=0;
@@ -444,6 +461,9 @@ public class PersonStats {
         compound.setString("impactType", this.getImpactType().toString());
         compound.setString("kakugan", kakugan.getResourcePath());
         compound.setBoolean("isDove", isDove);
+        compound.setInteger("red", red);
+        compound.setInteger("green", green);
+        compound.setInteger("blue", blue);
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -462,6 +482,9 @@ public class PersonStats {
         if (ImpactType.valueOf(compound.getString("impactType"))!=ImpactType.THRUST) this.changeImpactType();
         this.kakugan = new ResourceLocation(Reference.MODID, compound.getString("kakugan"));
         this.isDove = compound.getBoolean("isDove");
+        red = compound.getInteger("red");
+        green = compound.getInteger("green");
+        blue = compound.getInteger("blue");
     }
 
     public void setKakuganResource(ResourceLocation location) {
@@ -512,5 +535,35 @@ public class PersonStats {
 
     public boolean isMaskOff() {
         return getInventory().getStackInSlot(0).isEmpty();
+    }
+
+    public boolean iAmStrongerThanHim(EntityLivingBase base) {
+        PersonStats stats = PersonStats.getStats(base);
+        return GhoulType.getWeakType(ghoulType)==stats.getGhoulType();
+    }
+
+
+    public int getRed() {
+        return red;
+    }
+
+    public void setRed(int red) {
+        this.red = red;
+    }
+
+    public int getGreen() {
+        return green;
+    }
+
+    public void setGreen(int green) {
+        this.green = green;
+    }
+
+    public int getBlue() {
+        return blue;
+    }
+
+    public void setBlue(int blue) {
+        this.blue = blue;
     }
 }

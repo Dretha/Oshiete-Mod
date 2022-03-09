@@ -56,9 +56,6 @@ public class InitItems {
 	public static final Item GHOUL_MEAT = new ItemGhoulFood("ghoul_meat", I18n.format("info.kakuho"), 8, 10, 16, true, EnumKeeper.LOW_SATIATION);
 	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 2, 2, 24, true, EnumKeeper.HIGH_SATIATION);
 
-	//technical items
-	public static final Item UKAKU_FLAME_BIG_01 = new RenderingItem("ukaku_flame_big_01");
-
 	//clothes
 	public static final Item CLOTHESITEM1 = new ClothesArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "hat");
 	public static final Item TEST_HAT = new ItemCloth("testhat", 2, new ItemStack(CLOTHESITEM1));

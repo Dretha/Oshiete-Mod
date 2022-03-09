@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy{
     {
         super.preInit(event);
         MinecraftForge.EVENT_BUS.register(new EventsHandler());
-        InitEntities.initModels();
+        InitEntities.registerEntities();
         OBJLoader.INSTANCE.addDomain(Reference.MODID);
         KeybindsRegister.register();
 

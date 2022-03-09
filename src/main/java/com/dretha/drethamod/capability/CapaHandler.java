@@ -10,6 +10,7 @@ import com.dretha.drethamod.utils.stats.PersonStats;
 public class CapaHandler implements ICapaHandler {
 
 	private final PersonStats personStats = new PersonStats();
+	private boolean isFirstJoin = true;
 
 	private final int smellRadius = Randomizer.random(new Randomizer(1000, 2001, 0.01), new Randomizer(100, 201, 0.05), new Randomizer(50, 101, 0.14), new Randomizer(17, 26, 0.80));
 	private final int smellDuration = smellRadius * 25;
@@ -91,5 +92,15 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public int getLastFoodAmount() {
 		return this.lastFoodAmount;
+	}
+
+	@Override
+	public boolean isFirstJoin() {
+		return isFirstJoin;
+	}
+
+	@Override
+	public void setJoin() {
+		isFirstJoin = false;
 	}
 }

@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
@@ -51,24 +52,25 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
 
     public static void renderKagune(EntityLivingBase base, PersonStats stats, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale1, RenderManager renderManager, boolean isFirstView)
     {
-        KaguneHolder kaguneParams = KaguneHolder.valueOf(stats.getKaguneHolderName());
-    	//AnimatedGeoModel kaguneModelProvider = kaguneParams.getModel(stats.getTextureLocation());
-    	GeoEntityRenderer<EntityKagune> kaguneRenderer = kaguneParams.getRender(renderManager, stats.getTextureLocation());
+        KaguneHolder kaguneHolder = KaguneHolder.valueOf(stats.getKaguneHolderName());
+        String firstTexture = stats.getFirstTextureLocation();
+    	GeoEntityRenderer<EntityKagune> kaguneRenderer = kaguneHolder.getRender(renderManager, firstTexture);
         AnimatedGeoModel kaguneModelProvider = (AnimatedGeoModel) kaguneRenderer.getGeoModelProvider();
 
-        EntityKagune kagune;
+        EntityKagune entityKagune;
         do {
-        	kagune = stats.getKagune();
+        	entityKagune = stats.getKagune();
         } while (stats.getKagune()==null);
-        kagune.setListF(limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale1);
+        entityKagune.setRenderData(limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch, scale1);
 
-        ResourceLocation kaguneTexture = new ResourceLocation(Reference.MODID, stats.getTextureLocation());
-        GeoModel geomodelkagune = kaguneModelProvider.getModel(kaguneModelProvider.getModelLocation(kagune));
-        
-        kaguneRenderer.bindTexture(kaguneTexture);
+        ResourceLocation kaguneTexture = new ResourceLocation(Reference.MODID, firstTexture);
+        GeoModel geomodelkagune = kaguneModelProvider.getModel(kaguneModelProvider.getModelLocation(entityKagune));
+
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GlStateManager.pushMatrix();
         GlStateManager.disableLighting();
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+        kaguneRenderer.bindTexture(kaguneTexture);
 
         if (base.isSneaking())
             GlStateManager.translate(0.0F, 0.2F, 0.2F);
@@ -84,39 +86,59 @@ public class LayerKagune implements LayerRenderer<EntityLivingBase> {
 		entityModelData.isChild = false;
 		entityModelData.headPitch = -headPitch;
 		entityModelData.netHeadYaw = -netHeadYaw;
-        AnimationEvent<EntityKagune> predicate = new AnimationEvent<>(kagune, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
-        kaguneModelProvider.setLivingAnimations(kagune, kaguneRenderer.getUniqueID(kagune), predicate);
+        AnimationEvent<EntityKagune> predicate = new AnimationEvent<>(entityKagune, limbSwing, limbSwingAmount, partialTicks, !(limbSwingAmount > -0.15F && limbSwingAmount < 0.15F), Collections.singletonList(entityModelData));
+        kaguneModelProvider.setLivingAnimations(entityKagune, kaguneRenderer.getUniqueID(entityKagune), predicate);
 
-        float red = 255F;
-        float green = 255F;
-        float blue = 255F;
+        float red = stats.getRed();
+        float green = stats.getGreen();
+        float blue = stats.getBlue();
 
-        kaguneRenderer.render(geomodelkagune, kagune, partialTicks, red/255F, green/255F, blue/255F, 1F);
+        kaguneRenderer.render(geomodelkagune, entityKagune, partialTicks, red/255F, green/255F, blue/255F, 1F);
+
+        if (kaguneHolder.needSecondLayer) {
+            kaguneRenderer.bindTexture(new ResourceLocation(Reference.MODID, stats.getSecondTextureLocation()));
+            kaguneRenderer.render(geomodelkagune, entityKagune, partialTicks, 1, 1, 1, 1F);
+        }
+
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
+        GL11.glPopAttrib();
     }
 
     private static void toScaleKagune(GhoulType type, int RCpoints)
     {
         DrethaMath.IntervalFinder finder = new DrethaMath.IntervalFinder(RCpoints, 2000, 7000);
-        float scale = (float) finder.find(1, 2);
-        //switch (type) {
-            //case RINKAKU: {
-                GlStateManager.scale(scale, scale, scale);
-                float translateY = (float) finder.find(0, 0.2);
-                float translateZ = (float) finder.find(0, 0.025);
-                GlStateManager.translate(0.0F, translateY, translateZ);
-                //break;
-            //}
-        //}
-    }
-
-    private static void toColorKagune() {
-
+        float scale = (float) finder.find(1, 1.9);
+        GlStateManager.scale(scale, scale, scale);
+        float translateY = 0;
+        float translateZ = 0;
+        switch (type) {
+            case UKAKU: {
+                translateY = 0;
+                translateZ = -(float) finder.find(0, 0.05);
+                break;
+            }
+            case KOUKAKU: {
+                //translateY = (float) finder.find(0, 0.2);
+                //translateZ = (float) finder.find(0, 0.025);
+                break;
+            }
+            case RINKAKU: {
+                translateY = (float) finder.find(0, 0.2);
+                translateZ = (float) finder.find(0, 0.025);
+                break;
+            }
+            case BIKAKU: {
+                translateY = (float) finder.find(0, 0.31);
+                translateZ = (float) finder.find(0, 0.05);
+                break;
+            }
+        }
+        GlStateManager.translate(0.0F, translateY, translateZ);
     }
 
     public boolean shouldCombineTextures()
     {
-        return true;
+        return false;
     }
 }

@@ -1,6 +1,11 @@
 package com.dretha.drethamod.entity.ai;
 
+import com.dretha.drethamod.capability.CapaProvider;
+import com.dretha.drethamod.capability.ICapaHandler;
+import com.dretha.drethamod.capability.world.IWorldCapaHandler;
+import com.dretha.drethamod.capability.world.WorldCapaProvider;
 import com.dretha.drethamod.entity.human.EntityHuman;
+import com.dretha.drethamod.server.KaguneImpactMessage;
 import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import com.dretha.drethamod.worldevents.HeadquartersCCG;
@@ -40,8 +45,10 @@ public class HumanAIAttackMellee extends EntityAIAttackMelee {
         stats = PersonStats.getStats(attacker);
         if (!stats.isKaguneActive() && stats.isGhoul())
             stats.releaseKagune(attacker);
-        if (stats.isDove())
-            HeadquartersCCG.addWanted(attacker.getAttackTarget());
+        if (stats.isDove()) {
+            HeadquartersCCG headquartersCCG = attacker.world.getCapability(WorldCapaProvider.WORLD_CAP, null).getHeadquartersCCG();
+            headquartersCCG.addWanted(attacker.getAttackTarget());
+        }
     }
 
     @Override
@@ -58,6 +65,7 @@ public class HumanAIAttackMellee extends EntityAIAttackMelee {
         } else
             human.resetBlocking();
         super.updateTask();
+        // TODO сделать блок для хумана
     }
 
     @Override
@@ -66,11 +74,9 @@ public class HumanAIAttackMellee extends EntityAIAttackMelee {
         if (speedTowardsTarget <= d0 && this.attackTick <= 0 && !stats.isBlock())
         {
             this.attackTick = attackInterval;
-            DamageSource damagesource;
             if (stats.getKagune()!=null && !stats.getKagune().transform() && stats.isKaguneActive())
             {
-                damagesource = OshieteDamageSource.causeKaguneDamage(attacker);
-                base.attackEntityFrom(damagesource, stats.getDamage());
+                KaguneImpactMessage.impact(attacker, base, stats.getDamage());
                 stats.getKagune().getImpactController().setTicksPre(attacker.ticksExisted);
                 attacker.setLastAttackedEntity(base);
             }

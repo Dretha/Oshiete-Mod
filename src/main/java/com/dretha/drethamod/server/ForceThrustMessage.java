@@ -49,8 +49,7 @@ public class ForceThrustMessage implements IMessage {
             DamageSource damagesource = OshieteDamageSource.causeKaguneDamage(player);
 
             if (KaguneImpactMessage.splech(world, player, damagesource, m.damage, 1.25F) && !player.isCreative())
-                stats.removeRClevel(12);
-
+                stats.removeRClevel(24);
         }
     }
 }

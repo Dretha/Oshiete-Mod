@@ -81,3 +81,9 @@ processResources {
         exclude 'mcmod.info'
     }
 }
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'example_at.cfg'
+    }
+}
