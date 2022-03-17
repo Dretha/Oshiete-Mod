@@ -57,8 +57,8 @@ public class InitItems {
 	public static final Item KAGUNE_SHARD = new ItemGhoulFood("kagune_shard", I18n.format("info.kakuho"), 2, 2, 24, true, EnumKeeper.HIGH_SATIATION);
 
 	//clothes
-	public static final Item CLOTHESITEM1 = new ClothesArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "hat");
-	public static final Item TEST_HAT = new ItemCloth("testhat", 2, new ItemStack(CLOTHESITEM1));
+	//public static final Item CLOTHESITEM1 = new ClothesArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "hat");
+	//public static final Item TEST_HAT = new ItemCloth("testhat", 2, new ItemStack(CLOTHESITEM1));
 
 	public static final Item BLUE_BLOUSE_HEAD = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.HEAD, "blue_blouse_head");
 	public static final Item BLUE_BLOUSE_BODY = new BlueBlouseArmor(ArmorMaterial.DIAMOND, 1, EntityEquipmentSlot.CHEST, "blue_blouse_body");
@@ -95,6 +95,8 @@ public class InitItems {
 	public static final Item UTA_MASK = new ItemMask("mask_uta");
 	public static final Item NORO_MASK = new ItemMask("mask_noro");
 	public static final Item AOGIRI_MASK = new ItemMask("mask_aogiri");
+	public static final Item SHUU_MASK = new ItemMask("mask_shuu");
+	public static final Item KANEKI_MASK = new ItemMask("mask_kaneki");
 
 	//kuinkies
 	public static final Item KNIFE = new QColdSteel("knife", Weapons.KNIFE);

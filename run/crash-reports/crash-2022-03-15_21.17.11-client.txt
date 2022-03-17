@@ -1,0 +1,129 @@
+---- Minecraft Crash Report ----
+// My bad.
+
+Time: 3/15/22 9:17 PM
+Description: Updating screen events
+
+java.lang.IllegalArgumentException: No enum constant com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.kagune3010
+	at java.lang.Enum.valueOf(Enum.java:238)
+	at com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.valueOf(KaguneHolder.java:10)
+	at com.dretha.drethamod.utils.stats.PersonStats.updateEntityKagune(PersonStats.java:398)
+	at com.dretha.drethamod.utils.stats.PersonStats.addRCpoints(PersonStats.java:270)
+	at com.dretha.drethamod.utils.stats.PersonStats.becomeGhoul(PersonStats.java:197)
+	at com.dretha.drethamod.client.gui.StartGui.actionPerformed(StartGui.java:135)
+	at net.minecraft.client.gui.GuiScreen.mouseClicked(GuiScreen.java:494)
+	at net.minecraft.client.gui.GuiScreen.handleMouseInput(GuiScreen.java:611)
+	at net.minecraft.client.gui.GuiScreen.handleInput(GuiScreen.java:576)
+	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1884)
+	at net.minecraft.client.Minecraft.runGameLoop(Minecraft.java:1186)
+	at net.minecraft.client.Minecraft.run(Minecraft.java:441)
+	at net.minecraft.client.main.Main.main(Main.java:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97)
+	at GradleStart.main(GradleStart.java:25)
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- Head --
+Thread: Client thread
+Stacktrace:
+	at java.lang.Enum.valueOf(Enum.java:238)
+	at com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder.valueOf(KaguneHolder.java:10)
+	at com.dretha.drethamod.utils.stats.PersonStats.updateEntityKagune(PersonStats.java:398)
+	at com.dretha.drethamod.utils.stats.PersonStats.addRCpoints(PersonStats.java:270)
+	at com.dretha.drethamod.utils.stats.PersonStats.becomeGhoul(PersonStats.java:197)
+	at com.dretha.drethamod.client.gui.StartGui.actionPerformed(StartGui.java:135)
+	at net.minecraft.client.gui.GuiScreen.mouseClicked(GuiScreen.java:494)
+	at net.minecraft.client.gui.GuiScreen.handleMouseInput(GuiScreen.java:611)
+	at net.minecraft.client.gui.GuiScreen.handleInput(GuiScreen.java:576)
+
+-- Affected screen --
+Details:
+	Screen name: com.dretha.drethamod.client.gui.StartGui
+
+-- Affected level --
+Details:
+	Level name: MpServer
+	All players: 1 total; [EntityPlayerSP['Player345'/114, l='MpServer', x=-320.84, y=56.00, z=673.91]]
+	Chunk stats: MultiplayerChunkCache: 619, 619
+	Level seed: 0
+	Level generator: ID 01 - flat, ver 0. Features enabled: false
+	Level generator options: 
+	Level spawn location: World: (-559,4,716), Chunk: (at 1,0,12 in -35,44; contains blocks -560,0,704 to -545,255,719), Region: (-2,1; contains chunks -64,32 to -33,63, blocks -1024,0,512 to -513,255,1023)
+	Level time: 87859 game time, 12892 day time
+	Level dimension: 0
+	Level storage version: 0x00000 - Unknown?
+	Level weather: Rain time: 0 (now: false), thunder time: 0 (now: false)
+	Level game mode: Game mode: creative (ID 1). Hardcore: false. Cheats: false
+	Forced entities: 64 total; [EntityXPOrb['Сфера опыта'/158471, l='MpServer', x=-350.93, y=56.00, z=657.70], EntityXPOrb['Сфера опыта'/158472, l='MpServer', x=-356.26, y=56.00, z=653.54], EntityXPOrb['Сфера опыта'/158473, l='MpServer', x=-353.44, y=56.00, z=654.50], EntityXPOrb['Сфера опыта'/128145, l='MpServer', x=-395.22, y=56.00, z=597.71], EntityXPOrb['Сфера опыта'/128144, l='MpServer', x=-393.04, y=56.00, z=597.24], EntityXPOrb['Сфера опыта'/128146, l='MpServer', x=-391.99, y=56.00, z=597.17], EntityHuman['Гражданский'/129307, l='MpServer', x=-250.52, y=56.00, z=561.45], EntityHuman['Гражданский'/129306, l='MpServer', x=-250.52, y=56.00, z=674.18], EntityCorpse['Труп'/127010, l='MpServer', x=-390.85, y=56.00, z=596.94], EntityXPOrb['Сфера опыта'/139814, l='MpServer', x=-350.77, y=56.00, z=621.06], EntityXPOrb['Сфера опыта'/139815, l='MpServer', x=-352.64, y=56.00, z=619.75], EntityHuman['Гражданский'/157482, l='MpServer', x=-194.33, y=56.00, z=578.36], EntityHuman['Гражданский'/157483, l='MpServer', x=-198.09, y=56.00, z=573.40], EntityHuman['Гражданский'/124587, l='MpServer', x=-245.50, y=56.00, z=673.50], EntityXPOrb['Сфера опыта'/139816, l='MpServer', x=-352.57, y=56.00, z=619.52], EntityCorpse['Труп'/157480, l='MpServer', x=-345.66, y=56.00, z=658.20], EntityHuman['Гражданский'/129963, l='MpServer', x=-402.85, y=56.00, z=790.16], EntityHuman['Гражданский'/129965, l='MpServer', x=-280.83, y=56.00, z=798.54], EntityHuman['Гражданский'/157486, l='MpServer', x=-193.35, y=56.00, z=719.53], EntityHuman['Гражданский'/129964, l='MpServer', x=-315.82, y=56.00, z=784.40], EntityHuman['Гражданский'/157484, l='MpServer', x=-234.30, y=56.00, z=827.20], EntityHuman['Гражданский'/129966, l='MpServer', x=-291.25, y=56.00, z=799.19], EntityXPOrb['Сфера опыта'/129715, l='MpServer', x=-432.68, y=56.00, z=600.61], EntityXPOrb['Сфера опыта'/129717, l='MpServer', x=-433.77, y=56.00, z=600.22], EntityXPOrb['Сфера опыта'/129716, l='MpServer', x=-431.73, y=56.00, z=602.39], EntityHuman['Гражданский'/124599, l='MpServer', x=-260.19, y=56.00, z=649.32], EntityHuman['Гражданский'/124598, l='MpServer', x=-260.75, y=56.00, z=695.15], EntityHuman['Гражданский'/124601, l='MpServer', x=-258.82, y=56.00, z=550.17], EntityHuman['Гражданский'/123192, l='MpServer', x=-263.39, y=56.00, z=687.55], EntityHuman['Гражданский'/124600, l='MpServer', x=-257.79, y=56.00, z=567.80], EntityHuman['Гражданский'/124603, l='MpServer', x=-264.22, y=56.00, z=720.85], EntityCorpse['Труп'/122298, l='MpServer', x=-425.34, y=56.00, z=566.25], EntityHuman['Гражданский'/123194, l='MpServer', x=-279.43, y=56.00, z=577.41], EntityXPOrb['Сфера опыта'/123453, l='MpServer', x=-431.95, y=56.00, z=564.81], EntityHuman['Гражданский'/124604, l='MpServer', x=-267.40, y=56.00, z=761.66], EntityXPOrb['Сфера опыта'/123455, l='MpServer', x=-430.68, y=56.00, z=567.49], EntityXPOrb['Сфера опыта'/123454, l='MpServer', x=-429.78, y=56.00, z=567.97], EntityHuman['Гражданский'/132422, l='MpServer', x=-292.80, y=56.00, z=805.31], EntityHuman['Гражданский'/132423, l='MpServer', x=-303.11, y=56.00, z=800.19], EntityCorpse['Труп'/128589, l='MpServer', x=-434.00, y=56.00, z=599.00], EntityCorpse['Труп'/77, l='MpServer', x=-469.60, y=56.00, z=567.30], EntityXPOrb['Сфера опыта'/176719, l='MpServer', x=-282.68, y=56.00, z=670.82], EntityHuman['Гражданский'/120270, l='MpServer', x=-303.60, y=56.00, z=747.49], EntityCorpse['Труп'/131794, l='MpServer', x=-382.36, y=56.00, z=637.96], EntityXPOrb['Сфера опыта'/176720, l='MpServer', x=-288.06, y=56.00, z=668.78], EntityXPOrb['Сфера опыта'/176721, l='MpServer', x=-287.36, y=56.00, z=666.60], EntityHuman['Гражданский'/120277, l='MpServer', x=-295.51, y=56.00, z=762.49], EntityCorpse['Труп'/166870, l='MpServer', x=-365.74, y=56.00, z=703.33], EntityXPOrb['Сфера опыта'/120279, l='MpServer', x=-297.50, y=56.00, z=537.09], EntityXPOrb['Сфера опыта'/120278, l='MpServer', x=-297.80, y=56.00, z=535.91], EntityCorpse['Труп'/89, l='MpServer', x=-414.36, y=56.00, z=518.08], EntityXPOrb['Сфера опыта'/120280, l='MpServer', x=-298.60, y=56.00, z=535.14], EntityCorpse['Труп'/175707, l='MpServer', x=-276.41, y=56.00, z=667.99], EntityCorpse['Труп'/138847, l='MpServer', x=-357.00, y=56.00, z=621.00], EntityHuman['Гражданский'/103, l='MpServer', x=-369.34, y=56.00, z=532.99], EntityHuman['Гражданский'/104, l='MpServer', x=-372.38, y=56.00, z=546.81], EntityHuman['Гражданский'/160874, l='MpServer', x=-179.84, y=56.00, z=589.82], EntityHuman['Гражданский'/111, l='MpServer', x=-309.49, y=56.00, z=586.49], EntityXPOrb['Сфера опыта'/167922, l='MpServer', x=-367.55, y=56.00, z=701.22], EntityHuman['Гражданский'/133107, l='MpServer', x=-224.51, y=56.00, z=692.72], EntityPlayerSP['Player345'/114, l='MpServer', x=-320.84, y=56.00, z=673.91], EntityXPOrb['Сфера опыта'/167920, l='MpServer', x=-366.42, y=56.00, z=698.94], EntityXPOrb['Сфера опыта'/167921, l='MpServer', x=-365.30, y=56.00, z=699.49], EntityXPOrb['Сфера опыта'/132732, l='MpServer', x=-391.82, y=56.00, z=635.75]]
+	Retry entities: 0 total; []
+	Server brand: fml,forge
+	Server type: Integrated singleplayer server
+Stacktrace:
+	at net.minecraft.client.multiplayer.WorldClient.addWorldInfoToCrashReport(WorldClient.java:461)
+	at net.minecraft.client.Minecraft.addGraphicsAndWorldToCrashReport(Minecraft.java:2886)
+	at net.minecraft.client.Minecraft.run(Minecraft.java:462)
+	at net.minecraft.client.main.Main.main(Main.java:118)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135)
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97)
+	at GradleStart.main(GradleStart.java:25)
+
+-- System Details --
+Details:
+	Minecraft Version: 1.12.2
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_311, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 187551136 bytes (178 MB) / 710410240 bytes (677 MB) up to 1418723328 bytes (1353 MB)
+	JVM Flags: 0 total; 
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: MCP 9.42 Powered by Forge 14.23.4.2705 6 mods loaded, 6 mods active
+	States: 'U' = Unloaded 'L' = Loaded 'C' = Constructed 'H' = Pre-initialized 'I' = Initialized 'J' = Post-initialized 'A' = Available 'D' = Disabled 'E' = Errored
+
+	| State     | ID        | Version      | Source                                              | Signature |
+	|:--------- |:--------- |:------------ |:--------------------------------------------------- |:--------- |
+	| UCHIJAAAA | minecraft | 1.12.2       | minecraft.jar                                       | None      |
+	| UCHIJAAAA | mcp       | 9.42         | minecraft.jar                                       | None      |
+	| UCHIJAAAA | FML       | 8.0.99.99    | forgeSrc-1.12.2-14.23.4.2705-PROJECT(DrethaMod).jar | None      |
+	| UCHIJAAAA | forge     | 14.23.4.2705 | forgeSrc-1.12.2-14.23.4.2705-PROJECT(DrethaMod).jar | None      |
+	| UCHIJAAAA | geckolib3 | 3.0.0        | forge-1.12.2-geckolib-3.0.0-beta.8.jar              | None      |
+	| UCHIJAAAA | dm        | 0.41         | Oshiete-Mod-0.44.jar                                | None      |
+
+	Loaded coremods (and transformers): 
+	GL info: ' Vendor: 'ATI Technologies Inc.' Version: '4.6.13596 Compatibility Profile Context 20.10.28 27.20.1028.1' Renderer: 'AMD Radeon(TM) Vega 8 Graphics'
+	Launched Version: 1.12.2
+	LWJGL: 2.9.4
+	OpenGL: AMD Radeon(TM) Vega 8 Graphics GL version 4.6.13596 Compatibility Profile Context 20.10.28 27.20.1028.1, ATI Technologies Inc.
+	GL Caps: Using GL 1.3 multitexturing.
+Using GL 1.3 texture combiners.
+Using framebuffer objects because OpenGL 3.0 is supported and separate blending is supported.
+Shaders are available because OpenGL 2.1 is supported.
+VBOs are available because OpenGL 1.5 is supported.
+
+	Using VBOs: Yes
+	Is Modded: Definitely; Client brand changed to 'fml,forge'
+	Type: Client (map_client.txt)
+	Resource Packs: 
+	Current Language: Русский (Россия)
+	Profiler Position: N/A (disabled)
+	CPU: 8x AMD Ryzen 5 3550H with Radeon Vega Mobile Gfx 

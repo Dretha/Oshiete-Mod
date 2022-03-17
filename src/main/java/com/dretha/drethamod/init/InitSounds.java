@@ -29,6 +29,7 @@ public class InitSounds {
     public static SoundEvent burning = initialize("burning");
     public static SoundEvent rebound = initialize("rebound");
     public static SoundEvent opening = initialize("opening");
+    public static SoundEvent opening_piano = initialize("opening_piano");
 
     
     @SubscribeEvent

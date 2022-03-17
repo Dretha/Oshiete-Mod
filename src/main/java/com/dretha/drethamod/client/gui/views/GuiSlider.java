@@ -18,7 +18,11 @@ public class GuiSlider extends GuiButton
 
     public GuiSlider(int buttonId, int x, int y, String name, boolean isFloat, float valueMin, float valueMax, float valueStep, float defaultValue)
     {
-        super(buttonId, x, y, 150, 20, name);
+        this(buttonId, x, y, 150, 20, name, isFloat, valueMin, valueMax, valueStep, defaultValue);
+    }
+    public GuiSlider(int buttonId, int x, int y, int width, int height, String name, boolean isFloat, float valueMin, float valueMax, float valueStep, float defaultValue)
+    {
+        super(buttonId, x, y, width, height, name);
         this.sliderValue = normalizeValue(defaultValue);
         this.currentValue = defaultValue;
         this.name = name;
@@ -27,6 +31,7 @@ public class GuiSlider extends GuiButton
         this.valueMax = valueMax;
         this.valueStep = valueStep;
         updateDisplayString();
+        setCurrentValue(defaultValue);
     }
 
     /**

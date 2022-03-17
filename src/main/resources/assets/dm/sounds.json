@@ -98,5 +98,11 @@
     "sounds": [
       "dm:opening"
     ]
+  },
+  "opening_piano": {
+    "category": "player",
+    "sounds": [
+      "dm:opening_piano"
+    ]
   }
 }

@@ -1,5 +1,6 @@
 package com.dretha.drethamod.utils.stats;
 
+import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityFlame;
 import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.geckolib.kagunes.KaguneHolder;
@@ -248,15 +249,21 @@ public class PersonStats {
 
     public void addRCpoints(int points, EntityLivingBase base)
     {
+        boolean isDarking = true;
+        if (base instanceof EntityPlayer)
+            isDarking = base.getCapability(CapaProvider.PLAYER_CAP, null).isDarkeningKagune();
         GrowthStages stageOld = getGrowthStage();
         this.RCpoints += points;
         GrowthStages stageNew = getGrowthStage();
-        if (stageNew != stageOld) {
-            red = red - (red / 4 * (stageNew.ordinal()-stageOld.ordinal()));
-            green = green - (green / 4 * (stageNew.ordinal()-stageOld.ordinal()));
-            blue = blue - (blue / 4 * (stageNew.ordinal()-stageOld.ordinal()));
-        }
+        if (stageNew != stageOld && isDarking) {
+            red = red - (red / 4 * (stageNew.ordinal() - stageOld.ordinal()));
+            green = green - (green / 4 * (stageNew.ordinal() - stageOld.ordinal()));
+            blue = blue - (blue / 4 * (stageNew.ordinal() - stageOld.ordinal()));
 
+            red = normalizeColor(red);
+            green = normalizeColor(green);
+            blue = normalizeColor(blue);
+        }
         updateCharacteristics(base);
         updateEntityKagune(base);
     }
@@ -544,26 +551,32 @@ public class PersonStats {
 
 
     public int getRed() {
-        return red;
+        return normalizeColor(red);
     }
 
-    public void setRed(int red) {
-        this.red = red;
+    public void setRed(int color) {
+        this.red = normalizeColor(color);
     }
 
     public int getGreen() {
-        return green;
+        return normalizeColor(green);
     }
 
-    public void setGreen(int green) {
-        this.green = green;
+    public void setGreen(int color) {
+        this.green = normalizeColor(color);
     }
 
     public int getBlue() {
-        return blue;
+        return normalizeColor(blue);
     }
 
-    public void setBlue(int blue) {
-        this.blue = blue;
+    public void setBlue(int color) {
+        this.blue = normalizeColor(color);
+    }
+
+    private int normalizeColor(int color) {
+        color = Math.max(0, color);
+        color = Math.min(255, color);
+        return color;
     }
 }

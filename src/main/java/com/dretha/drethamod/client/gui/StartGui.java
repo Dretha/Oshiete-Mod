@@ -21,15 +21,13 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 
 public class StartGui extends GuiScreen {
 
-    public static final ISound opening = PositionedSoundRecord.getMasterRecord(InitSounds.opening, 1.0F);
+    public ISound opening;
     protected int guiLeft;
     protected int guiTop;
     protected int xSize = 176;
@@ -73,11 +71,6 @@ public class StartGui extends GuiScreen {
             sliderGreen.updateDisplayString();
             sliderBlue.updateDisplayString();
         }
-
-        //for (ISound iSound : playingSounds) {
-        //    soundHandler().stopSound(iSound);
-        //}
-
 
         if (buttonList.get(0).isMouseOver())
             originHelp.drawToast(mouseX, mouseY);
@@ -193,7 +186,6 @@ public class StartGui extends GuiScreen {
 
     @Override
     public void initGui() {
-        super.initGui();
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
 
@@ -215,9 +207,13 @@ public class StartGui extends GuiScreen {
         buttonList.add(new GuiTexturedButton(7, sliderRed().x + sliderRed().width + 30, sliderRed().y, 0, 0, 20));
         buttonList.add(new GuiButton(8, this.width / 4 - 120/2, sliderBlue().y, 120, 20,I18n.format("startgui.start") + "!"));
 
-        if (!player.getIsInvulnerable())
+        if (!player.isCreative())
             player.setEntityInvulnerable(true);
 
+        if (player.getCapability(CapaProvider.PLAYER_CAP, null).isCopyrightMode())
+            opening = PositionedSoundRecord.getMasterRecord(InitSounds.opening_piano, 1.0F);
+        else
+            opening = PositionedSoundRecord.getMasterRecord(InitSounds.opening, 1.0F);
         soundHandler().stopSounds();
         soundHandler().playSound(opening);
 
@@ -233,9 +229,7 @@ public class StartGui extends GuiScreen {
     @Override
     public void onGuiClosed() {
         super.onGuiClosed();
-        if (player.getIsInvulnerable() && !player.isCreative())
-            player.setEntityInvulnerable(false);
-        // TODO проверить работает ли неу€звимость при гуи
+        player.setEntityInvulnerable(false);
 
         if (soundHandler().isSoundPlaying(opening))
             soundHandler().stopSound(opening);

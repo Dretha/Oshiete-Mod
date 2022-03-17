@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class HelpToast extends Gui {
@@ -61,15 +62,18 @@ public class HelpToast extends Gui {
         }
 
         this.zLevel = 300.0F;
+
+        Color upColor = new Color(255, 192, 0);
+        Color downColor = new Color(120, 90, 0);
         this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, -267386864, -267386864);
         this.drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, -267386864, -267386864);
         this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, -267386864, -267386864);
         this.drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, -267386864, -267386864);
         this.drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, -267386864, -267386864);
-        this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, 1347420415, 1344798847);
-        this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, 1347420415, 1344798847);
-        this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, 1347420415, 1347420415);
-        this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, 1344798847, 1344798847);
+        this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, upColor.getRGB(), downColor.getRGB());
+        this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, upColor.getRGB(), downColor.getRGB());
+        this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, upColor.getRGB(), upColor.getRGB());
+        this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, downColor.getRGB(), downColor.getRGB());
 
         for (int k1 = 0; k1 < text.size(); ++k1)
         {
@@ -118,7 +122,7 @@ public class HelpToast extends Gui {
             }
         }
 
-        if (list.size()>1)
+        if (list.size()>2)
             list.add(0, " " + I18n.format("helptoast.prompt") + ":");
         return list;
     }

@@ -45,5 +45,13 @@ public class SkinHandler {
     public static ResourceLocation getKakuganResource(String textureID) {
         return KAKUGAN_PARAMS.get(textureID);
     }
+
+    public static ResourceLocation changeKakugan(ResourceLocation kakugan) {
+        if (kakugan==kakugan31)
+            return kakugan11;
+        if (kakugan==kakugan11)
+            return kakugan12;
+        return kakugan31;
+    }
 }
 

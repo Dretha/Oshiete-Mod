@@ -302,7 +302,7 @@ public class EventsHandler {
     @SubscribeEvent
     public void onCameraUpdate(EntityViewRenderEvent.CameraSetup e) {
         if (Minecraft.getMinecraft().gameSettings.thirdPersonView==1)
-            GL11.glTranslatef(-0.5F, 0, 0);
+            GL11.glTranslatef(getCapaMP(Minecraft.getMinecraft().player).getCameraOffset(), 0, 0);
     }
     
     //clothes inventory
@@ -411,7 +411,7 @@ public class EventsHandler {
 
     @SubscribeEvent
     public void soundPlay(PlaySoundEvent e) {
-        if (Minecraft.getMinecraft().currentScreen instanceof StartGui && e.getSound()!=StartGui.opening && !SoundPlayer.soundEquals(e.getSound(), InitSounds.let_out_kagune)) {
+        if (Minecraft.getMinecraft().currentScreen instanceof StartGui && e.getSound()!=((StartGui) Minecraft.getMinecraft().currentScreen).opening && !SoundPlayer.soundEquals(e.getSound(), InitSounds.let_out_kagune)) {
             e.setResultSound(null);
         }
     }

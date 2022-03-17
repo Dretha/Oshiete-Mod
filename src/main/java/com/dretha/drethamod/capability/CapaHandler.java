@@ -6,6 +6,8 @@ import com.dretha.drethamod.utils.controllers.DelayActionController;
 import com.dretha.drethamod.utils.controllers.NoParamActionController;
 import com.dretha.drethamod.utils.controllers.SmellController;
 import com.dretha.drethamod.utils.stats.PersonStats;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 
 public class CapaHandler implements ICapaHandler {
 
@@ -25,6 +27,12 @@ public class CapaHandler implements ICapaHandler {
 	SmellController smellController = new SmellController(smellRadius, smellDuration);
 
 	private int lastFoodAmount = 0;
+	private Item lastUseItem = Items.AIR;
+	private float lastExhaustion = 0;
+
+	private float cameraOffset = 0;
+	private boolean isCopyrightMode = false;
+	private boolean isDarkeningKagune = true;
 
 	@Override
 	public PersonStats personStats() {
@@ -95,6 +103,26 @@ public class CapaHandler implements ICapaHandler {
 	}
 
 	@Override
+	public void setLastUseItem(Item item) {
+		lastUseItem = item;
+	}
+
+	@Override
+	public Item getLastUseItem() {
+		return lastUseItem;
+	}
+
+	@Override
+	public void setLastExhaustion(float lastExhaustion) {
+		this.lastExhaustion = lastExhaustion;
+	}
+
+	@Override
+	public float getLastExhaustion() {
+		return lastExhaustion;
+	}
+
+	@Override
 	public boolean isFirstJoin() {
 		return isFirstJoin;
 	}
@@ -102,5 +130,35 @@ public class CapaHandler implements ICapaHandler {
 	@Override
 	public void setJoin() {
 		isFirstJoin = false;
+	}
+
+	@Override
+	public void setCameraOffset(float offset) {
+		cameraOffset = offset;
+	}
+
+	@Override
+	public float getCameraOffset() {
+		return cameraOffset;
+	}
+
+	@Override
+	public void setCopyrightMode(boolean b) {
+		isCopyrightMode = b;
+	}
+
+	@Override
+	public boolean isCopyrightMode() {
+		return isCopyrightMode;
+	}
+
+	@Override
+	public void setDarkeningKagune(boolean b) {
+		isDarkeningKagune = b;
+	}
+
+	@Override
+	public boolean isDarkeningKagune() {
+		return isDarkeningKagune;
 	}
 }

@@ -17,6 +17,9 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 		compound.setInteger("smellRadius", instance.getSmellController().getRadius());
 		compound.setInteger("smellDuration", instance.getSmellController().getDuration());
 		compound.setBoolean("isFirstJoin", instance.isFirstJoin());
+		compound.setFloat("cameraOffset", instance.getCameraOffset());
+		compound.setBoolean("isCopyrightMode" ,instance.isCopyrightMode());
+		compound.setBoolean("isDarkeningKagune" ,instance.isDarkeningKagune());
 	    
 	    return compound;
 	}
@@ -30,5 +33,8 @@ public class CapaStorage implements IStorage<ICapaHandler>{
 		instance.getSmellController().setRadiusAndDuration(compound.getInteger("smellRadius"), compound.getInteger("smellDuration"));
 		if (!compound.getBoolean("isFirstJoin"))
 			instance.setJoin();
+		instance.setCameraOffset(compound.getFloat("cameraOffset"));
+		instance.setCopyrightMode(compound.getBoolean("isCopyrightMode"));
+		instance.setDarkeningKagune(compound.getBoolean("isDarkeningKagune"));
 	}
 }
