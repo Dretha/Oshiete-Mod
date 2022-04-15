@@ -16,15 +16,19 @@ import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.KuinkeMeleeBase;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
+import com.dretha.drethamod.items.utils.IGetEntity;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.handlers.EventsHandler;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,9 +138,14 @@ public class InitItems {
 	public static final Item HK33 = new HK33Item("assault_rifle_hk33");
 
 	//spawn eggs
-	public static final Item SPAWN_EGG_GHOUL = new SpawnEgg("spawn_egg_ghoul");
-	public static final Item SPAWN_EGG_DOVE = new SpawnEgg("spawn_egg_dove");
+	public static final Item SPAWN_EGG_GHOUL = new SpawnEgg("spawn_egg_ghoul", SpawnEgg::getGhoul);
+	public static final Item SPAWN_EGG_DOVE = new SpawnEgg("spawn_egg_dove", SpawnEgg::getDove);
 
-	//other
+	//documents
 	public static final Item CCG_SERTIFICATE = new ItemMaterial("ccgsertificate");
+	public static final Item BLOOD_TEST = new Document("blood_test");
+
+	//medicine
+	public static final Item EMPTY_SYRINGE = new Syringe("empty_syringe");
+	public static final Item BLOOD_SYRINGE = new Syringe("blood_syringe");
 }

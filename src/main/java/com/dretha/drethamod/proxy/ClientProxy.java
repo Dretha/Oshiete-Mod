@@ -55,7 +55,6 @@ public class ClientProxy extends CommonProxy{
         super.init(event);
 
         LayersRegister.register();
-        //MinecraftForge.EVENT_BUS.register(new KakuganOverlay(Minecraft.getMinecraft()));
     }
 
     @Override

@@ -21,4 +21,11 @@ public class DelayActionController extends ActionController{
             ticksPre--;
         return b;
     }
+
+    public boolean isEndAct(int ticks) {
+        boolean b = ticksPre+delay+interval==ticks && ticksPre>0;
+        if (b)
+            ticksPre--;
+        return b;
+    }
 }

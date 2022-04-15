@@ -36,6 +36,9 @@ item.shock_resistant_handle.name=Ударопрочная рукоять
 item.balsam.name=Бальзам
 item.spawn_egg_ghoul.name=Яйцо призыва - Гуль
 item.spawn_egg_dove.name=Яйцо призыва - Следователь
+item.empty_syringe.name=Пустой шприц
+item.blood_syringe.name=Шприц с кровью
+item.blood_test.name=Анализ крови
 
 item.knife.name=Куинке-нож
 item.katana.name=Куинке-катана
@@ -49,6 +52,7 @@ tile.fusion_blast_furnace.name=Доменная печь сплавов
 tile.fireclay_brick.name=Шамотный кирпич
 tile.steel_block.name=Блок стали
 tile.kuinke_steel_block.name=Блок куинке-стали
+tile.blood_analyzer.name=Анализатор крови
 
 info.none=
 info.hk33=Стандартная штурмовая винтовка CCG
@@ -125,3 +129,15 @@ oshieteoptions.cameraslider.name=Смещение камеры по Х
 oshieteoptions.buttonchangekakugan.name=Сменить какуган
 oshieteoptions.copyright=Режим авторских прав
 oshieteoptions.darkening=Потемнение кагуне
+
+string.positive=положительно
+string.negative=отрицательно
+string.name=Имя
+string.rcpoints=Содержание rc-клеток
+string.skill=Боевой опыт
+string.isghoul=Субьект является гулем
+string.ghoultype=Тип rc-клеток
+string.rank=Ранг
+string.attack=Урон кагуне
+string.protection=Защита кагуне
+string.smellradius=Радиус обоняния

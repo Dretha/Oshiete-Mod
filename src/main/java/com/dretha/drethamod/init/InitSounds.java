@@ -30,6 +30,7 @@ public class InitSounds {
     public static SoundEvent rebound = initialize("rebound");
     public static SoundEvent opening = initialize("opening");
     public static SoundEvent opening_piano = initialize("opening_piano");
+    public static SoundEvent printing = initialize("printing");
 
     
     @SubscribeEvent

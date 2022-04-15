@@ -27,12 +27,16 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import javax.annotation.Nullable;
+import java.awt.*;
 
 public class PersonStats {
 
@@ -42,7 +46,8 @@ public class PersonStats {
     private boolean isDove = false;
     private int RCpoints = Oshiete.random.nextInt(501)+200;
     private int skill = 0;
-    private int RClevel = MaxRClevel();
+    private int RClevel = maxRClevel();
+    public static final int MAX_RC_FOR_STATS = 14000;
     private EntityKagune entityKagune = null;
 
     private final int MODEL_VARIANT = 1;
@@ -100,7 +105,7 @@ public class PersonStats {
 
     public static int getCombatPoint(int points)
     {
-        return (int) DrethaMath.getNumberOfInterval(1000, 3000, 5000, 12000, 6, 12, 20, 40, points);
+        return (int) DrethaMath.getNumberOfInterval(1000, 3000, 5000, MAX_RC_FOR_STATS, 6, 12, 20, 40, points);
     }
 
     private boolean isBlock = false;
@@ -188,18 +193,22 @@ public class PersonStats {
 
 
     public void becomeGhoul(GhoulType ghoulType, EntityLivingBase entity) {
+        becomeGhoul(ghoulType, entity, 801, 0);
+    }
+    public void becomeGhoul(GhoulType ghoulType, EntityLivingBase base, int rc, int skill) {
+        rc = Math.max(rc, 801);
         setGhoul(true);
         setGhoulType(ghoulType);
         if (ghoulType==GhoulType.UKAKU)
-            //this.ukakuState = UkakuState.generateState();
             ukakuState = UkakuState.FLAMELIMB;
         RCpoints = Oshiete.random.nextInt(501)+200;
-        addRCpoints(801, entity);
-        RClevel = MaxRClevel();
-        entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4);
-        entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
-        entity.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
-        entity.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
+        addRCpoints(rc, base);
+        addSkill(skill, base);
+        RClevel = maxRClevel();
+        base.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4);
+        base.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40);
+        base.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(10);
+        base.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10);
     }
 
     public void becomeHuman(EntityLivingBase entity) {
@@ -217,9 +226,12 @@ public class PersonStats {
     }
 
     public void becomeDove(EntityLivingBase entity) {
+        becomeDove(entity, 0);
+    }
+    public void becomeDove(EntityLivingBase base, int skill) {
         setDove(true);
-        addSkill(1000, entity);
-        updateCharacteristics(entity);
+        addSkill(1000+skill, base);
+        updateCharacteristics(base);
     }
 
     public void forceSpeed(EntityLivingBase base, float angle)
@@ -242,30 +254,33 @@ public class PersonStats {
     }
 
     public void updateRClevel() {
-        this.RClevel = MaxRClevel() - (MaxRClevel() - this.RClevel);
+        this.RClevel = maxRClevel() - (maxRClevel() - this.RClevel);
         if (RCpoints<1000)
             RClevel=0;
     }
 
     public void addRCpoints(int points, EntityLivingBase base)
     {
-        boolean isDarking = true;
-        if (base instanceof EntityPlayer)
-            isDarking = base.getCapability(CapaProvider.PLAYER_CAP, null).isDarkeningKagune();
-        GrowthStages stageOld = getGrowthStage();
-        this.RCpoints += points;
-        GrowthStages stageNew = getGrowthStage();
-        if (stageNew != stageOld && isDarking) {
-            red = red - (red / 4 * (stageNew.ordinal() - stageOld.ordinal()));
-            green = green - (green / 4 * (stageNew.ordinal() - stageOld.ordinal()));
-            blue = blue - (blue / 4 * (stageNew.ordinal() - stageOld.ordinal()));
+        if (RCpoints + points >= 1000)
+        {
+            boolean isDarking = true;
+            if (base instanceof EntityPlayer)
+                isDarking = base.getCapability(CapaProvider.PLAYER_CAP, null).isDarkeningKagune();
+            GrowthStages stageOld = getGrowthStage();
+            this.RCpoints += points;
+            GrowthStages stageNew = getGrowthStage();
+            if (stageNew != stageOld && isDarking) {
+                red = red - (red / 4 * (stageNew.ordinal() - stageOld.ordinal()));
+                green = green - (green / 4 * (stageNew.ordinal() - stageOld.ordinal()));
+                blue = blue - (blue / 4 * (stageNew.ordinal() - stageOld.ordinal()));
 
-            red = normalizeColor(red);
-            green = normalizeColor(green);
-            blue = normalizeColor(blue);
+                red = normalizeColor(red);
+                green = normalizeColor(green);
+                blue = normalizeColor(blue);
+            }
+            updateCharacteristics(base);
+            updateEntityKagune(base);
         }
-        updateCharacteristics(base);
-        updateEntityKagune(base);
     }
 
     public void updateCharacteristics(EntityLivingBase base) {
@@ -285,14 +300,14 @@ public class PersonStats {
     public void addRClevel(int points) {
         updateRClevel();
         this.RClevel += points;
-        if (this.RClevel>MaxRClevel()) this.RClevel=MaxRClevel();
+        if (this.RClevel> maxRClevel()) this.RClevel= maxRClevel();
     }
 
     public boolean RClevelFull() {
-        return this.RClevel == MaxRClevel();
+        return this.RClevel == maxRClevel();
     }
 
-    public int MaxRClevel() {
+    public int maxRClevel() {
         return RCpoints/10;
     }
 
@@ -306,6 +321,7 @@ public class PersonStats {
 
     public void addSkill(int points, EntityLivingBase base) {
         this.skill +=points;
+        if (this.skill < 0) this.skill = 0;
         updateCharacteristics(base);
     }
 
@@ -333,12 +349,17 @@ public class PersonStats {
     public float exactRank() {
         float rankmeter = isGhoul() ? (skill+RCpoints)/2F : skill;
         float rank = Math.round(rankmeter/1000) - 1;
-        if (rank<0.3F)
-            rank=0.3F;
+        rank = Math.max(0.3F, rank);
         return rank;
     }
 
     public int materialRank() {
+        if (isGhoul)
+            return Math.max(Math.round(RCpoints/1000F)-1, 0);
+        else
+            return Math.max(Math.round(skill/1000F)-1, 0);
+    }
+    public double exactMaterialRank() {
         if (isGhoul)
             return Math.max(Math.round(RCpoints/1000F)-1, 0);
         else
@@ -506,7 +527,7 @@ public class PersonStats {
      * ”€звим ли гуль дл€ обычного оружи€
      */
     public boolean isVulnerable() {
-        return !isGhoul || isGhoul && RClevel < MaxRClevel()/10;
+        return !isGhoul || isGhoul && RClevel < maxRClevel()/10;
     }
 
     public float getJumpHeight() {
@@ -517,8 +538,9 @@ public class PersonStats {
         return height;
     }
 
+    // TODO защита маленька€ пофиксь
     public int getProtection() {
-        return (int) (getCombatPoint((RCpoints+skill)/2) * ghoulType.blockMultiplier);
+        return getCombatPoint((int) (skill * ghoulType.blockMultiplier));
     }
 
     //for human
@@ -540,8 +562,10 @@ public class PersonStats {
         return isGhoul || isDove;
     }
 
-    public boolean isMaskOff() {
-        return getInventory().getStackInSlot(0).isEmpty();
+    public boolean isMaskOff(EntityLivingBase base)
+    {
+        ItemStack helmet = base.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+        return getInventory().getStackInSlot(0).isEmpty() && (helmet.getItem() instanceof ItemArmor || helmet.isEmpty());
     }
 
     public boolean iAmStrongerThanHim(EntityLivingBase base) {
@@ -578,5 +602,10 @@ public class PersonStats {
         color = Math.max(0, color);
         color = Math.min(255, color);
         return color;
+    }
+
+    public int getDecimalColor() {
+        Color color = new Color(red, green, blue);
+        return color.getRGB();
     }
 }

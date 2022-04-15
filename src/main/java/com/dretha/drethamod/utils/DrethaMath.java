@@ -38,6 +38,24 @@ public class DrethaMath {
     }
 
     /**
+     * Разница лишь в том что interval2To меньше interval2Of
+     */
+    public static double getNumberOfReverseInterval(double interval1Of, double interval1To, double interval2Of, double interval2To, double number)
+    {
+        if (interval1Of>interval1To || interval2Of<interval2To) return 0;
+        number = Math.max(interval1Of, number);
+        number = Math.min(interval1To, number);
+
+        double pool1 = interval1To-interval1Of;
+        double procent = (number-interval1Of)/pool1;
+
+        double pool2 = interval2Of - interval2To;
+
+        double preResult = pool2*procent+ interval2To;
+        return (interval2Of -preResult) + interval2To;
+    }
+
+    /**
      * Считает число по пропорции
      * @param interval1Of - начало первого интервала (конец - бесконечность)
      * @param interval2Of - начало второго интервала (конец - бесконечность)

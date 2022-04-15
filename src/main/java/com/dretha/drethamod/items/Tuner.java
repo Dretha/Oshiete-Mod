@@ -1,6 +1,7 @@
 package com.dretha.drethamod.items;
 
 import com.dretha.drethamod.init.InitItems;
+import com.dretha.drethamod.items.utils.ITune;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;

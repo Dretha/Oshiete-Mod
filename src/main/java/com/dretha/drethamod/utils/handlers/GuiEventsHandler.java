@@ -29,6 +29,43 @@ public class GuiEventsHandler extends GuiIngame
         super(mcIn);
     }
 
+    // TODO сделать оверлей какуган
+/*
+    @SubscribeEvent
+    public void onRenderKakuganOverlay(RenderGameOverlayEvent.Pre e)
+    {
+        PersonStats stats = PersonStats.getStats(mc.player);
+
+        if (stats.isKakuganActive())
+        {
+            ScaledResolution scaledRes = new ScaledResolution(Minecraft.getMinecraft());
+
+//            GlStateManager.enableAlpha();
+//            GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.depthMask(true);
+            GlStateManager.enableDepth();
+            GlStateManager.enableAlpha();
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+            mc.getTextureManager().bindTexture(PUMPKIN_BLUR_TEX_PATH);
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferbuilder = tessellator.getBuffer();
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+            bufferbuilder.pos(0.0D, scaledRes.getScaledHeight(), -90.0D).tex(0.0D, 1.0D).endVertex();
+            bufferbuilder.pos(scaledRes.getScaledWidth(), scaledRes.getScaledHeight(), -90.0D).tex(1.0D, 1.0D).endVertex();
+            bufferbuilder.pos(scaledRes.getScaledWidth(), 0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+            bufferbuilder.pos(0.0D, 0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
+            tessellator.draw();
+
+//            GlStateManager.disableAlpha();
+            GlStateManager.disableDepth();
+            GlStateManager.depthMask(false);
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableAlpha();
+        }
+    }
+*/
     //RC Overlay
     @SubscribeEvent
     public void onRenderRCOverlay(RenderGameOverlayEvent.Post e)
@@ -36,7 +73,7 @@ public class GuiEventsHandler extends GuiIngame
         PersonStats stats = PersonStats.getStats(mc.player);
 
         if (stats.isGhoul() && !mc.player.isCreative()) {
-            int textureY = stats.getRClevel() > stats.MaxRClevel() * 0.2F && mc.player.getFoodStats().getFoodLevel()>6 ? 0 : 14;
+            int textureY = stats.getRClevel() > stats.maxRClevel() * 0.2F && mc.player.getFoodStats().getFoodLevel()>6 ? 0 : 14;
             int x = e.getResolution().getScaledWidth() / 2 + 10;
             int y = e.getResolution().getScaledHeight() - 48;
             if (mc.player.isInsideOfMaterial(Material.WATER))
@@ -47,7 +84,7 @@ public class GuiEventsHandler extends GuiIngame
             int barHeight = 7;
             this.drawTexturedModalRect(x, y, 0, textureY, barWidth, barHeight);
 
-            int barDynamicWidth = (int) DrethaMath.getNumberOfInterval(0, stats.MaxRClevel(), 0, barWidth, stats.getRClevel());
+            int barDynamicWidth = (int) DrethaMath.getNumberOfInterval(0, stats.maxRClevel(), 0, barWidth, stats.getRClevel());
             this.drawTexturedModalRect(x, y, 0, textureY+7, barDynamicWidth, barHeight);
             this.getFontRenderer().drawString(stats.getRClevel()+"", x + barWidth + 1, y-1, 9668012, true);
 

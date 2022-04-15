@@ -1,11 +1,11 @@
 package com.dretha.drethamod.entity.human;
 
-import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
-import com.dretha.drethamod.utils.ListStackUtils;
+import com.dretha.drethamod.utils.ItemStackUtils;
+import com.dretha.drethamod.utils.SoundPlayer;
 import com.dretha.drethamod.utils.controllers.ActionController;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import io.netty.buffer.ByteBuf;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawnData {
 
-    public static final ResourceLocation LOOT = new ResourceLocation(Reference.MODID, "loot_tables/corpse.json");
     protected ResourceLocation textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/skin0002.png");
     public static final int ticksBeforeUndead = 10800;
     protected String skin = "skin0002";
@@ -38,8 +37,13 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
     protected ArrayList<ItemStack> drop;
     protected ActionController dissectionController = new ActionController(17);
     protected boolean isEmbalmed = false;
+    protected int litersOfBlood;
+    protected ActionController litersOfBloodController = new ActionController(10);
 
-    public EntityCorpse(World worldIn, BlockPos pos, String texture, boolean isGhoul, int shards, int rotationAngle, ClothesInventory inventory, ArrayList<ItemStack> drop) {
+    public EntityCorpse(World worldIn) {
+        super(worldIn);
+    }
+    public EntityCorpse(World worldIn, BlockPos pos, NBTTagCompound compound, String skinID, int rotationAngle, ArrayList<ItemStack> drop) {
         super(worldIn);
 
         float width = 1F;
@@ -47,19 +51,15 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         this.setEntityInvulnerable(true);
         this.setHealth(20);
 
+        stats.readFromNBT(compound);
         this.setPosition(pos.getX(), pos.getY(), pos.getZ());
-        skin = texture;
-        this.stats.setKakuganResource(SkinHandler.getKakuganResource(skin));
+        this.skin = skinID;
+        stats.setKakuganResource(SkinHandler.getKakuganResource(skin));
         this.textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/"+ skin + ".png");
-        this.stats.setGhoul(isGhoul);
-        this.stats.setKakuganActive(isGhoul);
-        stats.setShardCountInEntity(shards);
-        stats.setInventory(inventory);
+        stats.setKakuganActive(stats.isGhoul());
         this.rotationAngle = rotationAngle;
         this.drop = drop;
-    }
-    public EntityCorpse(World worldIn) {
-        super(worldIn);
+        litersOfBlood = stats.getSkill()/100 + 3;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
             }
             else
             {
-                if (ListStackUtils.containJustOneTypeItem(drop, Items.BONE))
+                if (ItemStackUtils.containJustOneTypeItem(drop, Items.BONE))
                     mob = new EntitySkeleton(world);
                 else
                     mob = new EntityZombie(world);
@@ -104,8 +104,9 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         compound.setString("skin", skin);
         compound.setInteger("angle", rotationAngle);
         compound.setBoolean("isEmbalmed", isEmbalmed);
+        compound.setInteger("litersOfBlood" ,litersOfBlood);
         compound.setInteger("ticksExisted", ticksExisted);
-        ListStackUtils.writeToNBT(drop, compound);
+        ItemStackUtils.writeListToNBT(drop, compound);
     }
 
     @Override
@@ -118,8 +119,9 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
         textureLocation = new ResourceLocation(Reference.MODID, "textures/entity/skins/"+ skin + ".png");
         rotationAngle = compound.getInteger("angle");
         isEmbalmed = compound.getBoolean("isEmbalmed");
+        litersOfBlood = compound.getInteger("litersOfBlood");
         ticksExisted = compound.getInteger("ticksExisted");
-        drop = ListStackUtils.readFromNBT(compound);
+        drop = ItemStackUtils.readListFromNBT(compound);
     }
 
     @Override
@@ -159,6 +161,14 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
             isEmbalmed = true;
         }
 
+        if (litersOfBloodController.endAct(player.ticksExisted, player.getHeldItemMainhand().getItem() == Items.GLASS_BOTTLE && litersOfBlood>0)) {
+            litersOfBlood--;
+            player.getHeldItemMainhand().shrink(1);
+            player.inventory.addItemStackToInventory(new ItemStack(InitItems.HUMAN_BLOOD_BOTTLE));
+            player.inventoryContainer.detectAndSendChanges();
+            SoundPlayer.play(player, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL);
+        }
+
         return super.processInteract(player, hand);
     }
 
@@ -177,9 +187,10 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         NBTTagCompound compound = new NBTTagCompound();
         compound.setBoolean("isEmbalmed", isEmbalmed);
+        compound.setInteger("litersOfBlood" ,litersOfBlood);
         compound.setInteger("ticksExisted", ticksExisted);
         stats.writeToNBT(compound);
-        ListStackUtils.writeToNBT(drop, compound);
+        ItemStackUtils.writeListToNBT(drop, compound);
         ByteBufUtils.writeTag(buf, compound);
     }
 
@@ -191,9 +202,10 @@ public class EntityCorpse extends EntityLiving implements IEntityAdditionalSpawn
 
         NBTTagCompound compound = ByteBufUtils.readTag(buf);
         isEmbalmed = compound.getBoolean("isEmbalmed");
+        litersOfBlood = compound.getInteger("litersOfBlood");
         ticksExisted = compound.getInteger("ticksExisted");
         stats.readFromNBT(compound);
-        drop = ListStackUtils.readFromNBT(compound);
+        drop = ItemStackUtils.readListFromNBT(compound);
     }
 
     @Override

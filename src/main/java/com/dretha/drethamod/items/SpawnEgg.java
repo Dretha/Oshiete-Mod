@@ -5,6 +5,7 @@ import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
+import com.dretha.drethamod.items.utils.IGetEntity;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.interfaces.IHasModel;
@@ -31,11 +32,13 @@ import java.util.Objects;
 
 public class SpawnEgg extends Item implements IHasModel {
 
-    public SpawnEgg(String name) {
+    protected final IGetEntity iGetEntity;
+    public SpawnEgg(String name, IGetEntity iGetEntity) {
         setRegistryName(name);
         setUnlocalizedName(name);
         setCreativeTab(CreativeTabs.MISC);
         setMaxStackSize(64);
+        this.iGetEntity = iGetEntity;
 
         InitItems.ITEMS.add(this);
     }
@@ -46,39 +49,21 @@ public class SpawnEgg extends Item implements IHasModel {
     }
 
 
-    private EntityHuman getGhoul(World world) {
+    public static EntityHuman getGhoul(World world) {
         EntityHuman human = new EntityHuman(world);
         PersonStats stats = human.personStats();
-        stats.becomeGhoul(GhoulType.random(), human);
-        stats.addRCpoints(Oshiete.random.nextInt(3500), human);
-        stats.addSkill(Oshiete.random.nextInt(1500), human);
+        stats.becomeGhoul(GhoulType.random(), human, Oshiete.random.nextInt(3500), Oshiete.random.nextInt(1500));
         stats.releaseKagune(human);
+        human.setFirstSpawn();
         return human;
     }
-    private EntityHuman getDove(World world) {
+    public static EntityHuman getDove(World world) {
         EntityHuman human = new EntityHuman(world);
         PersonStats stats = human.personStats();
-        stats.becomeDove(human);
-        stats.addSkill(Oshiete.random.nextInt(3200), human);
-        stats.updateCharacteristics(human);
-        armTheDove(human);
+        stats.becomeDove(human, Oshiete.random.nextInt(3200));
+        EntityHuman.armTheDove(human);
+        human.setFirstSpawn();
         return human;
-    }
-
-    public static void armTheDove(EntityHuman dove)
-    {
-        PersonStats stats = dove.personStats();
-        dove.setHeldItem(EnumHand.MAIN_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill()));
-
-        QColdSteel coldSteel = (QColdSteel) dove.getHeldItemMainhand().getItem();
-        if (coldSteel.getWeapon()== Weapons.KNIFE && Oshiete.random.nextBoolean())
-            dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
-        if (coldSteel.getWeapon()== Weapons.KATANA && Oshiete.random.nextBoolean() && Oshiete.random.nextBoolean())
-            dove.setHeldItem(EnumHand.OFF_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill(), Weapons.KNIFE));
-        if (Oshiete.random.nextInt(100)<6)
-            dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
-
-        stats.getInventory().setInventorySlotContents(((IDressable)InitItems.KUREO_CAPE).getSlot(), new ItemStack(InitItems.KUREO_CAPE));
     }
 
     @Override
@@ -154,14 +139,7 @@ public class SpawnEgg extends Item implements IHasModel {
 
     public Entity spawnCreature(World worldIn, double x, double y, double z)
     {
-        EntityLiving entityLiving;
-
-        if (getUnlocalizedName().contains("ghoul"))
-            entityLiving = getGhoul(worldIn);
-        else if (getUnlocalizedName().contains("dove"))
-            entityLiving = getDove(worldIn);
-        else
-            entityLiving = new EntityZombie(worldIn);
+        EntityLiving entityLiving = iGetEntity.getEntity(worldIn);
 
         entityLiving.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
         entityLiving.rotationYawHead = entityLiving.rotationYaw;

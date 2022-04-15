@@ -42,8 +42,6 @@ public class InitEntities {
 	
 	public static void initSpawn() {
 		EntityRegistry.addSpawn(EntityHuman.class, 3, 1, 3, EnumCreatureType.CREATURE, Biomes.PLAINS, Biomes.FOREST, Biomes.JUNGLE, Biomes.DESERT, Biomes.EXTREME_HILLS, Biomes.SWAMPLAND, Biomes.TAIGA);
-        //LootTableList.register(EntityCorpse.LOOT);
-        // TODO спавнить людей реже и добавить спавн гулей и следаков
     }
 
     private static int ID = 0;

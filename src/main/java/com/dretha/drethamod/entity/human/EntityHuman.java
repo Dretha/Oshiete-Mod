@@ -9,7 +9,12 @@ import com.dretha.drethamod.items.SpawnEgg;
 import com.dretha.drethamod.items.clothes.IDressable;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
 import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
+import com.dretha.drethamod.items.kuinkes.QColdSteel;
+import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.main.Oshiete;
+import com.dretha.drethamod.utils.Randomizer;
+import com.dretha.drethamod.utils.SoundPlayer;
+import com.dretha.drethamod.utils.controllers.BlockManager;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.pojo.SimpleColor;
 import com.dretha.drethamod.utils.stats.PersonStats;
@@ -32,7 +37,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -52,24 +56,16 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 {
 	PersonStats stats = new PersonStats();
 
+	public static final int MAX_RC_FOR_SPAWN = 200000;
 	protected float speed = 1.2F;
-	private String skin;
-	private ResourceLocation texture = null;
+	protected String skin;
+	protected ResourceLocation texture = null;
+	protected BlockManager blockManager = new BlockManager();
+	protected boolean isFirstSpawn = true;
 	
 	public EntityHuman(World worldIn)
 	{
 		super(worldIn);
-		construct();
-	}
-
-	public EntityHuman(World worldIn, BlockPos pos)
-	{
-		super(worldIn);
-		construct();
-		setPosition(pos.getX(), pos.getY(), pos.getZ());
-	}
-
-	private void construct() {
 		float width = 0.6f;
 		setSize(width, width*3);
 
@@ -91,25 +87,41 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		stats.setBlue(simpleColor.blue);
 	}
 
+	public static void armTheDove(EntityHuman dove)
+	{
+		PersonStats stats = dove.personStats();
+		dove.setHeldItem(EnumHand.MAIN_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill()));
+
+		QColdSteel coldSteel = (QColdSteel) dove.getHeldItemMainhand().getItem();
+		if (coldSteel.getWeapon()== Weapons.KNIFE && Oshiete.random.nextBoolean())
+			dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
+		if (coldSteel.getWeapon()== Weapons.KATANA && Oshiete.random.nextBoolean() && Oshiete.random.nextBoolean())
+			dove.setHeldItem(EnumHand.OFF_HAND, QColdSteel.buildRandomColdSteel(stats.getSkill(), Weapons.KNIFE));
+		if (Oshiete.random.nextInt(100)<6)
+			dove.setHeldItem(EnumHand.OFF_HAND, dove.getHeldItemMainhand());
+
+		stats.getInventory().setInventorySlotContents(((IDressable)InitItems.KUREO_CAPE).getSlot(), new ItemStack(InitItems.KUREO_CAPE));
+	}
+
+	public double getStrenghtPercentFromCoords() {
+		return Math.max(Math.abs(posX), Math.abs(posZ)) / MAX_RC_FOR_SPAWN;
+	}
+
+	public EntityHuman(World worldIn, BlockPos pos)
+	{
+		this(worldIn);
+		setPosition(pos.getX(), pos.getY(), pos.getZ());
+	}
+
 	public PersonStats personStats() {
 		return stats;
 	}
-	
+
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		/*
-		if (admit && admitTicksPre+400<=this.ticksExisted) {
-			updateSpeedAttribute();
-			admitKagune();
-		}
-
-		if (this.ticksExisted%30==0 && !stats.isAgressive(this)) {
-			EntityLivingBase scary = heMeScared();
-			if (scary != null)
-				setRevengeTarget(heMeScared());
-		}
-		*/
+		if (blockManager.endBlock(this.ticksExisted))
+			resetBlocking();
 	}
 	
 	@Override
@@ -119,6 +131,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		personStats().writeToNBT(compound);
 
 		compound.setString("skinVariant", skin);
+		compound.setBoolean("isFirstSpawn", isFirstSpawn);
 	}
 
 	@Override
@@ -128,6 +141,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		personStats().readFromNBT(compound);
 
 		this.skin = compound.getString("skinVariant");
+		this.isFirstSpawn = compound.getBoolean("isFirstSpawn");
 	}
 
 	@Override
@@ -170,6 +184,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 					ItemStack kakuho = new ItemStack(GhoulType.getKakuho(stats.getGhoulType()));
 					NBTTagCompound compound = new NBTTagCompound();
 					compound.setInteger("RCpoints", stats.getRCpoints());
+					compound.setInteger("color", stats.getDecimalColor());
 					kakuho.setTagCompound(compound);
 					drop.add(kakuho);
 				}
@@ -184,7 +199,9 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 
 			drop.add(ItemStack.EMPTY);
 			Collections.reverse(drop);
-			EntityCorpse corpse = new EntityCorpse(world, this.getPosition(), skin, stats.isGhoul(), stats.getShardCountInEntity(), rotationAngle, stats.getInventory(), drop);
+			NBTTagCompound compound = new NBTTagCompound();
+			stats.writeToNBT(compound);
+			EntityCorpse corpse = new EntityCorpse(world, this.getPosition(), compound, skin, rotationAngle, drop);
 			world.spawnEntity(corpse);
 		}
 	}
@@ -194,18 +211,9 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 			texture = new ResourceLocation("dm:textures/entity/skins/"+ skin + ".png");
 		return texture;
 	}
-	public String getSkin() {
-		return skin;
-	}
 	public void setSkin(String skin) {
 		this.skin = skin;
 	}
-
-
-	public static void registerFixesHuman(DataFixer fixer)
-    {
-        EntityLiving.registerFixesMob(fixer, EntityHuman.class);
-    }
 	
 	public boolean getCanSpawnHere()
     {
@@ -215,19 +223,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
         BlockPos blockpos = new BlockPos(i, j, k);
         return this.world.getLight(blockpos) > 0 && super.getCanSpawnHere();
     }
-	
-	public boolean attackEntityFrom(DamageSource source, float amount)
-    {
-        if (this.isEntityInvulnerable(source))
-        {
-            return false;
-        }
-        else
-        {
-            return super.attackEntityFrom(source, amount);
-        }
-    }
-	
+
 	protected boolean canDespawn()
     {
         return false;
@@ -259,12 +255,6 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
     }
 
 	@Override
-	public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
-		if (entitylivingbaseIn==this) return;
-		super.setAttackTarget(entitylivingbaseIn);
-	}
-
-	@Override
 	protected boolean processInteract(EntityPlayer player, EnumHand hand) {
 		Item item = player.getHeldItem(hand).getItem();
 		ItemStack stack = player.getHeldItem(hand);
@@ -275,8 +265,8 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
         	else
 				stats.becomeGhoul(((ItemTabletCreative) item).getGhoulType(), this);
         	
-        	player.inventory.clearMatchingItems(item, -1, 1, null);
-    		this.world.playSound(null, this.getPosition(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1F, 1F);
+        	stack.shrink(1);
+			SoundPlayer.play(player, SoundEvents.ENTITY_PLAYER_BURP);
         }
 
 		if (item == InitItems.HUMAN_MEAT) {
@@ -307,7 +297,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		if (item==InitItems.CCG_SERTIFICATE && !personStats().isDove()) {
 			stack.shrink(1);
 			personStats().becomeDove(this);
-			SpawnEgg.armTheDove(this);
+			armTheDove(this);
 		}
 
 		return super.processInteract(player, hand);
@@ -319,6 +309,7 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 
 		NBTTagCompound compound = new NBTTagCompound();
 		stats.writeToNBT(compound);
+		compound.setBoolean("isFirstSpawn", isFirstSpawn);
 		ByteBufUtils.writeTag(buf, compound);
 	}
 
@@ -327,7 +318,16 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		String tex = ByteBufUtils.readUTF8String(buf);
 		texture = new ResourceLocation("dm:textures/entity/skins/"+ tex + ".png");
 
-		stats.readFromNBT(ByteBufUtils.readTag(buf));
+		NBTTagCompound compound = ByteBufUtils.readTag(buf);
+		stats.readFromNBT(compound);
+		this.isFirstSpawn = compound.getBoolean("isFirstSpawn");
+	}
+
+	public boolean isFirstSpawn() {
+		return isFirstSpawn;
+	}
+	public void setFirstSpawn() {
+		isFirstSpawn = false;
 	}
 
 	public boolean isScared()
@@ -357,6 +357,26 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 		return null;
 	}
 
+	public BlockManager getBlockManager() {
+		return blockManager;
+	}
+
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
+		boolean isAttacked = super.attackEntityFrom(source, amount);
+		if (isAttacked) {
+			blockManager.startBlocking(ticksExisted, 60, 5);
+			setBlocking();
+		}
+		return isAttacked;
+	}
+
+	@Override
+	public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn) {
+		if (entitylivingbaseIn==this) return;
+		super.setAttackTarget(entitylivingbaseIn);
+	}
+
 	public boolean isMyEnemy(EntityLivingBase enemy) {
 		PersonStats enemyStats = PersonStats.getStats(enemy);
 		HeadquartersCCG headquartersCCG = enemy.world.getCapability(WorldCapaProvider.WORLD_CAP, null).getHeadquartersCCG();
@@ -383,7 +403,6 @@ public class EntityHuman extends EntityMob implements IAnimals, IEntityAdditiona
 				this.setActiveHand(EnumHand.OFF_HAND);
 		}
 	}
-
 	public void resetBlocking() {
 		if (!personStats().isBlock()) return;
 		if ((stats.isGhoul() && !stats.ukaku()) && stats.isKaguneActive())

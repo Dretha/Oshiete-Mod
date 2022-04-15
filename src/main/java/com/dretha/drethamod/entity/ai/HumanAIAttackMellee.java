@@ -5,7 +5,9 @@ import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.world.IWorldCapaHandler;
 import com.dretha.drethamod.capability.world.WorldCapaProvider;
 import com.dretha.drethamod.entity.human.EntityHuman;
+import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.server.KaguneImpactMessage;
+import com.dretha.drethamod.utils.DrethaMath;
 import com.dretha.drethamod.utils.OshieteDamageSource;
 import com.dretha.drethamod.utils.stats.PersonStats;
 import com.dretha.drethamod.worldevents.HeadquartersCCG;
@@ -60,12 +62,11 @@ public class HumanAIAttackMellee extends EntityAIAttackMelee {
     @Override
     public void updateTask()
     {
-        if (attacker.getLastAttackedEntityTime()+60>attacker.ticksExisted && !(attacker.getAttackTarget() instanceof EntityHuman && !((EntityHuman) attacker.getAttackTarget()).personStats().isNotCivillian())) {
+        if (human.getBlockManager().endCicle(human.ticksExisted) && !(human.getAttackTarget() instanceof EntityHuman && !((EntityHuman)human.getAttackTarget()).personStats().isNotCivillian())) {
+            human.getBlockManager().startBlocking(human.ticksExisted, Oshiete.random.nextInt(30)+15, (int) DrethaMath.getNumberOfReverseInterval(0, 8000, 17, 4, stats.getSkill()));
             human.setBlocking();
-        } else
-            human.resetBlocking();
+        }
         super.updateTask();
-        // TODO сделать блок для хумана
     }
 
     @Override

@@ -4,6 +4,7 @@ package com.dretha.drethamod.proxy;
 import com.dretha.drethamod.capability.InitCapabilities;
 import com.dretha.drethamod.client.gui.GuiHandler;
 import com.dretha.drethamod.command.CommandRC;
+import com.dretha.drethamod.command.InitCommands;
 import com.dretha.drethamod.init.InitBlocks;
 import com.dretha.drethamod.init.InitEntities;
 import com.dretha.drethamod.main.Oshiete;
@@ -45,6 +46,6 @@ public class CommonProxy {
     }
 
 	public void serverStarting(FMLServerStartingEvent event) {
-		event.registerServerCommand(new CommandRC());
+		InitCommands.init(event);
 	}
 }

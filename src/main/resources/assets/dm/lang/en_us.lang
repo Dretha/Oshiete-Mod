@@ -36,6 +36,9 @@ item.shock_resistant_handle.name=Shock-Resistant Handle
 item.balsam.name=Balsam
 item.spawn_egg_ghoul.name=Spawn Egg - Ghoul
 item.spawn_egg_dove.name=Spawn Egg - Dove
+item.empty_syringe.name=Empty Syringe
+item.blood_syringe.name=Syringe with Blood
+item.blood_test.name=Blood Test
 
 item.knife.name=Quinque-Knife
 item.katana.name=Quinque-Katana
@@ -49,6 +52,7 @@ tile.fusion_blast_furnace.name=Fusion Blast Furnace
 tile.fireclay_brick.name=Fireclay Brick
 tile.steel_block.name=Steel Block
 tile.kuinke_steel_block.name=Quinque Steel Block
+tile.blood_analyzer.name=Blood Analyzer
 
 info.none=
 info.hk33=CCG Standard Assault Rifle
@@ -125,3 +129,24 @@ oshieteoptions.cameraslider.name=Camera X Offset
 oshieteoptions.buttonchangekakugan.name=Change Kakugan
 oshieteoptions.copyright=Copyright Mode
 oshieteoptions.darkening=Darkening Kagune
+
+string.positive=positive
+string.negative=negative
+string.name=Name
+string.rcpoints=Content of rc-cells
+string.skill=Combat experience
+string.isghoul=Subject is ghoul
+string.ghoultype=Type of rc-cells
+string.rank=Rank
+string.attack=Kagune damage value
+string.protection=Kagune protection value
+string.smellradius=Smell radius
+
+rank.0=G
+rank.1=C
+rank.2=B
+rank.3=A
+rank.4=S
+rank.5=SS
+rank.6=SSS
+rank.7=HS

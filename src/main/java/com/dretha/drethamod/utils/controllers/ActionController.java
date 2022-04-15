@@ -2,11 +2,12 @@ package com.dretha.drethamod.utils.controllers;
 /**параметризованный контроллер, промежуток изменить нельзя*/
 public class ActionController {
 
-    protected int ticksPre = 0;
+    protected int ticksPre;
     protected int interval;
 
     public ActionController(int interval) {
         this.interval = interval;
+        this.ticksPre = -interval;
     }
 
     public void setTicksPre(int ticks) {

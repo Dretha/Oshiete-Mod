@@ -1,6 +1,8 @@
 package com.dretha.drethamod.init;
 
 import com.dretha.drethamod.blocks.BlockBase;
+import com.dretha.drethamod.blocks.BlockTileOrientable;
+import com.dretha.drethamod.blocks.BloodAnalyzer;
 import com.dretha.drethamod.blocks.fusion_blast_furnace.FusionBlastFurnace;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -9,6 +11,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,6 +28,7 @@ public class InitBlocks {
     public static Block FIRECLAY_BRICK = new BlockBase("fireclay_brick", Material.ROCK, 3.0F, 60F);
     public static Block STEEL_BLOCK = new BlockBase("steel_block", Material.IRON, 3.0F, 120F);
     public static Block KUINKE_STEEL_BLOCK = new BlockBase("kuinke_steel_block", Material.IRON, 3.0F, 30F);
+    public static Block BLOOD_ANALYZER = new BloodAnalyzer("blood_analyzer");
 
     public static void init()
     {
@@ -33,6 +37,7 @@ public class InitBlocks {
 
         //tile entities
         GameRegistry.registerTileEntity(((FusionBlastFurnace)(FUSION_BLAST_FURNACE)).getTileEntityClass(), FUSION_BLAST_FURNACE.getRegistryName().toString());
+        GameRegistry.registerTileEntity(((BlockTileOrientable<TileEntity>)(BLOOD_ANALYZER)).getTileEntityClass(), BLOOD_ANALYZER.getRegistryName().toString());
     }
 
     @SideOnly(Side.CLIENT)

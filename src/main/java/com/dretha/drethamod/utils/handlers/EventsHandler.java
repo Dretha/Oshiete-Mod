@@ -4,23 +4,24 @@ import com.dretha.drethamod.capability.CapaProvider;
 import com.dretha.drethamod.capability.ICapaHandler;
 import com.dretha.drethamod.capability.firearm.CapaFirearmProvider;
 import com.dretha.drethamod.capability.world.WorldCapaProvider;
+import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
 import com.dretha.drethamod.client.gui.StartGui;
+import com.dretha.drethamod.client.inventory.ClothesInventory;
 import com.dretha.drethamod.entity.human.EntityCorpse;
+import com.dretha.drethamod.entity.human.EntityHuman;
+import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.init.InitSounds;
 import com.dretha.drethamod.items.Kakuho;
 import com.dretha.drethamod.items.firearm.ItemFirearm;
-import com.dretha.drethamod.client.geckolib.kagunes.EntityKagune;
-import com.dretha.drethamod.client.inventory.ClothesInventory;
-import com.dretha.drethamod.entity.human.EntityHuman;
-import com.dretha.drethamod.init.InitItems;
 import com.dretha.drethamod.items.firearm.ItemMagazine;
-import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.IKuinke;
+import com.dretha.drethamod.items.kuinkes.IKuinkeMelee;
 import com.dretha.drethamod.items.kuinkes.QColdSteel;
 import com.dretha.drethamod.items.kuinkes.Weapons;
 import com.dretha.drethamod.layers.LayerKagune;
 import com.dretha.drethamod.main.Oshiete;
 import com.dretha.drethamod.reference.Reference;
+import com.dretha.drethamod.utils.Randomizer;
 import com.dretha.drethamod.utils.SoundPlayer;
 import com.dretha.drethamod.utils.enums.GhoulType;
 import com.dretha.drethamod.utils.stats.PersonStats;
@@ -32,9 +33,6 @@ import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -51,7 +49,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -60,7 +57,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
@@ -128,7 +124,7 @@ public class EventsHandler {
 
         if (e.isWasDeath()) {
             e.getEntityPlayer().setHealth(e.getEntityPlayer().getMaxHealth());
-            cloneStats.setRClevel(cloneStats.MaxRClevel());
+            cloneStats.setRClevel(cloneStats.maxRClevel());
             cloneStats.setKaguneActive(false);
             cloneStats.setKakuganActive(false);
             cloneStats.setSpeedModeActive(false);
@@ -164,14 +160,15 @@ public class EventsHandler {
                 Oshiete.NETWORK.sendTo(new OpenGuiMessage(), (EntityPlayerMP) e.player);
             }
             */
-            e.player.sendMessage(new TextComponentString("Oshiete Mod is loaded."));
+            e.player.sendMessage(new TextComponentString(START_MESSAGE));
     	}
     }
+    public static final String START_MESSAGE = "Oshiete Mod is loaded.";
     @SubscribeEvent
     public void openStartGui(ClientChatReceivedEvent e) {
         EntityPlayer player = Minecraft.getMinecraft().player;
         ICapaHandler capa = getCapaMP(player);
-        if (capa!=null && capa.isFirstJoin() && player.world.isRemote) {
+        if (e.getMessage().toString().equals(START_MESSAGE) && capa!=null && capa.isFirstJoin() && player.world.isRemote) {
             capa.setJoin();
             Minecraft.getMinecraft().displayGuiScreen(new StartGui());
         }
@@ -235,25 +232,7 @@ public class EventsHandler {
     public static boolean hasHumanMP(EntityHuman human) {
         return human_list.contains(human);
     }
-    
-    
-    
-    
-    public static final ItemStack ghoulFood = new ItemStack(InitItems.HUMAN_MEAT);
-    public static final Item bottle = Item.getItemById(374);
-    public static final ItemStack rottenflesh = new ItemStack(Items.ROTTEN_FLESH);
-    
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void fillBottleBlood(AttackEntityEvent e) {
-    	if (e.getEntityPlayer().getHeldItemMainhand().getItem().equals(bottle) && e.getTarget() instanceof EntityHuman) {
-    		System.out.println(e.getResult().toString());
-    		e.getEntityPlayer().inventory.clearMatchingItems(Items.GLASS_BOTTLE, 0, 1, null);
-    		e.getEntityPlayer().inventory.addItemStackToInventory(new ItemStack(InitItems.HUMAN_BLOOD_BOTTLE));
-    	    e.getEntityPlayer().inventoryContainer.detectAndSendChanges(); 
-    	    e.getEntity().world.playSound(e.getEntityPlayer(), e.getEntityPlayer().getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1F, 1F);
-    	}
-    }
+
 
     @SubscribeEvent
     public static void villagerDeath(LivingDeathEvent e) {
@@ -276,7 +255,6 @@ public class EventsHandler {
                 e.getEntityLiving().entityDropItem(new ItemStack(InitItems.KAGUNE_SHARD, kuinke.getCountKaguneShards()+rand), 0);
         }
     }
-
     @SubscribeEvent
     public static void kaguneFirstView(RenderSpecificHandEvent e) {
         ICapaHandler capa = EventsHandler.getCapaMP(Minecraft.getMinecraft().player);
@@ -414,5 +392,46 @@ public class EventsHandler {
         if (Minecraft.getMinecraft().currentScreen instanceof StartGui && e.getSound()!=((StartGui) Minecraft.getMinecraft().currentScreen).opening && !SoundPlayer.soundEquals(e.getSound(), InitSounds.let_out_kagune)) {
             e.setResultSound(null);
         }
+    }
+
+    // TODO неправильно распределяются очки
+    @SubscribeEvent
+    public void fabricateGhoulsAndDovesForSpawn(EntityJoinWorldEvent e) {
+        if (!e.getWorld().isRemote && e.getEntity() instanceof EntityHuman) {
+            EntityHuman human = (EntityHuman) e.getEntity();
+            PersonStats stats = human.personStats();
+            if (human.isFirstSpawn())
+            {
+                int pointsRange = 500;
+                int points = Oshiete.random.nextInt(pointsRange+1) + getMaxRank() - pointsRange/2;
+
+                double randomMult = (Oshiete.random.nextDouble()+1)/2;
+                if (Randomizer.randomToPercent(0.35F))
+                    points *= Oshiete.random.nextBoolean() ? randomMult : randomMult+0.5;
+
+                if (Randomizer.randomToPercent(0.2F))
+                {
+                    if (Oshiete.random.nextBoolean())
+                    {
+                        int RCpoints = (int) (points * (Oshiete.random.nextDouble()+1)/2);
+                        int skillPoints = points - RCpoints;
+                        stats.becomeGhoul(GhoulType.random(), human, RCpoints, skillPoints);
+                    } else
+                    {
+                        stats.becomeDove(human, points);
+                        EntityHuman.armTheDove(human);
+                    }
+                }
+                human.setFirstSpawn();
+            }
+        }
+    }
+    private int getMaxRank() {
+        int rank = 0;
+        for (EntityPlayer player : player_list) {
+            PersonStats stats = player.getCapability(CapaProvider.PLAYER_CAP, null).personStats();
+            rank = Math.max((int)((stats.exactMaterialRank()+1)*1000), rank);
+        }
+        return rank;
     }
 }

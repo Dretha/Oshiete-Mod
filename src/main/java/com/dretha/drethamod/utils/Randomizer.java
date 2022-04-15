@@ -45,4 +45,8 @@ public class Randomizer {
             System.out.println("RandomizerError: incorrect chance data!");
         return summ!=1F;
     }
+
+    public static boolean randomToPercent(float percent) {
+        return Math.random() < percent;
+    }
 }

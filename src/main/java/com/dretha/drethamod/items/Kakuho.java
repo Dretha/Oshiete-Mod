@@ -22,14 +22,6 @@ public class Kakuho extends ItemGhoulFood {
     public Kakuho(String name, String description, GhoulType ghoulType, int amount, float saturation) {
         super(name, description, amount, saturation, 1024, false);
         this.ghoulType = ghoulType;
-    }//
-
-    @Override
-    public void onCreated(ItemStack stack, World worldIn, EntityPlayer playerIn)
-    {
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setInteger("RCpoints", satiation);
-        stack.setTagCompound(compound);
     }
 
     @Override
@@ -38,6 +30,7 @@ public class Kakuho extends ItemGhoulFood {
         if (!stack.hasTagCompound()) {
             NBTTagCompound compound = new NBTTagCompound();
             compound.setInteger("RCpoints", satiation);
+            compound.setInteger("color", 16777215);
             stack.setTagCompound(compound);
         }
     }

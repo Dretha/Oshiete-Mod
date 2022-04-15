@@ -104,5 +104,11 @@
     "sounds": [
       "dm:opening_piano"
     ]
+  },
+  "printing": {
+    "category": "block",
+    "sounds": [
+      "dm:printing"
+    ]
   }
 }

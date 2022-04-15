@@ -1,6 +1,5 @@
 package com.dretha.drethamod.utils;
 
-import com.dretha.drethamod.init.InitSounds;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.SoundCategory;

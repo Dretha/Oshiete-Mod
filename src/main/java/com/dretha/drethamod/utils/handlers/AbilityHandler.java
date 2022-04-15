@@ -19,7 +19,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.*;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -55,8 +54,8 @@ public class AbilityHandler {
     	if (e.getEntityLiving() instanceof EntityPlayer) {
     		EntityPlayer player = (EntityPlayer) e.getEntityLiving();
     		ICapaHandler capa = EventsHandler.getCapaMP(player);
-			Item item = player.getActiveItemStack().getItem();
-    		if (capa.isGhoul() && !(item instanceof ItemGhoulFood) && (item instanceof ItemFood || capa.getLastUseItem() instanceof ItemFood) && item!=Items.ROTTEN_FLESH) {
+			Item item = capa.getLastUseItem();
+    		if (capa.isGhoul() && !(item instanceof ItemGhoulFood) && item instanceof ItemFood && item!=Items.ROTTEN_FLESH) {
     			Oshiete.NETWORK.sendToServer(new ServerGhoulPoisonedMessage());
     		}
     	}
@@ -69,7 +68,7 @@ public class AbilityHandler {
 			Oshiete.NETWORK.sendToServer(new ServerGhoulPoisonedMessage());
 		}
     }
-  	// TODO изменить регенерацию рс
+
   	@SubscribeEvent
     public static void onPlayerUpdate(LivingUpdateEvent event) {
   		if (event.getEntityLiving() instanceof EntityPlayer && !event.getEntityLiving().world.isRemote) {
@@ -78,19 +77,17 @@ public class AbilityHandler {
 			PersonStats stats = capa.personStats();
             int foodlevel = player.getFoodStats().getFoodLevel();
 
-            int upicks = 20; //update ticks
-            int tofull = 40; //40 secs to full level
+            int updateTicks = 5; //5 ticks to update
+            int ticksToFull = 40 * 20; //40 secs to full level
+            int partOfMaxRC = ticksToFull/updateTicks; //160
             
-            int i = (upicks * tofull)/20; //40
-            
-            if (player.ticksExisted%upicks==0 && capa.isGhoul()) {
+            if (player.ticksExisted % updateTicks==0 && capa.isGhoul()) {
             	stats.updateRClevel();
             	
             	if (foodlevel>6 && !stats.RClevelFull()) {
-            		stats.addRClevel((stats.MaxRClevel())/i);
-            		player.getFoodStats().addExhaustion((float)48/i); //1.2
+					player.getFoodStats().addExhaustion((48F / partOfMaxRC)); //1.2
+					stats.addRClevel(Math.max(Math.round((float)stats.maxRClevel() / partOfMaxRC), 1));
             	}
-            	
             }
   		}
   	}

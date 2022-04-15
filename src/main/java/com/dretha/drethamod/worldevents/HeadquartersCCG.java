@@ -15,7 +15,7 @@ public class HeadquartersCCG
 
     public void addWanted(EntityLivingBase base) {
         if (base==null) return;
-        if (!base.isDead && !wantedCriminalsBase.contains(base.getUniqueID()) && PersonStats.getStats(base).isMaskOff() && base instanceof EntityPlayer) {
+        if (!base.isDead && !wantedCriminalsBase.contains(base.getUniqueID()) && PersonStats.getStats(base).isMaskOff(base) && base instanceof EntityPlayer) {
             wantedCriminalsBase.add(base.getUniqueID());
             if (base instanceof EntityPlayer)
                 base.sendMessage(new TextComponentString(I18n.format("message.addedcriminalbase")));
